@@ -1,9 +1,10 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsCandidate, LyricsLookup } from '../types'
-import type { LyricsSource } from './types'
+import type { LyricsHttpPort, LyricsSource } from '@/lib/lyrics/application/ports'
+import type { LyricsCandidate, LyricsLookup } from '@/lib/lyrics/domain/types'
 
-import { convertTtml } from '@/lib/lyrics/parser/lyrics-parser'
-import { formEncode } from '@/lib/lyrics/utils/string'
+import { formEncode } from './encoding'
+
+const TTML_ROOT =
+  /^\s*(?:<\?xml\b[\s\S]*?\?>\s*)?(?:<!--[\s\S]*?-->\s*)*<(?:[A-Za-z_][\w.-]*:)?tt(?=\s|>)/iu
 
 export class UnisonLyricsSource implements LyricsSource {
   readonly id = 'unison'
@@ -41,24 +42,21 @@ export class UnisonLyricsSource implements LyricsSource {
       if (!lyrics) return []
 
       const trimmedStart = lyrics.trimStart()
-      const isTtml =
-        data.format?.toLowerCase() === 'ttml' ||
-        trimmedStart.startsWith('<tt') ||
-        trimmedStart.startsWith('<?xml')
+      const isTtml = data.format?.toLowerCase() === 'ttml' || TTML_ROOT.test(trimmedStart)
 
       const id = typeof data.id === 'string' && data.id ? data.id : 'unison'
       const attribution = 'Lyrics from Unison (https://unison.boidu.dev)'
-      const ttml = isTtml ? lyrics : undefined
-      const text = isTtml ? (convertTtml(lyrics, true) ?? convertTtml(lyrics) ?? lyrics) : lyrics
+      const isLrc = /^\s*\[\d{1,3}:\d{2}(?:\.\d{1,3})?\]/mu.test(lyrics)
 
       return [
         {
-          text,
+          document: isTtml
+            ? { format: 'ttml', content: lyrics }
+            : { format: isLrc ? 'lrc' : 'plain', content: lyrics },
           provider: isTtml ? 'Unison (TTML)' : 'Unison',
           sourceId: id,
           sourceUrl: url,
           weight: 22,
-          ttmlRaw: ttml,
           attribution,
         },
       ]

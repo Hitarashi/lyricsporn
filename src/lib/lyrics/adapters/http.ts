@@ -1,17 +1,9 @@
+import type { LyricsHttpPort } from '@/lib/lyrics/application/ports'
+
 export interface LyricsHttpOptions {
   timeoutMs?: number
   defaultHeaders?: Record<string, string>
   fetch?: typeof fetch
-}
-
-export interface LyricsHttpPort {
-  get(url: string, headers?: Record<string, string>, signal?: AbortSignal): Promise<string | null>
-  postJson(
-    url: string,
-    body: string,
-    headers?: Record<string, string>,
-    signal?: AbortSignal,
-  ): Promise<string | null>
 }
 
 const DEFAULT_HEADERS: Record<string, string> = {

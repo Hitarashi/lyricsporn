@@ -1,6 +1,4 @@
-import type { LyricsLine, LyricsWord } from '../types'
-
-import { formatTime } from '@/lib/lyrics/utils/time'
+import type { LyricsLine, LyricsWord } from '@/lib/lyrics/domain/types'
 
 const KRC_WORD_REGEX = /<(\d+),(\d+),\d+>([^<]*)/g
 const QRC_WORD_REGEX = /\((\d+),(\d+)\)/g
@@ -292,17 +290,4 @@ export function parseSubtitles(
   } catch {
     return null
   }
-}
-
-export function asEnhancedLrc(lines: LyricsLine[]): string {
-  return lines
-    .map((line) => {
-      const lineTime = formatTime(line.startMs)
-      if (line.words && line.words.length > 0) {
-        const wordsStr = line.words.map((w) => `<${formatTime(w.startMs)}>${w.text}`).join('')
-        return `[${lineTime}]${wordsStr}`
-      }
-      return `[${lineTime}]${line.text}`
-    })
-    .join('\n')
 }

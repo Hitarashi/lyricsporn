@@ -1,16 +1,8 @@
-import type { LyricsLine } from '@/lib/lyrics/types'
-
 import { describe, expect, it } from 'bun:test'
 
-import {
-  asEnhancedLrc,
-  parseKrc,
-  parseQrc,
-  parseRichsync,
-  parseYrc,
-} from '@/lib/lyrics/parser/timed-formats'
+import { parseLyrics } from '@/lib/lyrics/parser'
 
-describe('TimedFormats', () => {
+describe('LyricsParser timed document formats', () => {
   it('parses KRC lines and word timings correctly', () => {
     const krc = `
 [language:en]
@@ -18,7 +10,7 @@ describe('TimedFormats', () => {
 [3000,2000]<0,1000,0>Second <1000,1000,0>line
     `.trim()
 
-    const lines = parseKrc(krc)
+    const lines = parseLyrics({ format: 'krc', content: krc }).lines
     expect(lines.length).toBe(2)
 
     expect(lines[0]?.text).toBe('Hello world !')
@@ -40,7 +32,7 @@ describe('TimedFormats', () => {
 [4000,3000]sunshine(0,3000)
     `.trim()
 
-    const lines = parseQrc(qrc)
+    const lines = parseLyrics({ format: 'qrc', content: qrc }).lines
     expect(lines.length).toBe(2)
 
     expect(lines[0]?.text).toBe('Goodmorning ')
@@ -61,7 +53,7 @@ describe('TimedFormats', () => {
 [3000,2000](0,2000,0)me
     `.trim()
 
-    const lines = parseYrc(yrc)
+    const lines = parseLyrics({ format: 'yrc', content: yrc }).lines
     expect(lines.length).toBe(2)
 
     expect(lines[0]?.text).toBe('Take on')
@@ -88,11 +80,10 @@ describe('TimedFormats', () => {
       },
     ])
 
-    const lines = parseRichsync(richsync)
-    expect(lines).not.toBeNull()
-    expect(lines?.length).toBe(1)
+    const lines = parseLyrics({ format: 'richsync', content: richsync }).lines
+    expect(lines).toHaveLength(1)
 
-    const line = lines?.[0]
+    const line = lines[0]
     expect(line?.text).toBe('Never gonna give you up')
     expect(line?.startMs).toBe(1500)
     expect(line?.endMs).toBe(4500)
@@ -102,20 +93,12 @@ describe('TimedFormats', () => {
     expect(line?.words?.[4]?.text).toBe('up')
   })
 
-  it('formats lines to enhanced LRC (ELRC)', () => {
-    const lines: LyricsLine[] = [
-      {
-        text: 'Hello world',
-        startMs: 1250,
-        endMs: 3000,
-        words: [
-          { text: 'Hello ', startMs: 1250, endMs: 2000 },
-          { text: 'world', startMs: 2000, endMs: 3000 },
-        ],
-      },
-    ]
+  it('parses ELRC documents through the same parser interface', () => {
+    const elrc = '[00:01.250]<00:01.250>Hello <00:02.000>world\n[00:03.000]<00:03.000>Again'
+    const parsed = parseLyrics({ format: 'elrc', content: elrc })
 
-    const elrc = asEnhancedLrc(lines)
-    expect(elrc).toBe('[00:01.250]<00:01.250>Hello <00:02.000>world')
+    expect(parsed.syncLevel).toBe('word')
+    expect(parsed.lines[0]?.words?.map((word) => word.text)).toEqual(['Hello ', 'world'])
+    expect(parsed.lines[1]?.text).toBe('Again')
   })
 })

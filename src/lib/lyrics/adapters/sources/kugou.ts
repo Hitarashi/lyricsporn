@@ -1,10 +1,10 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsCandidate, LyricsLookup } from '../types'
-import type { LyricsSource } from './types'
+import type { LyricsHttpPort, LyricsSource } from '@/lib/lyrics/application/ports'
+import type { LyricsCandidate, LyricsLookup } from '@/lib/lyrics/domain/types'
 
-import { asEnhancedLrc, parseKrc } from '@/lib/lyrics/parser/timed-formats'
-import { decryptKrc } from '@/lib/lyrics/utils/crypto'
-import { formEncode, metadataScore, uriComponent } from '@/lib/lyrics/utils/string'
+import { decryptKrc } from '@/lib/lyrics/adapters/sources/kugou-crypto'
+import { metadataScore } from '@/lib/lyrics/domain/matching'
+
+import { formEncode, uriComponent } from './encoding'
 
 interface SongItem {
   songname?: string
@@ -91,8 +91,7 @@ export class KugouLyricsSource implements LyricsSource {
           const decrypted = decryptKrc(encoded)
           if (!decrypted) continue
 
-          const lines = parseKrc(decrypted)
-          if (lines.length === 0) continue
+          if (!decrypted.trim()) continue
 
           const matchScore = metadataScore(
             input,
@@ -105,13 +104,12 @@ export class KugouLyricsSource implements LyricsSource {
 
           return [
             {
-              text: asEnhancedLrc(lines),
+              document: { format: 'krc', content: decrypted },
               provider: 'Kugou KRC',
               sourceId: `kugou:${id}`,
               sourceUrl: sheetUrl,
               weight: 10,
               metadataScore: matchScore,
-              structuredLines: lines,
             },
           ]
         }

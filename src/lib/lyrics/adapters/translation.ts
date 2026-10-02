@@ -1,7 +1,7 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsLine, LyricsTranslation } from '../types'
+import type { LyricsHttpPort } from '@/lib/lyrics/application/ports'
+import type { LyricsLine, LyricsTranslation } from '@/lib/lyrics/domain/types'
 
-import { formEncode } from './string'
+import { formEncode } from './sources/encoding'
 
 function parseTranslationResponse(rawJson: string): string | null {
   try {

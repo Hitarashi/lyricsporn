@@ -1,4 +1,4 @@
-import type { LyricsLine, LyricsWord } from '../types'
+import type { LyricsLine, LyricsWord } from '@/lib/lyrics/domain/types'
 
 export function stripTags(str: string): string {
   return str.replace(/<[^>]*>/g, '')

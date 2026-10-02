@@ -1,8 +1,7 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsCandidate, LyricsLookup } from '../types'
-import type { LyricsSource } from './types'
+import type { LyricsHttpPort, LyricsSource } from '@/lib/lyrics/application/ports'
+import type { LyricsCandidate, LyricsLookup } from '@/lib/lyrics/domain/types'
 
-import { metadataScore } from '@/lib/lyrics/utils/string'
+import { metadataScore } from '@/lib/lyrics/domain/matching'
 
 const API = 'https://music.youtube.com/youtubei/v1'
 const CLIENT_VERSION = '1.20240923.01.00'
@@ -287,7 +286,7 @@ export class YouTubeMusicLyricsSource implements LyricsSource {
 
       return [
         {
-          text: description,
+          document: { format: 'plain', content: description },
           provider: 'YouTube Music Description',
           sourceId: `youtube:${id}`,
           sourceUrl: `https://music.youtube.com/watch?v=${id}`,

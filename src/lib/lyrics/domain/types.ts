@@ -26,6 +26,16 @@ export interface LyricsLine {
   isInstrumental?: boolean
 }
 
+export type LyricsDocument =
+  | {
+      format: 'elrc' | 'lrc' | 'plain' | 'ttml' | 'krc' | 'qrc' | 'yrc' | 'richsync' | 'subtitles'
+      content: string
+    }
+  | {
+      format: 'structured'
+      lines: LyricsLine[]
+    }
+
 export interface LyricsLookup {
   title: string
   artistString: string
@@ -36,15 +46,13 @@ export interface LyricsLookup {
 }
 
 export interface LyricsCandidate {
-  text?: string
+  document: LyricsDocument
   provider: string
   sourceId: string
   sourceUrl?: string
   attribution?: string
   weight?: number
   metadataScore?: number
-  ttmlRaw?: string
-  structuredLines?: LyricsLine[]
   instrumental?: boolean
 }
 
@@ -65,7 +73,6 @@ export interface LyricsResult {
   sourceId?: string
   sourceUrl?: string
   attribution?: string
-  ttmlRaw?: string
   instrumental?: boolean
 }
 

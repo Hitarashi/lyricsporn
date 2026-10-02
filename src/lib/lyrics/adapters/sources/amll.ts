@@ -1,9 +1,9 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsCandidate, LyricsLookup } from '../types'
-import type { LyricsSource } from './types'
+import type { LyricsHttpPort, LyricsSource } from '@/lib/lyrics/application/ports'
+import type { LyricsCandidate, LyricsLookup } from '@/lib/lyrics/domain/types'
 
-import { convertTtml } from '@/lib/lyrics/parser/lyrics-parser'
-import { metadataScore, uriComponent } from '@/lib/lyrics/utils/string'
+import { metadataScore } from '@/lib/lyrics/domain/matching'
+
+import { uriComponent } from './encoding'
 
 interface AmllEntry {
   title: string
@@ -86,18 +86,14 @@ export class AmllTtmlDbSource implements LyricsSource {
     const ttml = await http.get(url)
     if (!ttml) return []
 
-    const text = convertTtml(ttml, true) ?? convertTtml(ttml)
-    if (!text) return []
-
     return [
       {
-        text,
+        document: { format: 'ttml', content: ttml },
         provider: 'AMLL TTML Database',
         sourceId: bestEntry.ncmId ?? 'amll-ttml-db',
         sourceUrl: url,
         weight: 10,
         metadataScore: highestScore,
-        ttmlRaw: ttml,
       },
     ]
   }

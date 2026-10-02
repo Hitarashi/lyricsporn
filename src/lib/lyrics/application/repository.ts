@@ -1,72 +1,27 @@
-import type { LyricsSource } from './providers/types'
+import type { LyricsHttpPort, LyricsSource, LyricsTranslator } from '@/lib/lyrics/application/ports'
 import type {
   DetailedLyricsResult,
-  EvaluatedCandidate,
-  LyricsCandidate,
   LyricsLookup,
   LyricsLookupOptions,
   LyricsResult,
-} from './types'
+} from '@/lib/lyrics/domain/types'
 
-import { LyricsHttp, type LyricsHttpPort } from './http'
-import { fromText } from './parser/lyrics-parser'
-import { createDefaultProviders } from './providers/index'
-import { translateLyricsLines } from './utils/translation'
+import { candidateToResult, createFallbackLyrics, rankCandidates } from './ranking'
 
-const PROVIDER_TIMEOUT_MS = 12000
+const SOURCE_TIMEOUT_MS = 12_000
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000
 const MAX_CACHE_ENTRIES = 256
 
-export function scoreCandidate(candidate: LyricsCandidate): number {
-  if (!candidate.text && !candidate.ttmlRaw && !candidate.structuredLines) {
-    return 0
-  }
-
-  const parsed = fromText(candidate.text ?? '', 0, {
-    ttmlRaw: candidate.ttmlRaw,
-    structuredLines: candidate.structuredLines,
-  })
-
-  let tierScore = 0
-  if (parsed.syncLevel === 'word') {
-    tierScore = 1000
-  } else if (parsed.syncLevel === 'line') {
-    tierScore = 500
-  } else {
-    tierScore = 100
-  }
-
-  const cleanText = parsed.plainText.trim()
-  if (cleanText.length < 10 || parsed.lines.length < 2) {
-    return 0
-  }
-
-  const weight = candidate.weight ?? 0
-  const meta = candidate.metadataScore ?? 0
-
-  return tierScore + weight + meta
+interface CacheEntry {
+  result: LyricsResult
+  expiresAt: number
 }
 
-function candidateToResult(
-  candidate: LyricsCandidate,
-  durationMs: number,
-  mainArtist?: string | null,
-): LyricsResult {
-  const parsed = fromText(candidate.text ?? '', durationMs, {
-    ttmlRaw: candidate.ttmlRaw,
-    structuredLines: candidate.structuredLines,
-    mainArtist,
-  })
-
-  return {
-    ...parsed,
-    provider: candidate.provider,
-    sourceId: candidate.sourceId,
-    sourceUrl: candidate.sourceUrl,
-    attribution: candidate.attribution,
-    ttmlRaw: candidate.ttmlRaw,
-    instrumental: candidate.instrumental,
-  }
+export interface LyricsRepositoryOptions {
+  sources: LyricsSource[]
+  http: LyricsHttpPort
+  translator?: LyricsTranslator
+  now?: () => number
 }
 
 function cloneLyricsResult(result: LyricsResult): LyricsResult {
@@ -78,28 +33,6 @@ function cloneLyricsResult(result: LyricsResult): LyricsResult {
       backgroundWords: line.backgroundWords?.map((word) => ({ ...word })),
       translations: line.translations?.map((translation) => ({ ...translation })),
     })),
-  }
-}
-
-function createFallbackLyrics(lookup: LyricsLookup, durationMs: number = 0): LyricsResult {
-  const title = lookup.title ? lookup.title.trim() : 'Instrumental'
-  const artist = lookup.artistString ? lookup.artistString.trim() : ''
-  const text = artist ? `${title}\n${artist}` : title
-  const lines = [
-    {
-      text,
-      startMs: 0,
-      endMs: durationMs > 0 ? durationMs : 5000,
-    },
-  ]
-
-  return {
-    lines,
-    plainText: text,
-    syncLevel: 'plain',
-    format: 'plain',
-    provider: 'Fallback',
-    sourceId: 'fallback',
   }
 }
 
@@ -134,39 +67,30 @@ function createScopedHttp(
 async function translatedResult(
   result: LyricsResult,
   targetLanguage: string | undefined,
-  http: LyricsHttpPort,
+  translator: LyricsTranslator | undefined,
 ): Promise<LyricsResult> {
-  if (!targetLanguage || result.lines.length === 0) return result
+  if (!targetLanguage || !translator || result.lines.length === 0) return result
   try {
     return {
       ...result,
-      lines: await translateLyricsLines(result.lines, targetLanguage, http),
+      lines: await translator.translate(result.lines, targetLanguage),
     }
   } catch {
     return result
   }
 }
 
-interface CacheEntry {
-  result: LyricsResult
-  expiresAt: number
-}
-
-export interface LyricsRepositoryOptions {
-  sources?: LyricsSource[]
-  http?: LyricsHttpPort
-  now?: () => number
-}
-
 export class LyricsRepository {
-  private sources: LyricsSource[]
-  private http: LyricsHttpPort
-  private cache = new Map<string, CacheEntry>()
-  private now: () => number
+  private readonly sources: LyricsSource[]
+  private readonly http: LyricsHttpPort
+  private readonly translator?: LyricsTranslator
+  private readonly cache = new Map<string, CacheEntry>()
+  private readonly now: () => number
 
-  constructor(options: LyricsRepositoryOptions = {}) {
-    this.http = options.http ?? new LyricsHttp()
-    this.sources = options.sources ?? createDefaultProviders()
+  constructor(options: LyricsRepositoryOptions) {
+    this.sources = options.sources
+    this.http = options.http
+    this.translator = options.translator
     this.now = options.now ?? Date.now
   }
 
@@ -188,6 +112,7 @@ export class LyricsRepository {
       this.cache.delete(key)
       return null
     }
+
     this.cache.delete(key)
     this.cache.set(key, entry)
     return cloneLyricsResult(entry.result)
@@ -196,10 +121,9 @@ export class LyricsRepository {
   private putInCache(key: string, result: LyricsResult): void {
     if (!this.cache.has(key) && this.cache.size >= MAX_CACHE_ENTRIES) {
       const oldestKey = this.cache.keys().next().value
-      if (oldestKey) {
-        this.cache.delete(oldestKey)
-      }
+      if (oldestKey) this.cache.delete(oldestKey)
     }
+
     this.cache.set(key, {
       result: cloneLyricsResult(result),
       expiresAt: this.now() + CACHE_TTL_MS,
@@ -236,7 +160,7 @@ export class LyricsRepository {
       const cached = this.getFromCache(cacheKey)
       if (cached) {
         return {
-          result: await translatedResult(cached, options.translateTo, this.http),
+          result: await translatedResult(cached, options.translateTo, this.translator),
           candidates: [],
           winner: null,
           timingMs: {},
@@ -248,13 +172,14 @@ export class LyricsRepository {
 
     const timingMs: Record<string, number> = {}
     const errors: Record<string, string> = {}
-    const timeoutMs = options.timeoutMs ?? PROVIDER_TIMEOUT_MS
+    const timeoutMs = options.timeoutMs ?? SOURCE_TIMEOUT_MS
 
     const sourcePromises = this.sources.map(async (source, sourceIndex) => {
       const start = Date.now()
       const controller = new AbortController()
       const failedRequests: string[] = []
       const scopedHttp = createScopedHttp(this.http, controller.signal, failedRequests)
+
       try {
         let timer: ReturnType<typeof setTimeout> | null = null
         const timeoutPromise = new Promise<never>((_, reject) => {
@@ -281,60 +206,27 @@ export class LyricsRepository {
           sourceIndex,
           candidateIndex,
         }))
-      } catch (err) {
+      } catch (error) {
         timingMs[source.id] = Date.now() - start
         controller.abort()
-        const message = err instanceof Error ? err.message : String(err)
+        const message = error instanceof Error ? error.message : String(error)
         errors[source.id] = [...new Set([...failedRequests, message])].join('; ')
         return []
       }
     })
 
-    const allSourceResults = await Promise.all(sourcePromises)
-    const flattened = allSourceResults.flat()
+    const sourceResults = await Promise.all(sourcePromises)
+    const { candidates, winner } = rankCandidates(sourceResults.flat())
+    let result = winner
+      ? candidateToResult(winner.candidate, durationMs, track.artistString)
+      : createFallbackLyrics(track, durationMs)
 
-    const evaluatedCandidates: EvaluatedCandidate[] = flattened.map(
-      ({ candidate, sourceIndex, candidateIndex }) => {
-        const score = scoreCandidate(candidate)
-        return {
-          candidate,
-          score,
-          sourceIndex,
-          candidateIndex,
-        }
-      },
-    )
-
-    const validCandidates = evaluatedCandidates
-      .filter((c) => c.score > 0)
-      .sort((a, b) => {
-        if (b.score !== a.score) {
-          return b.score - a.score
-        }
-        if (a.sourceIndex !== b.sourceIndex) {
-          return a.sourceIndex - b.sourceIndex
-        }
-        const aCandIdx = a.candidateIndex ?? 0
-        const bCandIdx = b.candidateIndex ?? 0
-        return aCandIdx - bCandIdx
-      })
-
-    const winner = validCandidates[0] ?? null
-    let result: LyricsResult
-    if (winner) {
-      result = candidateToResult(winner.candidate, durationMs, track.artistString)
-      if (!options.bypassCache) {
-        this.putInCache(cacheKey, result)
-      }
-    } else {
-      result = createFallbackLyrics(track, durationMs)
-    }
-
-    result = await translatedResult(result, options.translateTo, this.http)
+    if (winner && !options.bypassCache) this.putInCache(cacheKey, result)
+    result = await translatedResult(result, options.translateTo, this.translator)
 
     return {
       result,
-      candidates: evaluatedCandidates,
+      candidates,
       winner,
       timingMs,
       errors,
@@ -342,5 +234,3 @@ export class LyricsRepository {
     }
   }
 }
-
-export const defaultLyricsRepository = new LyricsRepository()

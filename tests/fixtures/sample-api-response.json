@@ -1,0 +1,5070 @@
+{
+  "content": [
+    {
+      "timestamp": 1620,
+      "endtime": 2852,
+      "duration": 1232,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 1620,
+          "endtime": 1861,
+          "duration": 241,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 1861,
+          "endtime": 2051,
+          "duration": 190,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 2051,
+          "endtime": 2335,
+          "duration": 284,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 2335,
+          "endtime": 2852,
+          "duration": 517,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L1",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 2862,
+      "endtime": 4613,
+      "duration": 1751,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 2862,
+          "endtime": 3234,
+          "duration": 372,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 3234,
+          "endtime": 3442,
+          "duration": 208,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 3442,
+          "endtime": 3716,
+          "duration": 274,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 3716,
+          "endtime": 4138,
+          "duration": 422,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 4046,
+          "endtime": 4613,
+          "duration": 567,
+          "part": false
+        }
+      ],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L2",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 4170,
+      "endtime": 5450,
+      "duration": 1280,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 4170,
+          "endtime": 4584,
+          "duration": 414,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 4584,
+          "endtime": 4714,
+          "duration": 130,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 4714,
+          "endtime": 4989,
+          "duration": 275,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 4989,
+          "endtime": 5450,
+          "duration": 461,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L3",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 5458,
+      "endtime": 6535,
+      "duration": 1077,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 5458,
+          "endtime": 5707,
+          "duration": 249,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 5707,
+          "endtime": 5973,
+          "duration": 266,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 5973,
+          "endtime": 6535,
+          "duration": 562,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L4",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 6844,
+      "endtime": 8072,
+      "duration": 1228,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 6844,
+          "endtime": 7335,
+          "duration": 491,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 7335,
+          "endtime": 7435,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 7435,
+          "endtime": 7593,
+          "duration": 158,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 7593,
+          "endtime": 8072,
+          "duration": 479,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L5",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 8182,
+      "endtime": 9398,
+      "duration": 1216,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 8182,
+          "endtime": 8460,
+          "duration": 278,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 8460,
+          "endtime": 8665,
+          "duration": 205,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 8665,
+          "endtime": 8926,
+          "duration": 261,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 8926,
+          "endtime": 9398,
+          "duration": 472,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L6",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 9467,
+      "endtime": 10803,
+      "duration": 1336,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 9467,
+          "endtime": 9817,
+          "duration": 350,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 9817,
+          "endtime": 10011,
+          "duration": 194,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 10011,
+          "endtime": 10299,
+          "duration": 288,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 10299,
+          "endtime": 10803,
+          "duration": 504,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L7",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 10904,
+      "endtime": 11756,
+      "duration": 852,
+      "structure": "Intro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 10904,
+          "endtime": 11101,
+          "duration": 197,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 11101,
+          "endtime": 11320,
+          "duration": 219,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 11320,
+          "endtime": 11756,
+          "duration": 436,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L8",
+      "sectionBegin": 1620,
+      "sectionEnd": 11756
+    },
+    {
+      "timestamp": 11766,
+      "endtime": 14542,
+      "duration": 2776,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 11766,
+          "endtime": 12090,
+          "duration": 324,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 12090,
+          "endtime": 12394,
+          "duration": 304,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 12394,
+          "endtime": 12614,
+          "duration": 220,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 12614,
+          "endtime": 13084,
+          "duration": 470,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 13084,
+          "endtime": 13286,
+          "duration": 202,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 13286,
+          "endtime": 13435,
+          "duration": 149,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 13435,
+          "endtime": 13798,
+          "duration": 363,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 13798,
+          "endtime": 14542,
+          "duration": 744,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L9",
+      "sectionBegin": 11766,
+      "sectionEnd": 22273
+    },
+    {
+      "timestamp": 14554,
+      "endtime": 17082,
+      "duration": 2528,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 14554,
+          "endtime": 14801,
+          "duration": 247,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 14801,
+          "endtime": 15259,
+          "duration": 458,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 15259,
+          "endtime": 15860,
+          "duration": 601,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 15860,
+          "endtime": 16009,
+          "duration": 149,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 16009,
+          "endtime": 16109,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 16109,
+          "endtime": 16294,
+          "duration": 185,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 16294,
+          "endtime": 16394,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 16394,
+          "endtime": 17082,
+          "duration": 688,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L10",
+      "sectionBegin": 11766,
+      "sectionEnd": 22273
+    },
+    {
+      "timestamp": 17093,
+      "endtime": 19869,
+      "duration": 2776,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 17093,
+          "endtime": 17322,
+          "duration": 229,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 17322,
+          "endtime": 17542,
+          "duration": 220,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 17542,
+          "endtime": 17792,
+          "duration": 250,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 17792,
+          "endtime": 18345,
+          "duration": 553,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 18345,
+          "endtime": 18512,
+          "duration": 167,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 18512,
+          "endtime": 18708,
+          "duration": 196,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 18708,
+          "endtime": 19274,
+          "duration": 566,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 19274,
+          "endtime": 19869,
+          "duration": 595,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L11",
+      "sectionBegin": 11766,
+      "sectionEnd": 22273
+    },
+    {
+      "timestamp": 19881,
+      "endtime": 22273,
+      "duration": 2392,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 19881,
+          "endtime": 20074,
+          "duration": 193,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 20074,
+          "endtime": 20503,
+          "duration": 429,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 20503,
+          "endtime": 21116,
+          "duration": 613,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 21116,
+          "endtime": 21264,
+          "duration": 148,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 21264,
+          "endtime": 21443,
+          "duration": 179,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 21443,
+          "endtime": 21543,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 21543,
+          "endtime": 21643,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 21643,
+          "endtime": 22273,
+          "duration": 630,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L12",
+      "sectionBegin": 11766,
+      "sectionEnd": 22273
+    },
+    {
+      "timestamp": 22286,
+      "endtime": 24080,
+      "duration": 1794,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 22286,
+          "endtime": 22511,
+          "duration": 225,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 22511,
+          "endtime": 22835,
+          "duration": 324,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 22835,
+          "endtime": 23105,
+          "duration": 270,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 23105,
+          "endtime": 23286,
+          "duration": 181,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 23286,
+          "endtime": 23569,
+          "duration": 283,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 23569,
+          "endtime": 24080,
+          "duration": 511,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 23489,
+          "endtime": 23702,
+          "duration": 213,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 23702,
+          "endtime": 24037,
+          "duration": 335,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L13",
+      "sectionBegin": 22286,
+      "sectionEnd": 33919
+    },
+    {
+      "timestamp": 24088,
+      "endtime": 25344,
+      "duration": 1256,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 24088,
+          "endtime": 24371,
+          "duration": 283,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 24371,
+          "endtime": 24639,
+          "duration": 268,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 24639,
+          "endtime": 24909,
+          "duration": 270,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 24909,
+          "endtime": 25344,
+          "duration": 435,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 24821,
+          "endtime": 24985,
+          "duration": 164,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 24985,
+          "endtime": 25281,
+          "duration": 296,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L14",
+      "sectionBegin": 22286,
+      "sectionEnd": 33919
+    },
+    {
+      "timestamp": 25354,
+      "endtime": 27414,
+      "duration": 2060,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 25354,
+          "endtime": 25660,
+          "duration": 306,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 25660,
+          "endtime": 26041,
+          "duration": 381,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 26041,
+          "endtime": 26208,
+          "duration": 167,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 26208,
+          "endtime": 26612,
+          "duration": 404,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 26612,
+          "endtime": 27414,
+          "duration": 802,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L15",
+      "sectionBegin": 22286,
+      "sectionEnd": 33919
+    },
+    {
+      "timestamp": 27559,
+      "endtime": 30394,
+      "duration": 2835,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 27559,
+          "endtime": 27877,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 27877,
+          "endtime": 27977,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 27977,
+          "endtime": 28401,
+          "duration": 424,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 28401,
+          "endtime": 28746,
+          "duration": 345,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 28746,
+          "endtime": 29011,
+          "duration": 265,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 29103,
+          "endtime": 29338,
+          "duration": 235,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 29338,
+          "endtime": 29607,
+          "duration": 269,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 29607,
+          "endtime": 29924,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 29924,
+          "endtime": 30394,
+          "duration": 470,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L16",
+      "sectionBegin": 22286,
+      "sectionEnd": 33919
+    },
+    {
+      "timestamp": 30402,
+      "endtime": 33919,
+      "duration": 3517,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 30402,
+          "endtime": 30798,
+          "duration": 396,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 30798,
+          "endtime": 30976,
+          "duration": 178,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 30976,
+          "endtime": 31345,
+          "duration": 369,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 31345,
+          "endtime": 31532,
+          "duration": 187,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 31532,
+          "endtime": 32309,
+          "duration": 777,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 32309,
+          "endtime": 32621,
+          "duration": 312,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 32621,
+          "endtime": 32938,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 32938,
+          "endtime": 33255,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 33255,
+          "endtime": 33919,
+          "duration": 664,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L17",
+      "sectionBegin": 22286,
+      "sectionEnd": 33919
+    },
+    {
+      "timestamp": 33041,
+      "endtime": 38767,
+      "duration": 5726,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 33041,
+          "endtime": 33353,
+          "duration": 312,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 33353,
+          "endtime": 33823,
+          "duration": 470,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 33823,
+          "endtime": 34359,
+          "duration": 536,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 34359,
+          "endtime": 34674,
+          "duration": 315,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 34674,
+          "endtime": 35204,
+          "duration": 530,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 35204,
+          "endtime": 35608,
+          "duration": 404,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 35608,
+          "endtime": 35787,
+          "duration": 179,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 35787,
+          "endtime": 36078,
+          "duration": 291,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 36078,
+          "endtime": 36405,
+          "duration": 327,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 36405,
+          "endtime": 37018,
+          "duration": 613,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 37018,
+          "endtime": 37333,
+          "duration": 315,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 37333,
+          "endtime": 37634,
+          "duration": 301,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 37634,
+          "endtime": 37933,
+          "duration": 299,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 37933,
+          "endtime": 38767,
+          "duration": 834,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L18",
+      "sectionBegin": 33041,
+      "sectionEnd": 65110
+    },
+    {
+      "timestamp": 38273,
+      "endtime": 43971,
+      "duration": 5698,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 38273,
+          "endtime": 38817,
+          "duration": 544,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 38817,
+          "endtime": 39261,
+          "duration": 444,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 39261,
+          "endtime": 39673,
+          "duration": 412,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 39673,
+          "endtime": 40024,
+          "duration": 351,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 40024,
+          "endtime": 40644,
+          "duration": 620,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 40644,
+          "endtime": 40882,
+          "duration": 238,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 40882,
+          "endtime": 41060,
+          "duration": 178,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 41060,
+          "endtime": 41346,
+          "duration": 286,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 41346,
+          "endtime": 41673,
+          "duration": 327,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 41673,
+          "endtime": 42286,
+          "duration": 613,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 42286,
+          "endtime": 42604,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 42604,
+          "endtime": 42921,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 42921,
+          "endtime": 43254,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 43254,
+          "endtime": 43971,
+          "duration": 717,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L19",
+      "sectionBegin": 33041,
+      "sectionEnd": 65110
+    },
+    {
+      "timestamp": 43915,
+      "endtime": 49156,
+      "duration": 5241,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 43915,
+          "endtime": 44406,
+          "duration": 491,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 44406,
+          "endtime": 44745,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 44745,
+          "endtime": 45102,
+          "duration": 357,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 45102,
+          "endtime": 45453,
+          "duration": 351,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 45453,
+          "endtime": 49145,
+          "duration": 3692,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 46220,
+          "endtime": 46595,
+          "duration": 375,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 46595,
+          "endtime": 46809,
+          "duration": 214,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 46809,
+          "endtime": 47160,
+          "duration": 351,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 47160,
+          "endtime": 47500,
+          "duration": 340,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 47500,
+          "endtime": 47893,
+          "duration": 393,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 47893,
+          "endtime": 48363,
+          "duration": 470,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 48363,
+          "endtime": 48606,
+          "duration": 243,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 48606,
+          "endtime": 49156,
+          "duration": 550,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L20",
+      "sectionBegin": 33041,
+      "sectionEnd": 65110
+    },
+    {
+      "timestamp": 49156,
+      "endtime": 54576,
+      "duration": 5420,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 49156,
+          "endtime": 49345,
+          "duration": 189,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 49345,
+          "endtime": 49683,
+          "duration": 338,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 49683,
+          "endtime": 50022,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 50022,
+          "endtime": 50379,
+          "duration": 357,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 50379,
+          "endtime": 50682,
+          "duration": 303,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 50682,
+          "endtime": 51396,
+          "duration": 714,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 51396,
+          "endtime": 52074,
+          "duration": 678,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 52074,
+          "endtime": 54572,
+          "duration": 2498,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 52164,
+          "endtime": 52622,
+          "duration": 458,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 52622,
+          "endtime": 52824,
+          "duration": 202,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 52824,
+          "endtime": 53145,
+          "duration": 321,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 53145,
+          "endtime": 53407,
+          "duration": 262,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 53407,
+          "endtime": 53760,
+          "duration": 353,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 53760,
+          "endtime": 54576,
+          "duration": 816,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L21",
+      "sectionBegin": 33041,
+      "sectionEnd": 65110
+    },
+    {
+      "timestamp": 54583,
+      "endtime": 59767,
+      "duration": 5184,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 54583,
+          "endtime": 54987,
+          "duration": 404,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 54987,
+          "endtime": 55344,
+          "duration": 357,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 55344,
+          "endtime": 55700,
+          "duration": 356,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 55700,
+          "endtime": 56047,
+          "duration": 347,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 56047,
+          "endtime": 59763,
+          "duration": 3716,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 56823,
+          "endtime": 57188,
+          "duration": 365,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 57188,
+          "endtime": 57486,
+          "duration": 298,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 57486,
+          "endtime": 57770,
+          "duration": 284,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 57770,
+          "endtime": 58105,
+          "duration": 335,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 58105,
+          "endtime": 58601,
+          "duration": 496,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 58601,
+          "endtime": 59050,
+          "duration": 449,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 59050,
+          "endtime": 59258,
+          "duration": 208,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 59258,
+          "endtime": 59767,
+          "duration": 509,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L22",
+      "sectionBegin": 33041,
+      "sectionEnd": 65110
+    },
+    {
+      "timestamp": 59779,
+      "endtime": 65110,
+      "duration": 5331,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 59779,
+          "endtime": 60068,
+          "duration": 289,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 60068,
+          "endtime": 60404,
+          "duration": 336,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 60404,
+          "endtime": 60740,
+          "duration": 336,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 60740,
+          "endtime": 60996,
+          "duration": 256,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 60996,
+          "endtime": 61314,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 61314,
+          "endtime": 65104,
+          "duration": 3790,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 62770,
+          "endtime": 63167,
+          "duration": 397,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 63167,
+          "endtime": 63358,
+          "duration": 191,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 63358,
+          "endtime": 63800,
+          "duration": 442,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 63800,
+          "endtime": 64000,
+          "duration": 200,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 64000,
+          "endtime": 64456,
+          "duration": 456,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 64456,
+          "endtime": 65110,
+          "duration": 654,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L23",
+      "sectionBegin": 33041,
+      "sectionEnd": 65110
+    },
+    {
+      "timestamp": 65119,
+      "endtime": 67863,
+      "duration": 2744,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 65119,
+          "endtime": 65360,
+          "duration": 241,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 65360,
+          "endtime": 65646,
+          "duration": 286,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 65646,
+          "endtime": 65878,
+          "duration": 232,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 65878,
+          "endtime": 66313,
+          "duration": 435,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 66313,
+          "endtime": 66550,
+          "duration": 237,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 66550,
+          "endtime": 66699,
+          "duration": 149,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 66699,
+          "endtime": 67062,
+          "duration": 363,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 67062,
+          "endtime": 67863,
+          "duration": 801,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L24",
+      "sectionBegin": 65119,
+      "sectionEnd": 75652
+    },
+    {
+      "timestamp": 67872,
+      "endtime": 70329,
+      "duration": 2457,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 67872,
+          "endtime": 68054,
+          "duration": 182,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 68054,
+          "endtime": 69101,
+          "duration": 1047,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 69101,
+          "endtime": 69272,
+          "duration": 171,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 69272,
+          "endtime": 69416,
+          "duration": 144,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 69416,
+          "endtime": 69589,
+          "duration": 173,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 69589,
+          "endtime": 69898,
+          "duration": 309,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 69898,
+          "endtime": 70329,
+          "duration": 431,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L25",
+      "sectionBegin": 65119,
+      "sectionEnd": 75652
+    },
+    {
+      "timestamp": 70336,
+      "endtime": 73216,
+      "duration": 2880,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 70336,
+          "endtime": 70649,
+          "duration": 313,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 70649,
+          "endtime": 71041,
+          "duration": 392,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 71041,
+          "endtime": 71202,
+          "duration": 161,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 71202,
+          "endtime": 71746,
+          "duration": 544,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 71746,
+          "endtime": 71987,
+          "duration": 241,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 71987,
+          "endtime": 72166,
+          "duration": 179,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 72166,
+          "endtime": 72350,
+          "duration": 184,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 72350,
+          "endtime": 72612,
+          "duration": 262,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 72612,
+          "endtime": 73216,
+          "duration": 604,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L26",
+      "sectionBegin": 65119,
+      "sectionEnd": 75652
+    },
+    {
+      "timestamp": 73223,
+      "endtime": 75652,
+      "duration": 2429,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 73223,
+          "endtime": 73339,
+          "duration": 116,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 73339,
+          "endtime": 74374,
+          "duration": 1035,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 74374,
+          "endtime": 74540,
+          "duration": 166,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 74540,
+          "endtime": 74672,
+          "duration": 132,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 74672,
+          "endtime": 74993,
+          "duration": 321,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 74993,
+          "endtime": 75319,
+          "duration": 326,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 75319,
+          "endtime": 75652,
+          "duration": 333,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L27",
+      "sectionBegin": 65119,
+      "sectionEnd": 75652
+    },
+    {
+      "timestamp": 75659,
+      "endtime": 77459,
+      "duration": 1800,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 75659,
+          "endtime": 75907,
+          "duration": 248,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 75907,
+          "endtime": 76174,
+          "duration": 267,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 76174,
+          "endtime": 76424,
+          "duration": 250,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 76424,
+          "endtime": 76624,
+          "duration": 200,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 76624,
+          "endtime": 76910,
+          "duration": 286,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 76910,
+          "endtime": 77459,
+          "duration": 549,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 76808,
+          "endtime": 77028,
+          "duration": 220,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 77028,
+          "endtime": 77425,
+          "duration": 397,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L28",
+      "sectionBegin": 75659,
+      "sectionEnd": 87353
+    },
+    {
+      "timestamp": 77466,
+      "endtime": 78670,
+      "duration": 1204,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 77466,
+          "endtime": 77758,
+          "duration": 292,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 77758,
+          "endtime": 77949,
+          "duration": 191,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 77949,
+          "endtime": 78243,
+          "duration": 294,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 78243,
+          "endtime": 78670,
+          "duration": 427,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 78194,
+          "endtime": 78358,
+          "duration": 164,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 78358,
+          "endtime": 78656,
+          "duration": 298,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L29",
+      "sectionBegin": 75659,
+      "sectionEnd": 87353
+    },
+    {
+      "timestamp": 78679,
+      "endtime": 81405,
+      "duration": 2726,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 78679,
+          "endtime": 79116,
+          "duration": 437,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 79116,
+          "endtime": 79497,
+          "duration": 381,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 79497,
+          "endtime": 79830,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 79830,
+          "endtime": 80074,
+          "duration": 244,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 80074,
+          "endtime": 80671,
+          "duration": 597,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 80671,
+          "endtime": 81405,
+          "duration": 734,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L30",
+      "sectionBegin": 75659,
+      "sectionEnd": 87353
+    },
+    {
+      "timestamp": 80970,
+      "endtime": 83733,
+      "duration": 2763,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 80970,
+          "endtime": 81177,
+          "duration": 207,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 81177,
+          "endtime": 81378,
+          "duration": 201,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 81378,
+          "endtime": 81651,
+          "duration": 273,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 81651,
+          "endtime": 82002,
+          "duration": 351,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 82002,
+          "endtime": 82403,
+          "duration": 401,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 82533,
+          "endtime": 82682,
+          "duration": 149,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 82682,
+          "endtime": 83015,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 83015,
+          "endtime": 83349,
+          "duration": 334,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 83349,
+          "endtime": 83733,
+          "duration": 384,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L31",
+      "sectionBegin": 75659,
+      "sectionEnd": 87353
+    },
+    {
+      "timestamp": 83747,
+      "endtime": 87353,
+      "duration": 3606,
+      "structure": "PreChorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 83747,
+          "endtime": 84048,
+          "duration": 301,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 84048,
+          "endtime": 84232,
+          "duration": 184,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 84232,
+          "endtime": 84601,
+          "duration": 369,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 84601,
+          "endtime": 84860,
+          "duration": 259,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 84860,
+          "endtime": 85677,
+          "duration": 817,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 85677,
+          "endtime": 85997,
+          "duration": 320,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 85997,
+          "endtime": 86296,
+          "duration": 299,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 86296,
+          "endtime": 86597,
+          "duration": 301,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 86597,
+          "endtime": 87353,
+          "duration": 756,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L32",
+      "sectionBegin": 75659,
+      "sectionEnd": 87353
+    },
+    {
+      "timestamp": 86347,
+      "endtime": 92031,
+      "duration": 5684,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 86347,
+          "endtime": 86760,
+          "duration": 413,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 86760,
+          "endtime": 87119,
+          "duration": 359,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 87119,
+          "endtime": 87760,
+          "duration": 641,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 87760,
+          "endtime": 88135,
+          "duration": 375,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 88135,
+          "endtime": 88641,
+          "duration": 506,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 88641,
+          "endtime": 88867,
+          "duration": 226,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 88867,
+          "endtime": 89039,
+          "duration": 172,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 89039,
+          "endtime": 89325,
+          "duration": 286,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 89325,
+          "endtime": 89664,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 89664,
+          "endtime": 90295,
+          "duration": 631,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 90295,
+          "endtime": 90613,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 90613,
+          "endtime": 90962,
+          "duration": 349,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 90962,
+          "endtime": 91279,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 91279,
+          "endtime": 92031,
+          "duration": 752,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L33",
+      "sectionBegin": 86347,
+      "sectionEnd": 118641
+    },
+    {
+      "timestamp": 91635,
+      "endtime": 97515,
+      "duration": 5880,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 91635,
+          "endtime": 92078,
+          "duration": 443,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 92078,
+          "endtime": 92548,
+          "duration": 470,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 92548,
+          "endtime": 93078,
+          "duration": 530,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 93078,
+          "endtime": 93405,
+          "duration": 327,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 93405,
+          "endtime": 93935,
+          "duration": 530,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 93935,
+          "endtime": 94339,
+          "duration": 404,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 94339,
+          "endtime": 94512,
+          "duration": 173,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 94512,
+          "endtime": 94797,
+          "duration": 285,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 94797,
+          "endtime": 95136,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 95136,
+          "endtime": 95692,
+          "duration": 556,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 95692,
+          "endtime": 95988,
+          "duration": 296,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 95988,
+          "endtime": 96278,
+          "duration": 290,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 96278,
+          "endtime": 96595,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 96595,
+          "endtime": 97515,
+          "duration": 920,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L34",
+      "sectionBegin": 86347,
+      "sectionEnd": 118641
+    },
+    {
+      "timestamp": 97146,
+      "endtime": 102451,
+      "duration": 5305,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 97146,
+          "endtime": 97661,
+          "duration": 515,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 97661,
+          "endtime": 98000,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 98000,
+          "endtime": 98379,
+          "duration": 379,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 98379,
+          "endtime": 98708,
+          "duration": 329,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 98708,
+          "endtime": 102451,
+          "duration": 3743,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 99587,
+          "endtime": 99844,
+          "duration": 257,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 99844,
+          "endtime": 100064,
+          "duration": 220,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 100064,
+          "endtime": 100451,
+          "duration": 387,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 100451,
+          "endtime": 100748,
+          "duration": 297,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 100748,
+          "endtime": 101331,
+          "duration": 583,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 101331,
+          "endtime": 101699,
+          "duration": 368,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 101699,
+          "endtime": 101966,
+          "duration": 267,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 101966,
+          "endtime": 102451,
+          "duration": 485,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L35",
+      "sectionBegin": 86347,
+      "sectionEnd": 118641
+    },
+    {
+      "timestamp": 102462,
+      "endtime": 107895,
+      "duration": 5433,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 102462,
+          "endtime": 102739,
+          "duration": 277,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 102739,
+          "endtime": 103143,
+          "duration": 404,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 103143,
+          "endtime": 103482,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 103482,
+          "endtime": 103833,
+          "duration": 351,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 103833,
+          "endtime": 104143,
+          "duration": 310,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 104143,
+          "endtime": 104654,
+          "duration": 511,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 104654,
+          "endtime": 105333,
+          "duration": 679,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 105333,
+          "endtime": 107894,
+          "duration": 2561,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 105489,
+          "endtime": 105889,
+          "duration": 400,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 105889,
+          "endtime": 106070,
+          "duration": 181,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 106070,
+          "endtime": 106387,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 106387,
+          "endtime": 106721,
+          "duration": 334,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 106721,
+          "endtime": 107070,
+          "duration": 349,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 107070,
+          "endtime": 107895,
+          "duration": 825,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L36",
+      "sectionBegin": 86347,
+      "sectionEnd": 118641
+    },
+    {
+      "timestamp": 107906,
+      "endtime": 113166,
+      "duration": 5260,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 107906,
+          "endtime": 108309,
+          "duration": 403,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 108309,
+          "endtime": 108605,
+          "duration": 296,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 108605,
+          "endtime": 109022,
+          "duration": 417,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 109022,
+          "endtime": 109420,
+          "duration": 398,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 109420,
+          "endtime": 113166,
+          "duration": 3746,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 110147,
+          "endtime": 110371,
+          "duration": 224,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 110371,
+          "endtime": 110685,
+          "duration": 314,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 110685,
+          "endtime": 111003,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 111003,
+          "endtime": 111304,
+          "duration": 301,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 111304,
+          "endtime": 111971,
+          "duration": 667,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 111971,
+          "endtime": 112304,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 112304,
+          "endtime": 112603,
+          "duration": 299,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 112603,
+          "endtime": 113163,
+          "duration": 560,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L37",
+      "sectionBegin": 86347,
+      "sectionEnd": 118641
+    },
+    {
+      "timestamp": 113176,
+      "endtime": 118641,
+      "duration": 5465,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 113176,
+          "endtime": 113389,
+          "duration": 213,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 113389,
+          "endtime": 113725,
+          "duration": 336,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 113725,
+          "endtime": 114000,
+          "duration": 275,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 114000,
+          "endtime": 114339,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 114339,
+          "endtime": 114678,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 114678,
+          "endtime": 118641,
+          "duration": 3963,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 116115,
+          "endtime": 116427,
+          "duration": 312,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 116427,
+          "endtime": 116618,
+          "duration": 191,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 116618,
+          "endtime": 117129,
+          "duration": 511,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 117129,
+          "endtime": 117367,
+          "duration": 238,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 117367,
+          "endtime": 117861,
+          "duration": 494,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 117861,
+          "endtime": 118641,
+          "duration": 780,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L38",
+      "sectionBegin": 86347,
+      "sectionEnd": 118641
+    },
+    {
+      "timestamp": 118852,
+      "endtime": 121232,
+      "duration": 2380,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 118852,
+          "endtime": 119248,
+          "duration": 396,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 119248,
+          "endtime": 119509,
+          "duration": 261,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 119509,
+          "endtime": 119668,
+          "duration": 159,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 119668,
+          "endtime": 120140,
+          "duration": 472,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 120140,
+          "endtime": 120467,
+          "duration": 327,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 120467,
+          "endtime": 120597,
+          "duration": 130,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 120597,
+          "endtime": 121232,
+          "duration": 635,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L39",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 121244,
+      "endtime": 123521,
+      "duration": 2277,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 121244,
+          "endtime": 121533,
+          "duration": 289,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 121533,
+          "endtime": 121693,
+          "duration": 160,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 121693,
+          "endtime": 121854,
+          "duration": 161,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 121854,
+          "endtime": 121997,
+          "duration": 143,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 121997,
+          "endtime": 122217,
+          "duration": 220,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 122217,
+          "endtime": 122360,
+          "duration": 143,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 122360,
+          "endtime": 122520,
+          "duration": 160,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 122520,
+          "endtime": 122657,
+          "duration": 137,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 122657,
+          "endtime": 122823,
+          "duration": 166,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 122823,
+          "endtime": 122998,
+          "duration": 175,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 122998,
+          "endtime": 123521,
+          "duration": 523,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L40",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 123531,
+      "endtime": 126531,
+      "duration": 3000,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 123531,
+          "endtime": 124116,
+          "duration": 585,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 124278,
+          "endtime": 124474,
+          "duration": 196,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 124474,
+          "endtime": 124742,
+          "duration": 268,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 124742,
+          "endtime": 125128,
+          "duration": 386,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 125128,
+          "endtime": 125414,
+          "duration": 286,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 125414,
+          "endtime": 125785,
+          "duration": 371,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 125785,
+          "endtime": 125961,
+          "duration": 176,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 125961,
+          "endtime": 126531,
+          "duration": 570,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L41",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 126639,
+      "endtime": 129512,
+      "duration": 2873,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 126639,
+          "endtime": 126975,
+          "duration": 336,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 126975,
+          "endtime": 127142,
+          "duration": 167,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 127142,
+          "endtime": 127308,
+          "duration": 166,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 127308,
+          "endtime": 127469,
+          "duration": 161,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 127469,
+          "endtime": 127636,
+          "duration": 167,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 127636,
+          "endtime": 127772,
+          "duration": 136,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 127772,
+          "endtime": 127872,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 127872,
+          "endtime": 127999,
+          "duration": 127,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 127999,
+          "endtime": 128208,
+          "duration": 209,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 128208,
+          "endtime": 128364,
+          "duration": 156,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 128364,
+          "endtime": 128690,
+          "duration": 326,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 128690,
+          "endtime": 129006,
+          "duration": 316,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 129006,
+          "endtime": 129512,
+          "duration": 506,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 127626,
+          "endtime": 128007,
+          "duration": 381,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 128007,
+          "endtime": 128306,
+          "duration": 299,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 128306,
+          "endtime": 128623,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 128623,
+          "endtime": 129386,
+          "duration": 763,
+          "part": false
+        }
+      ],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L42",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 129525,
+      "endtime": 131837,
+      "duration": 2312,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 129525,
+          "endtime": 129849,
+          "duration": 324,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 129849,
+          "endtime": 129986,
+          "duration": 137,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 129986,
+          "endtime": 130581,
+          "duration": 595,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 130581,
+          "endtime": 130760,
+          "duration": 179,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 130760,
+          "endtime": 131079,
+          "duration": 319,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 131079,
+          "endtime": 131339,
+          "duration": 260,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 131339,
+          "endtime": 131660,
+          "duration": 321,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 131660,
+          "endtime": 131837,
+          "duration": 177,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L43",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 131847,
+      "endtime": 134839,
+      "duration": 2992,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 131847,
+          "endtime": 132011,
+          "duration": 164,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 132011,
+          "endtime": 132715,
+          "duration": 704,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 132715,
+          "endtime": 132927,
+          "duration": 212,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 132927,
+          "endtime": 133093,
+          "duration": 166,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 133093,
+          "endtime": 133266,
+          "duration": 173,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 133266,
+          "endtime": 133415,
+          "duration": 149,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 133415,
+          "endtime": 133605,
+          "duration": 190,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 133605,
+          "endtime": 133742,
+          "duration": 137,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 133742,
+          "endtime": 133938,
+          "duration": 196,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 133938,
+          "endtime": 134371,
+          "duration": 433,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 134371,
+          "endtime": 134839,
+          "duration": 468,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L44",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 135147,
+      "endtime": 137163,
+      "duration": 2016,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 135147,
+          "endtime": 135436,
+          "duration": 289,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 135436,
+          "endtime": 135651,
+          "duration": 215,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 135651,
+          "endtime": 135916,
+          "duration": 265,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 135916,
+          "endtime": 136016,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 136016,
+          "endtime": 136198,
+          "duration": 182,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 136198,
+          "endtime": 136531,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 136531,
+          "endtime": 136692,
+          "duration": 161,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 136692,
+          "endtime": 137163,
+          "duration": 471,
+          "part": false
+        }
+      ],
+      "background": false,
+      "backgroundText": [],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L45",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 137171,
+      "endtime": 140218,
+      "duration": 3047,
+      "structure": "Verse",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 137171,
+          "endtime": 137347,
+          "duration": 176,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 137347,
+          "endtime": 137692,
+          "duration": 345,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 137692,
+          "endtime": 137846,
+          "duration": 154,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 137846,
+          "endtime": 138075,
+          "duration": 229,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 138075,
+          "endtime": 138393,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 138393,
+          "endtime": 138638,
+          "duration": 245,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 138638,
+          "endtime": 138990,
+          "duration": 352,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 138990,
+          "endtime": 139355,
+          "duration": 365,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 139355,
+          "endtime": 139571,
+          "duration": 216,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 139571,
+          "endtime": 139755,
+          "duration": 184,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 139755,
+          "endtime": 140218,
+          "duration": 463,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 138299,
+          "endtime": 138638,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 138638,
+          "endtime": 138971,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 138971,
+          "endtime": 139288,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 139288,
+          "endtime": 140003,
+          "duration": 715,
+          "part": false
+        }
+      ],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L46",
+      "sectionBegin": 118852,
+      "sectionEnd": 140218
+    },
+    {
+      "timestamp": 140032,
+      "endtime": 145204,
+      "duration": 5172,
+      "structure": "Bridge",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 140032,
+          "endtime": 140374,
+          "duration": 342,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 140374,
+          "endtime": 140701,
+          "duration": 327,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 140701,
+          "endtime": 141076,
+          "duration": 375,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 141076,
+          "endtime": 141415,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 141415,
+          "endtime": 145202,
+          "duration": 3787,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 142236,
+          "endtime": 142443,
+          "duration": 207,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 142443,
+          "endtime": 142683,
+          "duration": 240,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 142683,
+          "endtime": 143000,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 143000,
+          "endtime": 143299,
+          "duration": 299,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 143299,
+          "endtime": 143965,
+          "duration": 666,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 143965,
+          "endtime": 144351,
+          "duration": 386,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 144351,
+          "endtime": 144629,
+          "duration": 278,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 144629,
+          "endtime": 145204,
+          "duration": 575,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L47",
+      "sectionBegin": 140032,
+      "sectionEnd": 161174
+    },
+    {
+      "timestamp": 145212,
+      "endtime": 150580,
+      "duration": 5368,
+      "structure": "Bridge",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 145212,
+          "endtime": 145356,
+          "duration": 144,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 145356,
+          "endtime": 145710,
+          "duration": 354,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 145710,
+          "endtime": 145973,
+          "duration": 263,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 145973,
+          "endtime": 146339,
+          "duration": 366,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 146339,
+          "endtime": 146661,
+          "duration": 322,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 146661,
+          "endtime": 147351,
+          "duration": 690,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 147351,
+          "endtime": 148053,
+          "duration": 702,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 148053,
+          "endtime": 150580,
+          "duration": 2527,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 148089,
+          "endtime": 148528,
+          "duration": 439,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 148528,
+          "endtime": 148694,
+          "duration": 166,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 148694,
+          "endtime": 149011,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 149011,
+          "endtime": 149310,
+          "duration": 299,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 149310,
+          "endtime": 149627,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 149627,
+          "endtime": 150495,
+          "duration": 868,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L48",
+      "sectionBegin": 140032,
+      "sectionEnd": 161174
+    },
+    {
+      "timestamp": 150592,
+      "endtime": 155787,
+      "duration": 5195,
+      "structure": "Bridge",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 150592,
+          "endtime": 150944,
+          "duration": 352,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 150944,
+          "endtime": 151293,
+          "duration": 349,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 151293,
+          "endtime": 151731,
+          "duration": 438,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 151731,
+          "endtime": 152154,
+          "duration": 423,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 152154,
+          "endtime": 155787,
+          "duration": 3633,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 152840,
+          "endtime": 153081,
+          "duration": 241,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 153081,
+          "endtime": 153317,
+          "duration": 236,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 153317,
+          "endtime": 153689,
+          "duration": 372,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 153689,
+          "endtime": 153994,
+          "duration": 305,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 153994,
+          "endtime": 154599,
+          "duration": 605,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 154599,
+          "endtime": 155025,
+          "duration": 426,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 155025,
+          "endtime": 155388,
+          "duration": 363,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 155388,
+          "endtime": 155784,
+          "duration": 396,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L49",
+      "sectionBegin": 140032,
+      "sectionEnd": 161174
+    },
+    {
+      "timestamp": 155797,
+      "endtime": 161174,
+      "duration": 5377,
+      "structure": "Bridge",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 155797,
+          "endtime": 156008,
+          "duration": 211,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 156008,
+          "endtime": 156407,
+          "duration": 399,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 156407,
+          "endtime": 156740,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 156740,
+          "endtime": 157079,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 157079,
+          "endtime": 157406,
+          "duration": 327,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 157406,
+          "endtime": 161017,
+          "duration": 3611,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 158786,
+          "endtime": 159079,
+          "duration": 293,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 159079,
+          "endtime": 159206,
+          "duration": 127,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 159206,
+          "endtime": 159624,
+          "duration": 418,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 159624,
+          "endtime": 159960,
+          "duration": 336,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 159960,
+          "endtime": 160424,
+          "duration": 464,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 160424,
+          "endtime": 161174,
+          "duration": 750,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L50",
+      "sectionBegin": 140032,
+      "sectionEnd": 161174
+    },
+    {
+      "timestamp": 161024,
+      "endtime": 166680,
+      "duration": 5656,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 161024,
+          "endtime": 161330,
+          "duration": 306,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 161330,
+          "endtime": 161891,
+          "duration": 561,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 161891,
+          "endtime": 162324,
+          "duration": 433,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 162324,
+          "endtime": 162663,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 162663,
+          "endtime": 163199,
+          "duration": 536,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 163199,
+          "endtime": 163591,
+          "duration": 392,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 163591,
+          "endtime": 163764,
+          "duration": 173,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 163764,
+          "endtime": 164049,
+          "duration": 285,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 164049,
+          "endtime": 164383,
+          "duration": 334,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 164383,
+          "endtime": 164966,
+          "duration": 583,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 164966,
+          "endtime": 165284,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 165284,
+          "endtime": 165601,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 165601,
+          "endtime": 165900,
+          "duration": 299,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 165900,
+          "endtime": 166680,
+          "duration": 780,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L51",
+      "sectionBegin": 161024,
+      "sectionEnd": 193289
+    },
+    {
+      "timestamp": 166293,
+      "endtime": 172313,
+      "duration": 6020,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 166293,
+          "endtime": 166802,
+          "duration": 509,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 166802,
+          "endtime": 167266,
+          "duration": 464,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 167266,
+          "endtime": 167795,
+          "duration": 529,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 167795,
+          "endtime": 168045,
+          "duration": 250,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 168045,
+          "endtime": 168698,
+          "duration": 653,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 168698,
+          "endtime": 169009,
+          "duration": 311,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 169009,
+          "endtime": 169109,
+          "duration": 100,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 169109,
+          "endtime": 169318,
+          "duration": 209,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 169318,
+          "endtime": 169848,
+          "duration": 530,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 169848,
+          "endtime": 170322,
+          "duration": 474,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 170322,
+          "endtime": 170637,
+          "duration": 315,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 170637,
+          "endtime": 170954,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 170954,
+          "endtime": 171290,
+          "duration": 336,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 171290,
+          "endtime": 172313,
+          "duration": 1023,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L52",
+      "sectionBegin": 161024,
+      "sectionEnd": 193289
+    },
+    {
+      "timestamp": 171925,
+      "endtime": 177193,
+      "duration": 5268,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 171925,
+          "endtime": 172347,
+          "duration": 422,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 172347,
+          "endtime": 172600,
+          "duration": 253,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 172600,
+          "endtime": 173023,
+          "duration": 423,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 173023,
+          "endtime": 173433,
+          "duration": 410,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 173433,
+          "endtime": 177190,
+          "duration": 3757,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 174193,
+          "endtime": 174465,
+          "duration": 272,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 174465,
+          "endtime": 174690,
+          "duration": 225,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 174690,
+          "endtime": 175024,
+          "duration": 334,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 175024,
+          "endtime": 175325,
+          "duration": 301,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 175325,
+          "endtime": 175992,
+          "duration": 667,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 175992,
+          "endtime": 176325,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 176325,
+          "endtime": 176656,
+          "duration": 331,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 176656,
+          "endtime": 177193,
+          "duration": 537,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L53",
+      "sectionBegin": 161024,
+      "sectionEnd": 193289
+    },
+    {
+      "timestamp": 177201,
+      "endtime": 182563,
+      "duration": 5362,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 177201,
+          "endtime": 177348,
+          "duration": 147,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 177348,
+          "endtime": 177726,
+          "duration": 378,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 177726,
+          "endtime": 178007,
+          "duration": 281,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 178007,
+          "endtime": 178346,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 178346,
+          "endtime": 178656,
+          "duration": 310,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 178656,
+          "endtime": 179376,
+          "duration": 720,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 179376,
+          "endtime": 180054,
+          "duration": 678,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 180054,
+          "endtime": 182561,
+          "duration": 2507,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 180151,
+          "endtime": 180502,
+          "duration": 351,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 180502,
+          "endtime": 180667,
+          "duration": 165,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 180667,
+          "endtime": 181019,
+          "duration": 352,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 181019,
+          "endtime": 181336,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 181336,
+          "endtime": 181686,
+          "duration": 350,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 181686,
+          "endtime": 182563,
+          "duration": 877,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L54",
+      "sectionBegin": 161024,
+      "sectionEnd": 193289
+    },
+    {
+      "timestamp": 182571,
+      "endtime": 187852,
+      "duration": 5281,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 182571,
+          "endtime": 182978,
+          "duration": 407,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 182978,
+          "endtime": 183449,
+          "duration": 471,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 183449,
+          "endtime": 183746,
+          "duration": 297,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 183746,
+          "endtime": 184046,
+          "duration": 300,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 184046,
+          "endtime": 187851,
+          "duration": 3805,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 184772,
+          "endtime": 184987,
+          "duration": 215,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 184987,
+          "endtime": 185304,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 185304,
+          "endtime": 185638,
+          "duration": 334,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 185638,
+          "endtime": 185955,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 185955,
+          "endtime": 186622,
+          "duration": 667,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 186622,
+          "endtime": 186971,
+          "duration": 349,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 186971,
+          "endtime": 187288,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 187288,
+          "endtime": 187852,
+          "duration": 564,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L55",
+      "sectionBegin": 161024,
+      "sectionEnd": 193289
+    },
+    {
+      "timestamp": 187883,
+      "endtime": 193289,
+      "duration": 5406,
+      "structure": "Chorus",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 187883,
+          "endtime": 188047,
+          "duration": 164,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 188047,
+          "endtime": 188416,
+          "duration": 369,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 188416,
+          "endtime": 188725,
+          "duration": 309,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 188725,
+          "endtime": 189058,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 189058,
+          "endtime": 189397,
+          "duration": 339,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 189397,
+          "endtime": 193289,
+          "duration": 3892,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 190782,
+          "endtime": 191066,
+          "duration": 284,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 191066,
+          "endtime": 191315,
+          "duration": 249,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 191315,
+          "endtime": 191683,
+          "duration": 368,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 191683,
+          "endtime": 191947,
+          "duration": 264,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 191947,
+          "endtime": 192416,
+          "duration": 469,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 192416,
+          "endtime": 193266,
+          "duration": 850,
+          "part": false
+        }
+      ],
+      "oppositeTurn": true,
+      "agent": "v2",
+      "key": "L56",
+      "sectionBegin": 161024,
+      "sectionEnd": 193289
+    },
+    {
+      "timestamp": 193276,
+      "endtime": 198583,
+      "duration": 5307,
+      "structure": "Outro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 193276,
+          "endtime": 193960,
+          "duration": 684,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 193960,
+          "endtime": 194293,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 194293,
+          "endtime": 194626,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 194626,
+          "endtime": 195274,
+          "duration": 648,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 195274,
+          "endtime": 195992,
+          "duration": 718,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 195992,
+          "endtime": 197309,
+          "duration": 1317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 197309,
+          "endtime": 198582,
+          "duration": 1273,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 196993,
+          "endtime": 197327,
+          "duration": 334,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 197327,
+          "endtime": 197641,
+          "duration": 314,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 197641,
+          "endtime": 197943,
+          "duration": 302,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 197943,
+          "endtime": 198583,
+          "duration": 640,
+          "part": false
+        }
+      ],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L57",
+      "sectionBegin": 193276,
+      "sectionEnd": 214721
+    },
+    {
+      "timestamp": 198592,
+      "endtime": 203893,
+      "duration": 5301,
+      "structure": "Outro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 198592,
+          "endtime": 199253,
+          "duration": 661,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 199253,
+          "endtime": 199586,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 199586,
+          "endtime": 199951,
+          "duration": 365,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 199951,
+          "endtime": 200634,
+          "duration": 683,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 200634,
+          "endtime": 201301,
+          "duration": 667,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 201301,
+          "endtime": 202618,
+          "duration": 1317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 202618,
+          "endtime": 203891,
+          "duration": 1273,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 202253,
+          "endtime": 202659,
+          "duration": 406,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 202659,
+          "endtime": 202944,
+          "duration": 285,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 202944,
+          "endtime": 203259,
+          "duration": 315,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 203259,
+          "endtime": 203893,
+          "duration": 634,
+          "part": false
+        }
+      ],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L58",
+      "sectionBegin": 193276,
+      "sectionEnd": 214721
+    },
+    {
+      "timestamp": 203904,
+      "endtime": 209239,
+      "duration": 5335,
+      "structure": "Outro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 203904,
+          "endtime": 204591,
+          "duration": 687,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 204591,
+          "endtime": 204909,
+          "duration": 318,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 204909,
+          "endtime": 205258,
+          "duration": 349,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 205258,
+          "endtime": 205925,
+          "duration": 667,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 205925,
+          "endtime": 206642,
+          "duration": 717,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 206642,
+          "endtime": 207909,
+          "duration": 1267,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 207909,
+          "endtime": 209238,
+          "duration": 1329,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 207595,
+          "endtime": 207955,
+          "duration": 360,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 207955,
+          "endtime": 208272,
+          "duration": 317,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 208272,
+          "endtime": 208605,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 208605,
+          "endtime": 209239,
+          "duration": 634,
+          "part": false
+        }
+      ],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L59",
+      "sectionBegin": 193276,
+      "sectionEnd": 214721
+    },
+    {
+      "timestamp": 209248,
+      "endtime": 214721,
+      "duration": 5473,
+      "structure": "Outro",
+      "text": [
+        {
+          "text": "WORD",
+          "timestamp": 209248,
+          "endtime": 209965,
+          "duration": 717,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 209965,
+          "endtime": 210250,
+          "duration": 285,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 210250,
+          "endtime": 210599,
+          "duration": 349,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 210599,
+          "endtime": 211250,
+          "duration": 651,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 211250,
+          "endtime": 211983,
+          "duration": 733,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 211983,
+          "endtime": 213349,
+          "duration": 1366,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 213349,
+          "endtime": 214659,
+          "duration": 1310,
+          "part": false
+        }
+      ],
+      "background": true,
+      "backgroundText": [
+        {
+          "text": "WORD",
+          "timestamp": 212933,
+          "endtime": 213315,
+          "duration": 382,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 213315,
+          "endtime": 213616,
+          "duration": 301,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 213616,
+          "endtime": 213949,
+          "duration": 333,
+          "part": false
+        },
+        {
+          "text": "WORD",
+          "timestamp": 213949,
+          "endtime": 214721,
+          "duration": 772,
+          "part": false
+        }
+      ],
+      "oppositeTurn": false,
+      "agent": "v1",
+      "key": "L60",
+      "sectionBegin": 193276,
+      "sectionEnd": 214721
+    }
+  ]
+}

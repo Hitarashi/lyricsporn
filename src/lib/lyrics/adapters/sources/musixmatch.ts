@@ -1,10 +1,9 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsCandidate, LyricsLookup } from '../types'
-import type { LyricsSource } from './types'
+import type { LyricsHttpPort, LyricsSource } from '@/lib/lyrics/application/ports'
+import type { LyricsCandidate, LyricsLookup } from '@/lib/lyrics/domain/types'
 
-import { parseTextLines } from '@/lib/lyrics/parser/lyrics-parser'
-import { asEnhancedLrc, parseRichsync, parseSubtitles } from '@/lib/lyrics/parser/timed-formats'
-import { formEncode, metadataScore } from '@/lib/lyrics/utils/string'
+import { metadataScore } from '@/lib/lyrics/domain/matching'
+
+import { formEncode } from './encoding'
 
 export class MusixmatchLyricsSource implements LyricsSource {
   readonly id = 'musixmatch'
@@ -67,39 +66,31 @@ export class MusixmatchLyricsSource implements LyricsSource {
       if (metadata === null) return []
 
       const richsyncBody = calls['track.richsync.get']?.message?.body?.richsync?.richsync_body
-      const richLines = typeof richsyncBody === 'string' ? parseRichsync(richsyncBody) : null
+      const richsync = typeof richsyncBody === 'string' ? richsyncBody : null
 
       const subtitleList = calls['track.subtitles.get']?.message?.body?.subtitle_list
       const subtitleBody = Array.isArray(subtitleList)
         ? subtitleList[0]?.subtitle?.subtitle_body
         : null
 
-      const subtitleLines =
-        typeof subtitleBody === 'string' ? parseSubtitles(subtitleBody, parseTextLines) : null
-
-      const structured =
-        richLines && richLines.length > 0
-          ? richLines
-          : subtitleLines && subtitleLines.length > 0
-            ? subtitleLines
-            : null
-
-      if (!structured) return []
+      const subtitles = typeof subtitleBody === 'string' ? subtitleBody : null
+      const documents = [
+        ...(richsync ? [{ format: 'richsync' as const, content: richsync }] : []),
+        ...(subtitles ? [{ format: 'subtitles' as const, content: subtitles }] : []),
+      ]
+      if (documents.length === 0) return []
 
       const publicUrl = new URL(url)
       publicUrl.searchParams.delete('usertoken')
 
-      return [
-        {
-          text: asEnhancedLrc(structured),
-          provider: 'Musixmatch',
-          sourceId: 'musixmatch',
-          sourceUrl: publicUrl.toString(),
-          weight: 20,
-          metadataScore: metadata,
-          structuredLines: structured,
-        },
-      ]
+      return documents.map((document) => ({
+        document,
+        provider: 'Musixmatch',
+        sourceId: 'musixmatch',
+        sourceUrl: publicUrl.toString(),
+        weight: 20,
+        metadataScore: metadata,
+      }))
     } catch {
       return []
     }

@@ -1,8 +1,7 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsCandidate, LyricsLookup } from '../types'
-import type { LyricsSource } from './types'
+import type { LyricsHttpPort, LyricsSource } from '@/lib/lyrics/application/ports'
+import type { LyricsCandidate, LyricsLookup } from '@/lib/lyrics/domain/types'
 
-import { formEncode } from '@/lib/lyrics/utils/string'
+import { formEncode } from './encoding'
 
 function simpleKey(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -81,7 +80,7 @@ export class LrclibLyricsSource implements LyricsSource {
       const candidates: LyricsCandidate[] = []
       if (data.syncedLyrics && typeof data.syncedLyrics === 'string') {
         candidates.push({
-          text: data.syncedLyrics,
+          document: { format: 'lrc', content: data.syncedLyrics },
           provider: 'LRCLIB Exact (LRC)',
           sourceId: 'lrclib',
           sourceUrl: url,
@@ -90,7 +89,7 @@ export class LrclibLyricsSource implements LyricsSource {
       }
       if (data.plainLyrics && typeof data.plainLyrics === 'string') {
         candidates.push({
-          text: data.plainLyrics,
+          document: { format: 'plain', content: data.plainLyrics },
           provider: 'LRCLIB Exact (Plain)',
           sourceId: 'lrclib',
           sourceUrl: url,
@@ -136,7 +135,7 @@ export class LrclibLyricsSource implements LyricsSource {
       for (const item of matches) {
         if (item.syncedLyrics) {
           candidates.push({
-            text: item.syncedLyrics,
+            document: { format: 'lrc', content: item.syncedLyrics },
             provider: 'LRCLIB Search (LRC)',
             sourceId: 'lrclib',
             sourceUrl: url,
@@ -145,7 +144,7 @@ export class LrclibLyricsSource implements LyricsSource {
         }
         if (item.plainLyrics) {
           candidates.push({
-            text: item.plainLyrics,
+            document: { format: 'plain', content: item.plainLyrics },
             provider: 'LRCLIB Search (Plain)',
             sourceId: 'lrclib',
             sourceUrl: url,

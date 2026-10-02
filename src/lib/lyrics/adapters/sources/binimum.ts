@@ -1,9 +1,9 @@
-import type { LyricsHttpPort } from '../http'
-import type { LyricsCandidate, LyricsLookup } from '../types'
-import type { LyricsSource } from './types'
+import type { LyricsHttpPort, LyricsSource } from '@/lib/lyrics/application/ports'
+import type { LyricsCandidate, LyricsLookup } from '@/lib/lyrics/domain/types'
 
-import { convertTtml } from '@/lib/lyrics/parser/lyrics-parser'
-import { metadataScore, uriComponent } from '@/lib/lyrics/utils/string'
+import { metadataScore } from '@/lib/lyrics/domain/matching'
+
+import { uriComponent } from './encoding'
 
 interface BinimumItem {
   track_name?: string
@@ -73,18 +73,14 @@ export class BinimumLyricsSource implements LyricsSource {
         )
         if (score === null) continue
 
-        const text = convertTtml(ttml, true) ?? convertTtml(ttml)
-        if (!text) continue
-
         return [
           {
-            text,
+            document: { format: 'ttml', content: ttml },
             provider: 'Apple Music (Binimum TTML)',
             sourceId: 'binimum',
             sourceUrl: sheetUrl,
             weight: 10,
             metadataScore: score,
-            ttmlRaw: ttml,
           },
         ]
       }

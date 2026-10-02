@@ -1,11 +1,15 @@
-export type { LyricsHttpPort } from './http'
-export type { LyricsSource } from './providers/types'
-export type { LyricsRepositoryOptions } from './repository'
-export type { FetchLyricsInput } from './server'
+export type { FetchLyricsInput } from './adapters/server-functions'
+export type {
+  LyricsHttpPort,
+  LyricsSource,
+  LyricsTranslator,
+} from './application/ports'
+export type { LyricsRepositoryOptions } from './application/repository'
 export type {
   DetailedLyricsResult,
   EvaluatedCandidate,
   LyricsCandidate,
+  LyricsDocument,
   LyricsFormat,
   LyricsLine,
   LyricsLookup,
@@ -14,10 +18,10 @@ export type {
   LyricsSyncLevel,
   LyricsTranslation,
   LyricsWord,
-} from './types'
+} from './domain/types'
+export type { ParsedLyrics, ParseLyricsOptions } from './parser'
 
-export { defaultLyricsRepository, LyricsRepository } from './repository'
-export {
-  fetchDetailedLyricsServerFn,
-  fetchLyricsServerFn,
-} from './server'
+export { defaultLyricsRepository } from './adapters/default-repository'
+export { fetchDetailedLyricsServerFn, fetchLyricsServerFn } from './adapters/server-functions'
+export { LyricsRepository } from './application/repository'
+export { parseLyrics } from './parser'

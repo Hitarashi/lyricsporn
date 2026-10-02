@@ -1,8 +1,13 @@
-import type { DetailedLyricsResult, LyricsLookup, LyricsLookupOptions, LyricsResult } from './types'
+import type {
+  DetailedLyricsResult,
+  LyricsLookup,
+  LyricsLookupOptions,
+  LyricsResult,
+} from '@/lib/lyrics/domain/types'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { defaultLyricsRepository } from './repository'
+import { defaultLyricsRepository } from './default-repository'
 
 export interface FetchLyricsInput {
   lookup: LyricsLookup
