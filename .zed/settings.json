@@ -1,0 +1,96 @@
+{
+  "format_on_save": "on",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+
+  "tab_size": 2,
+  "hard_tabs": false,
+
+  "preferred_line_length": 100,
+  "soft_wrap": "preferred_line_length",
+
+  "show_whitespaces": "selection",
+  "colorize_brackets": true,
+  "document_symbols": "on",
+
+  "code_actions_on_format": {
+    "source.organizeImports.biome": true,
+    "source.fixAll.biome": true
+  },
+
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true
+  },
+
+  "lsp": {
+    "biome": {
+      "settings": {
+        "require_config_file": true
+      }
+    },
+
+    "typescript-language-server": {
+      "initialization_options": {
+        "preferences": {
+          "includeInlayParameterNameHints": "literals",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+          "includeInlayFunctionParameterTypeHints": true,
+          "includeInlayVariableTypeHints": false,
+          "includeInlayPropertyDeclarationTypeHints": true,
+          "includeInlayFunctionLikeReturnTypeHints": true,
+          "includeInlayEnumMemberValueHints": true
+        }
+      }
+    }
+  },
+
+  "languages": {
+    "JavaScript": {
+      "tab_size": 2,
+      "hard_tabs": false,
+      "preferred_line_length": 100,
+      "format_on_save": "on",
+      "formatter": "language_server",
+      "language_servers": ["typescript-language-server", "biome", "!eslint"]
+    },
+
+    "TypeScript": {
+      "tab_size": 2,
+      "hard_tabs": false,
+      "preferred_line_length": 100,
+      "format_on_save": "on",
+      "formatter": "language_server",
+      "language_servers": ["typescript-language-server", "biome", "!eslint"]
+    },
+
+    "TSX": {
+      "tab_size": 2,
+      "hard_tabs": false,
+      "preferred_line_length": 100,
+      "format_on_save": "on",
+      "formatter": "language_server",
+      "language_servers": ["typescript-language-server", "biome", "!eslint"]
+    },
+
+    "JSON": {
+      "tab_size": 2,
+      "hard_tabs": false,
+      "preferred_line_length": 100,
+      "format_on_save": "on",
+      "formatter": "language_server",
+      "language_servers": ["biome"]
+    },
+
+    "JSONC": {
+      "tab_size": 2,
+      "hard_tabs": false,
+      "preferred_line_length": 100,
+      "format_on_save": "on",
+      "formatter": "language_server",
+      "language_servers": ["biome"]
+    }
+  }
+}
