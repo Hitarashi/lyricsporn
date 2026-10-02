@@ -220,6 +220,7 @@ function catalogUrl(path: string): URL {
 async function requestForStorefront(
   input: AppleCatalogLookupInput,
   storefront: string,
+  limit: number,
 ): Promise<AppleCatalogResponse | null> {
   if (input.type === 'appleTrackId') {
     const url = catalogUrl(`${storefront}/songs/${encodeURIComponent(input.value)}`)
@@ -230,6 +231,7 @@ async function requestForStorefront(
   if (input.type === 'isrc') {
     const url = catalogUrl(`${storefront}/songs`)
     url.searchParams.set('filter[isrc]', input.value)
+    url.searchParams.set('limit', String(limit))
     url.searchParams.set('include', 'albums,artists')
     return fetchAmp(url)
   }
@@ -237,22 +239,40 @@ async function requestForStorefront(
   const url = catalogUrl(`${storefront}/search`)
   url.searchParams.set('term', [input.title, input.artist, input.album].filter(Boolean).join(' '))
   url.searchParams.set('types', 'songs')
-  url.searchParams.set('limit', '25')
+  url.searchParams.set('limit', String(limit))
   return fetchAmp(url)
 }
 
 async function lookupAppleCatalog(
   input: AppleCatalogLookupInput,
+  limit = 5,
 ): Promise<AppleCatalogLookupResult | null> {
+  let emptyResult: AppleCatalogLookupResult | null = null
+
   for (const storefront of storefrontAttempts(input.storefront ?? 'us')) {
-    const response = await requestForStorefront(input, storefront)
+    const response = await requestForStorefront(input, storefront, limit)
     if (!response) continue
 
     const songs = songsFromResponse(response)
-    if (songs.length > 0) return { storefront, response, songs }
+    if (songs.length > 0) return { storefront, response, songs: songs.slice(0, limit) }
+    emptyResult = { storefront, response, songs }
   }
 
-  return null
+  return emptyResult
+}
+
+export async function lookupAppleCatalogServer(
+  input: AppleCatalogLookupInput,
+  options: { limit?: number } = {},
+): Promise<AppleCatalogLookupResult | null> {
+  const validatedInput = validateLookupInput(input)
+  const limit = options.limit ?? 5
+
+  if (!Number.isInteger(limit) || limit < 1 || limit > 10) {
+    throw new Error('limit must be an integer between 1 and 10')
+  }
+
+  return lookupAppleCatalog(validatedInput, limit)
 }
 
 function normalizeStorefront(value: unknown): string {

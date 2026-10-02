@@ -10,43 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiQueryRouteImport } from './routes/api/query'
+import { Route as ApiDocsRouteImport } from './routes/api/docs'
+import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
+import { Route as ApiV1LookupRouteImport } from './routes/api/v1/lookup'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiQueryRoute = ApiQueryRouteImport.update({
-  id: '/api/query',
-  path: '/api/query',
+const ApiDocsRoute = ApiDocsRouteImport.update({
+  id: '/api/docs',
+  path: '/api/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
+  id: '/api/openapi.json',
+  path: '/api/openapi.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1LookupRoute = ApiV1LookupRouteImport.update({
+  id: '/api/v1/lookup',
+  path: '/api/v1/lookup',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/query': typeof ApiQueryRoute
+  '/api/docs': typeof ApiDocsRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/v1/lookup': typeof ApiV1LookupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/query': typeof ApiQueryRoute
+  '/api/docs': typeof ApiDocsRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/v1/lookup': typeof ApiV1LookupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/query': typeof ApiQueryRoute
+  '/api/docs': typeof ApiDocsRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/v1/lookup': typeof ApiV1LookupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/query'
+  fullPaths: '/' | '/api/docs' | '/api/openapi.json' | '/api/v1/lookup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/query'
-  id: '__root__' | '/' | '/api/query'
+  to: '/' | '/api/docs' | '/api/openapi.json' | '/api/v1/lookup'
+  id: '__root__' | '/' | '/api/docs' | '/api/openapi.json' | '/api/v1/lookup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiQueryRoute: typeof ApiQueryRoute
+  ApiDocsRoute: typeof ApiDocsRoute
+  ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
+  ApiV1LookupRoute: typeof ApiV1LookupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +78,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/query': {
-      id: '/api/query'
-      path: '/api/query'
-      fullPath: '/api/query'
-      preLoaderRoute: typeof ApiQueryRouteImport
+    '/api/docs': {
+      id: '/api/docs'
+      path: '/api/docs'
+      fullPath: '/api/docs'
+      preLoaderRoute: typeof ApiDocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/openapi.json': {
+      id: '/api/openapi.json'
+      path: '/api/openapi.json'
+      fullPath: '/api/openapi.json'
+      preLoaderRoute: typeof ApiOpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/lookup': {
+      id: '/api/v1/lookup'
+      path: '/api/v1/lookup'
+      fullPath: '/api/v1/lookup'
+      preLoaderRoute: typeof ApiV1LookupRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiQueryRoute: ApiQueryRoute,
+  ApiDocsRoute: ApiDocsRoute,
+  ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
+  ApiV1LookupRoute: ApiV1LookupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
