@@ -72,12 +72,14 @@
           "level": "on",
           "options": {
             "groups": [
-              ":NODE:",
-              ":PACKAGE:",
-              "@/**",
               {
                 "type": true
               },
+              ":BLANK_LINE:",
+              [":NODE:", ":BUN:", ":PACKAGE:"],
+              ":BLANK_LINE:",
+              "@/**",
+              ":BLANK_LINE:",
               ":PATH:"
             ]
           }
