@@ -88,9 +88,7 @@ function Home() {
     <div className='flex min-h-svh flex-col bg-background text-foreground'>
       <header className='mx-auto flex w-full max-w-7xl shrink-0 items-center px-5 py-6 sm:px-8 lg:px-12'>
         <Link to='/' className='group inline-flex items-center gap-3' aria-label='Lyricsporn home'>
-          <span className='flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm ring-1 ring-foreground/10'>
-            <AudioLines aria-hidden='true' className='size-5' strokeWidth={2.2} />
-          </span>
+          <AudioLines aria-hidden='true' className='size-5' strokeWidth={2.2} />
           <span className='text-[15px] font-semibold tracking-[-0.045em]'>
             lyrics<span className='text-muted-foreground'>porn</span>
           </span>
@@ -101,7 +99,9 @@ function Home() {
         <section className='w-full max-w-md'>
           <Card>
             <CardHeader>
-              <CardTitle>Find lyrics</CardTitle>
+              <CardTitle>
+                <h1>Find lyrics</h1>
+              </CardTitle>
             </CardHeader>
 
             <CardContent>

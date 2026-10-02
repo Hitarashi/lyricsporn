@@ -4,10 +4,14 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from '@/components/theme-provider'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
+
+const pageTitle = 'Find Lyrics by ISRC or Apple Music | Lyricsporn'
+const pageDescription =
+  'Start a lyrics lookup with an ISRC, Apple Music track ID or link, or search by song title and artist. Add an album to refine your search.'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -17,6 +21,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
       {
+        title: pageTitle,
+      },
+      {
         charSet: 'utf-8',
       },
       {
@@ -24,11 +31,36 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Lyricsporn — Find your lyrics',
+        name: 'description',
+        content: pageDescription,
       },
       {
-        name: 'description',
-        content: 'Find lyrics using an ISRC, Apple Music track ID, or Apple Music song link.',
+        property: 'og:title',
+        content: pageTitle,
+      },
+      {
+        property: 'og:description',
+        content: pageDescription,
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        property: 'og:site_name',
+        content: 'Lyricsporn',
+      },
+      {
+        name: 'twitter:card',
+        content: 'summary',
+      },
+      {
+        name: 'twitter:title',
+        content: pageTitle,
+      },
+      {
+        name: 'twitter:description',
+        content: pageDescription,
       },
     ],
     links: [
@@ -48,7 +80,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider defaultTheme="system" storageKey="theme">
+        <ThemeProvider defaultTheme='system' storageKey='theme'>
           {children}
         </ThemeProvider>
         <TanStackDevtools
