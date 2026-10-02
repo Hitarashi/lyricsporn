@@ -87,7 +87,6 @@ export interface DetailedLyricsResult {
 
 export interface LyricsLookupOptions {
   timeoutMs?: number
-  /** Skip both cache reads and writes for this lookup. */
   bypassCache?: boolean
   translateTo?: string
 }
