@@ -11,6 +11,7 @@
     "ignoreUnknown": false,
     "includes": [
       "**/src/**/*",
+      "**/tests/**/*",
       "**/.vscode/**/*",
       "**/.zed/**/*",
       "**/index.html",
@@ -43,7 +44,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
 
       "correctness": {
         "noUnusedImports": "error",
