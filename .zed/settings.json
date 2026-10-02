@@ -20,7 +20,7 @@
   },
 
   "inlay_hints": {
-    "enabled": false`
+    "enabled": false
   },
 
   "lsp": {
