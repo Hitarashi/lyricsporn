@@ -33,9 +33,21 @@ export function unexpectedErrorResponse(): Response {
     {
       error: {
         code: 'internal_error',
-        message: 'The lookup request could not be completed.',
+        message: 'The request could not be completed.',
       },
     },
     { status: 500 },
+  )
+}
+
+export function resourceNotFoundResponse(resource: string): Response {
+  return Response.json(
+    {
+      error: {
+        code: 'not_found',
+        message: `${resource} was not found in the Apple Music catalog.`,
+      },
+    },
+    { status: 404 },
   )
 }

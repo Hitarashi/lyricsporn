@@ -1,6 +1,7 @@
 import type { AppleCatalogLookupInput, AppleCatalogResource } from '@/lib/apple-music/catalog'
 import type { LyricsLookup } from '@/lib/lyrics/domain/types'
 import type {
+  ApiJsonValue,
   BatchLookupRequest,
   IncludeSection,
   LookupError,
@@ -29,10 +30,16 @@ import {
 } from './contract'
 import { createLyricsOutput } from './lyrics-formats'
 
+export interface TrackMetadataHints {
+  title?: string
+  artist?: string
+  album?: string
+}
+
 interface PreparedLookup {
   selector: LookupSelector
   catalogInput: AppleCatalogLookupInput
-  hints: { title?: string; artist?: string; album?: string }
+  hints: TrackMetadataHints
   options: {
     include: IncludeSection[]
     formats: LyricsOutputFormat[]
@@ -185,7 +192,7 @@ function resolveOptions(item: LookupItem, defaults: LookupOptions): PreparedLook
   }
 }
 
-function mapTrack(resource: AppleCatalogResource, hints: PreparedLookup['hints']): Track {
+export function mapTrack(resource: AppleCatalogResource, hints: TrackMetadataHints = {}): Track {
   const attributes = resource.attributes ?? {}
   return {
     id: resource.id,
@@ -225,6 +232,7 @@ async function processLookup(prepared: PreparedLookup) {
   try {
     const catalog = await lookupAppleCatalogServer(prepared.catalogInput, {
       limit: prepared.options.limit,
+      includeRelations: prepared.options.include.includes('appleCatalog'),
     })
 
     if (!catalog || catalog.songs.length === 0) {
@@ -336,7 +344,7 @@ export async function lookupTracks(request: BatchLookupRequest): Promise<LookupR
   return { results }
 }
 
-function toApiJson(value: unknown): import('./contract').ApiJsonValue {
+export function toApiJson(value: unknown): ApiJsonValue {
   if (
     value === null ||
     typeof value === 'string' ||
@@ -347,7 +355,7 @@ function toApiJson(value: unknown): import('./contract').ApiJsonValue {
   }
   if (Array.isArray(value)) return value.map(toApiJson)
   if (typeof value === 'object') {
-    const record: Record<string, import('./contract').ApiJsonValue> = {}
+    const record: Record<string, ApiJsonValue> = {}
     for (const [key, child] of Object.entries(value)) {
       if (child !== undefined) record[key] = toApiJson(child)
     }

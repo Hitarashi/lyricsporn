@@ -24,6 +24,7 @@ export interface AppleCatalogArtwork extends Record<string, AppleJsonValue | und
 export interface AppleCatalogAttributes extends Record<string, AppleJsonValue | undefined> {
   name?: string
   artistName?: string
+  artistUrl?: string
   albumName?: string
   albumArtistName?: string
   composerName?: string
@@ -35,11 +36,30 @@ export interface AppleCatalogAttributes extends Record<string, AppleJsonValue | 
   isrc?: string
   audioTraits?: string[]
   artwork?: AppleCatalogArtwork
+  url?: string
   recordLabel?: string
   copyright?: string
   isStreamable?: boolean
   contentRating?: string
+  hasLyrics?: boolean
+  isAppleDigitalMaster?: boolean
+  attribution?: string
+  audioVariants?: string[]
   upc?: string
+  curatorName?: string
+  description?: Record<string, AppleJsonValue | undefined>
+  editorialNotes?: Record<string, AppleJsonValue | undefined>
+  trackCount?: number
+  playlistType?: string
+  lastModifiedDate?: string
+  isSingle?: boolean
+  isCompilation?: boolean
+  isComplete?: boolean
+  isMasteredForItunes?: boolean
+  isChart?: boolean
+  inFavorites?: boolean
+  trackTypes?: string[]
+  playParams?: Record<string, AppleJsonValue | undefined>
 }
 
 export interface AppleCatalogResource extends Record<string, AppleJsonValue | undefined> {
@@ -48,11 +68,13 @@ export interface AppleCatalogResource extends Record<string, AppleJsonValue | un
   href?: string
   attributes?: AppleCatalogAttributes
   relationships?: Record<string, AppleJsonValue | undefined>
+  views?: Record<string, AppleJsonValue | undefined>
   meta?: Record<string, AppleJsonValue | undefined>
 }
 
 export interface AppleCatalogResponse extends Record<string, AppleJsonValue | undefined> {
   data?: AppleCatalogResource[]
+  next?: string
   results?: Record<string, AppleJsonValue | undefined> & {
     songs?: Record<string, AppleJsonValue | undefined> & { data?: AppleCatalogResource[] }
   }
@@ -67,6 +89,36 @@ export interface AppleCatalogLookupResult {
   storefront: string
   response: AppleCatalogResponse
   songs: AppleCatalogResource[]
+}
+
+export type AppleCatalogResourceType = 'songs' | 'artists' | 'albums' | 'playlists'
+
+const APPLE_CATALOG_ID_LIMITS: Record<AppleCatalogResourceType, number> = {
+  songs: 300,
+  artists: 25,
+  albums: 25,
+  playlists: 25,
+}
+
+export interface AppleCatalogResourceReference {
+  type: AppleCatalogResourceType
+  id: string
+  storefront: string
+}
+
+export interface AppleCatalogResourceResult {
+  reference: AppleCatalogResourceReference
+  storefront: string
+  response: AppleCatalogResponse
+  resource: AppleCatalogResource | null
+  error?: boolean
+}
+
+export class AppleCatalogCollectionUnavailableError extends Error {
+  constructor() {
+    super('Apple Music has no resources for this collection.')
+    this.name = 'AppleCatalogCollectionUnavailableError'
+  }
 }
 
 let cachedDeveloperToken: { value: string; expiresAt: number } | null = null
@@ -189,8 +241,27 @@ async function fetchAmp(url: URL): Promise<AppleCatalogResponse | null> {
     response = await requestAmp(url, token)
   }
 
-  if (response.status === 404) return null
-  if (!response.ok) throw new Error(`Apple Music API returned HTTP ${response.status}`)
+  if (!response.ok) {
+    let payload: unknown
+    try {
+      payload = await response.json()
+    } catch {
+      payload = null
+    }
+    const errors = isRecord(payload) && Array.isArray(payload.errors) ? payload.errors : []
+    const unavailableCollection = errors.some((entry) => {
+      if (!isRecord(entry)) return false
+      const title = typeof entry.title === 'string' ? entry.title : ''
+      const detail = typeof entry.detail === 'string' ? entry.detail : ''
+      return (
+        title === 'No related resources' ||
+        (title === 'Invalid Path Value' && detail.includes('No view found matching'))
+      )
+    })
+    if (unavailableCollection) throw new AppleCatalogCollectionUnavailableError()
+    if (response.status === 404) return null
+    throw new Error(`Apple Music API returned HTTP ${response.status}`)
+  }
 
   const payload: unknown = await response.json()
   if (!isRecord(payload)) throw new Error('Apple Music API returned an invalid response')
@@ -217,14 +288,151 @@ function catalogUrl(path: string): URL {
   return new URL(`https://amp-api.music.apple.com/v1/catalog/${path}`)
 }
 
+function normalizeCatalogId(value: string): string {
+  const id = value.trim()
+  if (!/^[a-z\d._-]{1,128}$/i.test(id)) throw new Error('Invalid Apple Music catalog ID')
+  return id
+}
+
+function normalizeCatalogStorefront(value: string): string {
+  const storefront = value.trim().toLowerCase()
+  if (!/^[a-z]{2}$/.test(storefront)) throw new Error('Invalid Apple Music storefront')
+  return storefront
+}
+
+function resourcesFromResponse(response: AppleCatalogResponse): AppleCatalogResource[] {
+  return Array.isArray(response.data) ? response.data : []
+}
+
+export async function fetchAppleCatalogResourceServer(
+  reference: AppleCatalogResourceReference,
+  options: { include?: string[]; views?: string[]; extend?: string[] } = {},
+): Promise<AppleCatalogResourceResult | null> {
+  const storefront = normalizeCatalogStorefront(reference.storefront)
+  const id = normalizeCatalogId(reference.id)
+  const url = catalogUrl(`${storefront}/${reference.type}/${encodeURIComponent(id)}`)
+
+  if (options.include?.length)
+    url.searchParams.set('include', [...new Set(options.include)].join(','))
+  if (options.views?.length) url.searchParams.set('views', [...new Set(options.views)].join(','))
+  if (options.extend?.length) url.searchParams.set('extend', [...new Set(options.extend)].join(','))
+
+  const response = await fetchAmp(url)
+  if (!response) return null
+  return {
+    reference: { ...reference, id, storefront },
+    storefront,
+    response,
+    resource: resourcesFromResponse(response)[0] ?? null,
+  }
+}
+
+export async function fetchAppleCatalogResourcesServer(
+  references: AppleCatalogResourceReference[],
+  options: { include?: string[]; views?: string[]; extend?: string[] } = {},
+): Promise<AppleCatalogResourceResult[]> {
+  const uniqueReferences = new Map<string, AppleCatalogResourceReference>()
+  for (const reference of references) {
+    const normalized = {
+      ...reference,
+      id: normalizeCatalogId(reference.id),
+      storefront: normalizeCatalogStorefront(reference.storefront),
+    }
+    uniqueReferences.set(`${normalized.storefront}:${normalized.type}:${normalized.id}`, normalized)
+  }
+
+  const groups = new Map<string, AppleCatalogResourceReference[]>()
+  for (const reference of uniqueReferences.values()) {
+    const group = groups.get(reference.storefront) ?? []
+    group.push(reference)
+    groups.set(reference.storefront, group)
+  }
+
+  const requests = await Promise.all(
+    [...groups.entries()].flatMap(([storefront, group]) => {
+      const batches: AppleCatalogResourceReference[][] = []
+      for (const type of ['songs', 'artists', 'albums', 'playlists'] as const) {
+        const typedReferences = group.filter((item) => item.type === type)
+        const chunkSize = APPLE_CATALOG_ID_LIMITS[type]
+        for (let offset = 0; offset < typedReferences.length; offset += chunkSize) {
+          const batchIndex = Math.floor(offset / chunkSize)
+          const batch = batches[batchIndex] ?? []
+          batch.push(...typedReferences.slice(offset, offset + chunkSize))
+          batches[batchIndex] = batch
+        }
+      }
+
+      return batches.map(async (batch) => {
+        const url = catalogUrl(storefront)
+        if (options.include?.length)
+          url.searchParams.set('include', [...new Set(options.include)].join(','))
+        if (options.views?.length)
+          url.searchParams.set('views', [...new Set(options.views)].join(','))
+        if (options.extend?.length)
+          url.searchParams.set('extend', [...new Set(options.extend)].join(','))
+        for (const type of ['songs', 'artists', 'albums', 'playlists'] as const) {
+          const ids = batch.filter((item) => item.type === type).map((item) => item.id)
+          if (ids.length > 0) url.searchParams.set(`ids[${type}]`, ids.join(','))
+        }
+
+        let response: AppleCatalogResponse | null
+        try {
+          response = await fetchAmp(url)
+        } catch {
+          return batch.map((reference) => ({
+            reference,
+            storefront,
+            response: {},
+            resource: null,
+            error: true,
+          }))
+        }
+        const resources = response ? resourcesFromResponse(response) : []
+        const byKey = new Map(
+          resources.map((resource) => [`${resource.type}:${resource.id}`, resource]),
+        )
+
+        return batch.map((reference) => ({
+          reference,
+          storefront,
+          response: response ?? {},
+          resource: byKey.get(`${reference.type}:${reference.id}`) ?? null,
+        }))
+      })
+    }),
+  )
+
+  return requests.flat()
+}
+
+export async function fetchAppleCatalogCollectionServer(
+  reference: AppleCatalogResourceReference,
+  collection: { kind: 'relationship' | 'view'; name: string },
+  options: { limit: number; offset: number } = { limit: 20, offset: 0 },
+): Promise<AppleCatalogResponse | null> {
+  const storefront = normalizeCatalogStorefront(reference.storefront)
+  const id = normalizeCatalogId(reference.id)
+  const collectionName = normalizeCatalogId(collection.name)
+  const path =
+    collection.kind === 'view'
+      ? `${reference.type}/${encodeURIComponent(id)}/view/${encodeURIComponent(collectionName)}`
+      : `${reference.type}/${encodeURIComponent(id)}/${encodeURIComponent(collectionName)}`
+  const url = catalogUrl(`${storefront}/${path}`)
+  url.searchParams.set('limit', String(options.limit))
+  url.searchParams.set('offset', String(options.offset))
+  if (collection.kind === 'view') url.searchParams.set('with', 'attributes')
+  return fetchAmp(url)
+}
+
 async function requestForStorefront(
   input: AppleCatalogLookupInput,
   storefront: string,
   limit: number,
+  includeRelations: boolean,
 ): Promise<AppleCatalogResponse | null> {
   if (input.type === 'appleTrackId') {
     const url = catalogUrl(`${storefront}/songs/${encodeURIComponent(input.value)}`)
-    url.searchParams.set('include', 'albums,artists')
+    if (includeRelations) url.searchParams.set('include', 'albums,artists')
     return fetchAmp(url)
   }
 
@@ -232,7 +440,7 @@ async function requestForStorefront(
     const url = catalogUrl(`${storefront}/songs`)
     url.searchParams.set('filter[isrc]', input.value)
     url.searchParams.set('limit', String(limit))
-    url.searchParams.set('include', 'albums,artists')
+    if (includeRelations) url.searchParams.set('include', 'albums,artists')
     return fetchAmp(url)
   }
 
@@ -246,11 +454,12 @@ async function requestForStorefront(
 async function lookupAppleCatalog(
   input: AppleCatalogLookupInput,
   limit = 5,
+  includeRelations = false,
 ): Promise<AppleCatalogLookupResult | null> {
   let emptyResult: AppleCatalogLookupResult | null = null
 
   for (const storefront of storefrontAttempts(input.storefront ?? 'us')) {
-    const response = await requestForStorefront(input, storefront, limit)
+    const response = await requestForStorefront(input, storefront, limit, includeRelations)
     if (!response) continue
 
     const songs = songsFromResponse(response)
@@ -263,7 +472,7 @@ async function lookupAppleCatalog(
 
 export async function lookupAppleCatalogServer(
   input: AppleCatalogLookupInput,
-  options: { limit?: number } = {},
+  options: { limit?: number; includeRelations?: boolean } = {},
 ): Promise<AppleCatalogLookupResult | null> {
   const validatedInput = validateLookupInput(input)
   const limit = options.limit ?? 5
@@ -272,7 +481,7 @@ export async function lookupAppleCatalogServer(
     throw new Error('limit must be an integer between 1 and 10')
   }
 
-  return lookupAppleCatalog(validatedInput, limit)
+  return lookupAppleCatalog(validatedInput, limit, options.includeRelations)
 }
 
 function normalizeStorefront(value: unknown): string {

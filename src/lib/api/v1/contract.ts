@@ -361,7 +361,13 @@ export const LookupMatchSchema = z
 
 export const LookupErrorSchema = z
   .object({
-    code: z.enum(['invalid_request', 'invalid_lookup', 'lookup_failed', 'internal_error']),
+    code: z.enum([
+      'invalid_request',
+      'invalid_lookup',
+      'lookup_failed',
+      'not_found',
+      'internal_error',
+    ]),
     message: z.string(),
     issues: z
       .array(

@@ -14,7 +14,7 @@ const DEFAULT_HEADERS: Record<string, string> = {
 export class LyricsHttp implements LyricsHttpPort {
   private timeoutMs: number
   private defaultHeaders: Record<string, string>
-  private fetcher: typeof fetch
+  private fetcher: typeof fetch | undefined
 
   constructor(options: LyricsHttpOptions = {}) {
     this.timeoutMs = options.timeoutMs ?? 12_000
@@ -22,7 +22,7 @@ export class LyricsHttp implements LyricsHttpPort {
       ...DEFAULT_HEADERS,
       ...(options.defaultHeaders ?? {}),
     }
-    this.fetcher = options.fetch ?? globalThis.fetch
+    this.fetcher = options.fetch
   }
 
   async get(
@@ -37,7 +37,7 @@ export class LyricsHttp implements LyricsHttpPort {
     const timer = setTimeout(() => controller.abort(), this.timeoutMs)
 
     try {
-      const response = await this.fetcher(url, {
+      const response = await (this.fetcher ?? globalThis.fetch)(url, {
         method: 'GET',
         headers: {
           ...this.defaultHeaders,
@@ -72,7 +72,7 @@ export class LyricsHttp implements LyricsHttpPort {
     const timer = setTimeout(() => controller.abort(), this.timeoutMs)
 
     try {
-      const response = await this.fetcher(url, {
+      const response = await (this.fetcher ?? globalThis.fetch)(url, {
         method: 'POST',
         headers: {
           ...this.defaultHeaders,
