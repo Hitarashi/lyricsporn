@@ -2,6 +2,7 @@ import type {
   AppleCatalogResource,
   AppleCatalogResourceReference,
   AppleCatalogResourceResult,
+  AppleCatalogSearchType,
 } from '@/lib/apple-music/catalog'
 import type { LyricsLookup } from '@/lib/lyrics/domain/types'
 import type {
@@ -17,6 +18,11 @@ import type {
   CatalogEntity,
   CatalogInclude,
   CatalogItem,
+  CatalogSearchHintsResponse,
+  CatalogSearchResponse,
+  CatalogSearchSuggestionKind,
+  CatalogSearchSuggestionsResponse,
+  CatalogSearchType,
   Playlist,
   QueueInclude,
   QueueTrack,
@@ -32,12 +38,18 @@ import {
   fetchAppleCatalogCollectionServer,
   fetchAppleCatalogResourceServer,
   fetchAppleCatalogResourcesServer,
+  fetchAppleCatalogSearchHintsServer,
+  fetchAppleCatalogSearchServer,
+  fetchAppleCatalogSearchSuggestionsServer,
 } from '@/lib/apple-music/catalog'
 import { defaultLyricsRepository } from '@/lib/lyrics/adapters/default-repository'
 
 import {
   CatalogEntitySchema,
   CatalogItemSchema,
+  CatalogSearchHintsResponseSchema,
+  CatalogSearchResponseSchema,
+  CatalogSearchSuggestionsResponseSchema,
   DEFAULT_ARTWORK_SIZE,
   DEFAULT_COLLECTION_LIMIT,
   MAX_COLLECTION_LIMIT,
@@ -63,6 +75,7 @@ const ENTITY_RESOURCE_TYPES = {
 
 const RESOURCE_SINGULAR_TYPES: Record<string, CatalogItem['type']> = {
   songs: 'song',
+  activities: 'activity',
   artists: 'artist',
   albums: 'album',
   playlists: 'playlist',
@@ -490,6 +503,38 @@ function makeCollectionUrl(
   return `/api/v1/${entity}/${encodeURIComponent(id)}/collections/${encodeURIComponent(collection)}?${query.toString()}`
 }
 
+const SEARCH_RESULT_KEYS = {
+  activities: 'activities',
+  albums: 'albums',
+  'apple-curators': 'appleCurators',
+  artists: 'artists',
+  curators: 'curators',
+  'music-videos': 'musicVideos',
+  playlists: 'playlists',
+  'record-labels': 'recordLabels',
+  songs: 'songs',
+  stations: 'stations',
+} as const satisfies Record<AppleCatalogSearchType, keyof CatalogSearchResponse['results']>
+
+function makeCatalogSearchUrl(
+  term: string,
+  storefront: string,
+  type: AppleCatalogSearchType,
+  limit: number,
+  offset: number,
+  artworkSize: number,
+): string {
+  const query = new URLSearchParams({
+    term,
+    storefront,
+    types: type,
+    limit: String(limit),
+    offset: String(offset),
+    artworkSize: String(artworkSize),
+  })
+  return `/api/v1/catalog/search?${query.toString()}`
+}
+
 function getCollectionConfig(type: EntityResourceType, name: string): CollectionConfig | undefined {
   if (type === 'artists') return ARTIST_COLLECTIONS[name as keyof typeof ARTIST_COLLECTIONS]
   if (type === 'albums') return ALBUM_COLLECTIONS[name as keyof typeof ALBUM_COLLECTIONS]
@@ -577,6 +622,114 @@ export async function getCatalogEntityServer(options: {
     options.limit,
     options.artworkSize,
   )
+}
+
+export async function getCatalogSearchServer(options: {
+  term: string
+  storefront: string
+  types: CatalogSearchType[]
+  limit: number
+  offset: number
+  artworkSize: number
+}): Promise<CatalogSearchResponse> {
+  const response = await fetchAppleCatalogSearchServer(options)
+  const appleResults = getRecord(response?.results)
+  const results: CatalogSearchResponse['results'] = {}
+
+  for (const type of options.types) {
+    const appleGroup = getRecord(appleResults?.[type])
+    const rawItems = Array.isArray(appleGroup?.data) ? appleGroup.data : []
+    const items = rawItems.flatMap((item) => {
+      if (!isRecord(item) || typeof item.id !== 'string' || typeof item.type !== 'string') return []
+      const mapped = mapCatalogItem(item as AppleCatalogResource, options.artworkSize)
+      return mapped ? [mapped] : []
+    })
+    const appleNext = getString(appleGroup?.next)
+    const nextOffset = appleNext
+      ? (readOffset(appleNext) ?? options.offset + rawItems.length)
+      : undefined
+
+    results[SEARCH_RESULT_KEYS[type]] = {
+      items,
+      ...(nextOffset !== undefined
+        ? {
+            next: makeCatalogSearchUrl(
+              options.term,
+              options.storefront,
+              type,
+              options.limit,
+              nextOffset,
+              options.artworkSize,
+            ),
+          }
+        : {}),
+    }
+  }
+
+  return CatalogSearchResponseSchema.parse({
+    term: options.term,
+    storefront: options.storefront,
+    results,
+  })
+}
+
+export async function getCatalogSearchHintsServer(options: {
+  term: string
+  storefront: string
+  limit: number
+}): Promise<CatalogSearchHintsResponse> {
+  const response = await fetchAppleCatalogSearchHintsServer(options)
+  const appleResults = getRecord(response?.results)
+  const terms = Array.isArray(appleResults?.terms)
+    ? appleResults.terms.filter((term): term is string => typeof term === 'string')
+    : []
+
+  return CatalogSearchHintsResponseSchema.parse({
+    term: options.term,
+    storefront: options.storefront,
+    terms,
+  })
+}
+
+export async function getCatalogSearchSuggestionsServer(options: {
+  term: string
+  storefront: string
+  kinds: CatalogSearchSuggestionKind[]
+  types?: CatalogSearchType[]
+  limit: number
+  artworkSize: number
+}): Promise<CatalogSearchSuggestionsResponse> {
+  const response = await fetchAppleCatalogSearchSuggestionsServer(options)
+  const appleResults = getRecord(response?.results)
+  const rawSuggestions = Array.isArray(appleResults?.suggestions) ? appleResults.suggestions : []
+  const suggestions = rawSuggestions.flatMap(
+    (value): CatalogSearchSuggestionsResponse['suggestions'] => {
+      if (!isRecord(value) || typeof value.kind !== 'string') return []
+      if (value.kind === 'terms' && typeof value.searchTerm === 'string') {
+        return [
+          {
+            kind: 'terms' as const,
+            searchTerm: value.searchTerm,
+            displayTerm:
+              typeof value.displayTerm === 'string' ? value.displayTerm : value.searchTerm,
+          },
+        ]
+      }
+      if (value.kind === 'topResults' && isRecord(value.content)) {
+        const content = value.content
+        if (typeof content.id !== 'string' || typeof content.type !== 'string') return []
+        const mapped = mapCatalogItem(content as AppleCatalogResource, options.artworkSize)
+        return mapped ? [{ kind: 'topResults' as const, content: mapped }] : []
+      }
+      return []
+    },
+  )
+
+  return CatalogSearchSuggestionsResponseSchema.parse({
+    term: options.term,
+    storefront: options.storefront,
+    suggestions,
+  })
 }
 
 export async function getCatalogCollectionServer(options: {

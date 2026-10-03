@@ -5,7 +5,49 @@ The API is public and does not require an API key.
 
 Apple Music supplies catalog metadata and artwork. Lyrics requests use every provider configured in the lyrics repository. Artwork responses contain Apple CDN URLs; clients fetch the image bytes from Apple.
 
-Track, artist, album, playlist, and artwork routes accept Apple Music catalog IDs. Track lyrics are requested through the track detail or queue routes; the API does not resolve ISRCs, Apple links, or title and artist searches.
+Track, artist, album, playlist, and artwork routes accept Apple Music catalog IDs. Free-text Apple catalog search is available through `/api/v1/catalog/search`. The API does not resolve ISRCs or Apple links. Track lyrics are requested through the track detail or queue routes.
+
+## Apple Music catalog search
+
+`GET /api/v1/catalog/search` proxies Apple's free-text catalog search and returns compact normalized results grouped by resource type. The default search type is songs; request `albums`, `artists`, `playlists`, `music-videos`, `stations`, `activities`, `curators`, `apple-curators`, or `record-labels` as needed. Apple ranks the text query; this route does not perform exact title or artist matching.
+
+```text
+GET /api/v1/catalog/search?term=Daft%20Punk%20Discovery&types=songs,albums,artists&storefront=us&limit=5
+```
+
+Each result group contains `items` and, when Apple has another page, a proxied `next` URL. Follow that URL to page only the resource type that has more results. `limit` applies per type and ranges from 1 to 25. `artworkSize` controls square Apple CDN artwork URLs from 50 to 3000 pixels; the default is 300.
+
+Use the autocomplete routes while the user types:
+
+```text
+GET /api/v1/catalog/search/hints?term=daft
+GET /api/v1/catalog/search/suggestions?term=daft&kinds=terms,topResults&types=songs,albums
+```
+
+Hints return Apple’s suggested query strings. Suggestions can return query terms, compact top catalog results, or both. The default kinds are `terms,topResults`; `types` filters only the top results and defaults to `songs,albums,artists,playlists` when top results are requested. Suggestion limits range from 1 to 10.
+
+```json
+{
+  "term": "Daft Punk Discovery",
+  "storefront": "us",
+  "results": {
+    "songs": {
+      "items": [
+        {
+          "id": "...",
+          "type": "song",
+          "name": "One More Time",
+          "artistName": "Daft Punk",
+          "albumName": "Discovery",
+          "durationMs": 320000,
+          "artwork": { "url": "https://..." }
+        }
+      ],
+      "next": "/api/v1/catalog/search?term=Daft+Punk+Discovery&storefront=us&types=songs&limit=5&offset=5&artworkSize=300"
+    }
+  }
+}
+```
 
 ## Track detail
 

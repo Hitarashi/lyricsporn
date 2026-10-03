@@ -14,6 +14,12 @@ import {
   CatalogCollectionQuerySchema,
   CatalogCollectionResponseSchema,
   CatalogGetQuerySchema,
+  CatalogSearchHintsQuerySchema,
+  CatalogSearchHintsResponseSchema,
+  CatalogSearchQuerySchema,
+  CatalogSearchResponseSchema,
+  CatalogSearchSuggestionsQuerySchema,
+  CatalogSearchSuggestionsResponseSchema,
   PlaylistCollectionNameSchema,
   PlaylistSchema,
   TrackAppleIdSchema,
@@ -25,6 +31,84 @@ import {
 import { ApiErrorResponseSchema } from './contract'
 
 const registry = new OpenAPIRegistry()
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/catalog/search',
+  tags: ['Apple catalog'],
+  summary: 'Search the Apple Music catalog',
+  description:
+    'Search Apple Music with one free-text term. `types` selects one or more resource groups and defaults to songs. Results are normalized into compact catalog items. Each group can include a proxied `next` URL for its next page.',
+  request: {
+    query: CatalogSearchQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'Normalized results grouped by requested Apple catalog type.',
+      content: { 'application/json': { schema: CatalogSearchResponseSchema } },
+    },
+    400: {
+      description: 'Invalid term, types, storefront, or pagination options.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+    500: {
+      description: 'Apple Music search failed.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+  },
+})
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/catalog/search/hints',
+  tags: ['Apple catalog'],
+  summary: 'Get Apple Music search hints',
+  description:
+    'Return Apple Music autocomplete query terms for partial text. Use the returned term with the catalog search route.',
+  request: {
+    query: CatalogSearchHintsQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'Suggested query terms.',
+      content: { 'application/json': { schema: CatalogSearchHintsResponseSchema } },
+    },
+    400: {
+      description: 'Invalid term, storefront, or limit.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+    500: {
+      description: 'Apple Music search hints failed.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+  },
+})
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/catalog/search/suggestions',
+  tags: ['Apple catalog'],
+  summary: 'Get Apple Music search suggestions',
+  description:
+    'Return Apple Music query suggestions, top catalog results, or both. `types` filters top results and has no effect on query term suggestions. If `types` is omitted with `topResults`, the proxy requests songs, albums, artists, and playlists.',
+  request: {
+    query: CatalogSearchSuggestionsQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'A mixed list of query term and normalized catalog suggestions.',
+      content: { 'application/json': { schema: CatalogSearchSuggestionsResponseSchema } },
+    },
+    400: {
+      description: 'Invalid term, kinds, types, storefront, or limit.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+    500: {
+      description: 'Apple Music search suggestions failed.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+  },
+})
 
 registry.registerPath({
   method: 'get',

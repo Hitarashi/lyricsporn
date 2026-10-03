@@ -77,6 +77,20 @@ export interface AppleCatalogResponse extends Record<string, AppleJsonValue | un
 
 export type AppleCatalogResourceType = 'songs' | 'artists' | 'albums' | 'playlists'
 
+export type AppleCatalogSearchType =
+  | 'activities'
+  | 'albums'
+  | 'apple-curators'
+  | 'artists'
+  | 'curators'
+  | 'music-videos'
+  | 'playlists'
+  | 'record-labels'
+  | 'songs'
+  | 'stations'
+
+export type AppleCatalogSuggestionKind = 'terms' | 'topResults'
+
 const APPLE_CATALOG_ID_LIMITS: Record<AppleCatalogResourceType, number> = {
   songs: 300,
   artists: 25,
@@ -293,6 +307,50 @@ export async function fetchAppleCatalogResourceServer(
     response,
     resource: resourcesFromResponse(response)[0] ?? null,
   }
+}
+
+export async function fetchAppleCatalogSearchServer(options: {
+  term: string
+  storefront: string
+  types: AppleCatalogSearchType[]
+  limit: number
+  offset: number
+}): Promise<AppleCatalogResponse | null> {
+  const storefront = normalizeCatalogStorefront(options.storefront)
+  const url = catalogUrl(`${storefront}/search`)
+  url.searchParams.set('term', options.term.trim())
+  url.searchParams.set('types', [...new Set(options.types)].join(','))
+  url.searchParams.set('limit', String(options.limit))
+  if (options.offset > 0) url.searchParams.set('offset', String(options.offset))
+  return fetchAmp(url)
+}
+
+export async function fetchAppleCatalogSearchHintsServer(options: {
+  term: string
+  storefront: string
+  limit: number
+}): Promise<AppleCatalogResponse | null> {
+  const storefront = normalizeCatalogStorefront(options.storefront)
+  const url = catalogUrl(`${storefront}/search/hints`)
+  url.searchParams.set('term', options.term.trim())
+  url.searchParams.set('limit', String(options.limit))
+  return fetchAmp(url)
+}
+
+export async function fetchAppleCatalogSearchSuggestionsServer(options: {
+  term: string
+  storefront: string
+  kinds: AppleCatalogSuggestionKind[]
+  types?: AppleCatalogSearchType[]
+  limit: number
+}): Promise<AppleCatalogResponse | null> {
+  const storefront = normalizeCatalogStorefront(options.storefront)
+  const url = catalogUrl(`${storefront}/search/suggestions`)
+  url.searchParams.set('term', options.term.trim())
+  url.searchParams.set('kinds', [...new Set(options.kinds)].join(','))
+  if (options.types?.length) url.searchParams.set('types', [...new Set(options.types)].join(','))
+  url.searchParams.set('limit', String(options.limit))
+  return fetchAmp(url)
 }
 
 export async function fetchAppleCatalogResourcesServer(

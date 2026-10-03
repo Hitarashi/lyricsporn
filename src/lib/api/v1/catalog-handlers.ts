@@ -10,6 +10,12 @@ import {
   CatalogBatchRequestSchema,
   CatalogCollectionQuerySchema,
   CatalogGetQuerySchema,
+  CatalogSearchHintsQuerySchema,
+  CatalogSearchQuerySchema,
+  CatalogSearchSuggestionKindSchema,
+  CatalogSearchSuggestionsQuerySchema,
+  CatalogSearchTypeSchema,
+  DEFAULT_CATALOG_SEARCH_TYPES,
   PlaylistCollectionNameSchema,
   PlaylistIncludeSchema,
   TrackAppleIdSchema,
@@ -20,6 +26,9 @@ import {
 import {
   getCatalogCollectionServer,
   getCatalogEntityServer,
+  getCatalogSearchHintsServer,
+  getCatalogSearchServer,
+  getCatalogSearchSuggestionsServer,
   getTrackDetailServer,
   lookupAssetBatchServer,
   lookupCatalogBatchServer,
@@ -40,6 +49,10 @@ function invalidValue(path: string, message: string): Response {
       message,
     },
   ])
+}
+
+function prefixIssuePath(path: string, issues: z.ZodIssue[]): z.ZodIssue[] {
+  return issues.map((issue) => ({ ...issue, path: [path, ...issue.path] }))
 }
 
 function queryParameters(
@@ -126,6 +139,81 @@ export async function handleCatalogEntityGet(
     })
     if (!data) return resourceNotFoundResponse(`${type} ${idResult.id}`)
     return catalogJson({ data })
+  } catch {
+    return unexpectedErrorResponse()
+  }
+}
+
+export async function handleCatalogSearchGet(request: Request): Promise<Response> {
+  const query = queryParameters(request)
+  if (query.error) return query.error
+  const parsedQuery = CatalogSearchQuerySchema.safeParse(query.values)
+  if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
+  const parsedTypes = parseCsvList(parsedQuery.data.types, CatalogSearchTypeSchema)
+  if (!parsedTypes.success)
+    return invalidRequestResponse(prefixIssuePath('types', parsedTypes.issues))
+  if (parsedTypes.data?.length === 0)
+    return invalidValue('types', 'At least one Apple catalog type must be selected.')
+
+  try {
+    const data = await getCatalogSearchServer({
+      term: parsedQuery.data.term,
+      storefront: parsedQuery.data.storefront,
+      types: parsedTypes.data ?? ['songs'],
+      limit: parsedQuery.data.limit,
+      offset: parsedQuery.data.offset,
+      artworkSize: parsedQuery.data.artworkSize,
+    })
+    return catalogJson(data)
+  } catch {
+    return unexpectedErrorResponse()
+  }
+}
+
+export async function handleCatalogSearchHintsGet(request: Request): Promise<Response> {
+  const query = queryParameters(request)
+  if (query.error) return query.error
+  const parsedQuery = CatalogSearchHintsQuerySchema.safeParse(query.values)
+  if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
+
+  try {
+    const data = await getCatalogSearchHintsServer(parsedQuery.data)
+    return catalogJson(data)
+  } catch {
+    return unexpectedErrorResponse()
+  }
+}
+
+export async function handleCatalogSearchSuggestionsGet(request: Request): Promise<Response> {
+  const query = queryParameters(request)
+  if (query.error) return query.error
+  const parsedQuery = CatalogSearchSuggestionsQuerySchema.safeParse(query.values)
+  if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
+  const parsedKinds = parseCsvList(parsedQuery.data.kinds, CatalogSearchSuggestionKindSchema)
+  if (!parsedKinds.success)
+    return invalidRequestResponse(prefixIssuePath('kinds', parsedKinds.issues))
+  const parsedTypes = parseCsvList(parsedQuery.data.types, CatalogSearchTypeSchema)
+  if (!parsedTypes.success)
+    return invalidRequestResponse(prefixIssuePath('types', parsedTypes.issues))
+  if (parsedKinds.data?.length === 0)
+    return invalidValue('kinds', 'At least one suggestion kind must be selected.')
+  if (parsedTypes.data?.length === 0)
+    return invalidValue('types', 'At least one Apple catalog type must be selected.')
+  const kinds = parsedKinds.data ?? ['terms', 'topResults']
+  const types =
+    parsedTypes.data ??
+    (kinds.includes('topResults') ? [...DEFAULT_CATALOG_SEARCH_TYPES] : undefined)
+
+  try {
+    const data = await getCatalogSearchSuggestionsServer({
+      term: parsedQuery.data.term,
+      storefront: parsedQuery.data.storefront,
+      kinds,
+      ...(types ? { types } : {}),
+      limit: parsedQuery.data.limit,
+      artworkSize: parsedQuery.data.artworkSize,
+    })
+    return catalogJson(data)
   } catch {
     return unexpectedErrorResponse()
   }

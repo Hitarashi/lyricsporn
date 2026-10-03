@@ -16,9 +16,12 @@ import { Route as ApiV1AlbumsAppleIdRouteImport } from './routes/api/v1/albums/$
 import { Route as ApiV1ArtistsAppleIdRouteImport } from './routes/api/v1/artists/$appleId'
 import { Route as ApiV1AssetsBatchRouteImport } from './routes/api/v1/assets/batch'
 import { Route as ApiV1CatalogBatchRouteImport } from './routes/api/v1/catalog/batch'
+import { Route as ApiV1CatalogSearchRouteImport } from './routes/api/v1/catalog/search'
 import { Route as ApiV1PlaylistsAppleIdRouteImport } from './routes/api/v1/playlists/$appleId'
 import { Route as ApiV1TracksAppleIdRouteImport } from './routes/api/v1/tracks/$appleId'
 import { Route as ApiV1TracksBatchRouteImport } from './routes/api/v1/tracks/batch'
+import { Route as ApiV1CatalogSearchHintsRouteImport } from './routes/api/v1/catalog/search/hints'
+import { Route as ApiV1CatalogSearchSuggestionsRouteImport } from './routes/api/v1/catalog/search/suggestions'
 import { Route as ApiV1AlbumsAppleIdCollectionsCollectionRouteImport } from './routes/api/v1/albums/$appleId/collections/$collection'
 import { Route as ApiV1ArtistsAppleIdCollectionsCollectionRouteImport } from './routes/api/v1/artists/$appleId/collections/$collection'
 import { Route as ApiV1PlaylistsAppleIdCollectionsCollectionRouteImport } from './routes/api/v1/playlists/$appleId/collections/$collection'
@@ -58,6 +61,11 @@ const ApiV1CatalogBatchRoute = ApiV1CatalogBatchRouteImport.update({
   path: '/api/v1/catalog/batch',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1CatalogSearchRoute = ApiV1CatalogSearchRouteImport.update({
+  id: '/api/v1/catalog/search',
+  path: '/api/v1/catalog/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV1PlaylistsAppleIdRoute = ApiV1PlaylistsAppleIdRouteImport.update({
   id: '/api/v1/playlists/$appleId',
   path: '/api/v1/playlists/$appleId',
@@ -73,6 +81,17 @@ const ApiV1TracksBatchRoute = ApiV1TracksBatchRouteImport.update({
   path: '/api/v1/tracks/batch',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1CatalogSearchHintsRoute = ApiV1CatalogSearchHintsRouteImport.update({
+  id: '/hints',
+  path: '/hints',
+  getParentRoute: () => ApiV1CatalogSearchRoute,
+} as any)
+const ApiV1CatalogSearchSuggestionsRoute =
+  ApiV1CatalogSearchSuggestionsRouteImport.update({
+    id: '/suggestions',
+    path: '/suggestions',
+    getParentRoute: () => ApiV1CatalogSearchRoute,
+  } as any)
 const ApiV1AlbumsAppleIdCollectionsCollectionRoute =
   ApiV1AlbumsAppleIdCollectionsCollectionRouteImport.update({
     id: '/collections/$collection',
@@ -100,9 +119,12 @@ export interface FileRoutesByFullPath {
   '/api/v1/artists/$appleId': typeof ApiV1ArtistsAppleIdRouteWithChildren
   '/api/v1/assets/batch': typeof ApiV1AssetsBatchRoute
   '/api/v1/catalog/batch': typeof ApiV1CatalogBatchRoute
+  '/api/v1/catalog/search': typeof ApiV1CatalogSearchRouteWithChildren
   '/api/v1/playlists/$appleId': typeof ApiV1PlaylistsAppleIdRouteWithChildren
   '/api/v1/tracks/$appleId': typeof ApiV1TracksAppleIdRoute
   '/api/v1/tracks/batch': typeof ApiV1TracksBatchRoute
+  '/api/v1/catalog/search/hints': typeof ApiV1CatalogSearchHintsRoute
+  '/api/v1/catalog/search/suggestions': typeof ApiV1CatalogSearchSuggestionsRoute
   '/api/v1/albums/$appleId/collections/$collection': typeof ApiV1AlbumsAppleIdCollectionsCollectionRoute
   '/api/v1/artists/$appleId/collections/$collection': typeof ApiV1ArtistsAppleIdCollectionsCollectionRoute
   '/api/v1/playlists/$appleId/collections/$collection': typeof ApiV1PlaylistsAppleIdCollectionsCollectionRoute
@@ -115,9 +137,12 @@ export interface FileRoutesByTo {
   '/api/v1/artists/$appleId': typeof ApiV1ArtistsAppleIdRouteWithChildren
   '/api/v1/assets/batch': typeof ApiV1AssetsBatchRoute
   '/api/v1/catalog/batch': typeof ApiV1CatalogBatchRoute
+  '/api/v1/catalog/search': typeof ApiV1CatalogSearchRouteWithChildren
   '/api/v1/playlists/$appleId': typeof ApiV1PlaylistsAppleIdRouteWithChildren
   '/api/v1/tracks/$appleId': typeof ApiV1TracksAppleIdRoute
   '/api/v1/tracks/batch': typeof ApiV1TracksBatchRoute
+  '/api/v1/catalog/search/hints': typeof ApiV1CatalogSearchHintsRoute
+  '/api/v1/catalog/search/suggestions': typeof ApiV1CatalogSearchSuggestionsRoute
   '/api/v1/albums/$appleId/collections/$collection': typeof ApiV1AlbumsAppleIdCollectionsCollectionRoute
   '/api/v1/artists/$appleId/collections/$collection': typeof ApiV1ArtistsAppleIdCollectionsCollectionRoute
   '/api/v1/playlists/$appleId/collections/$collection': typeof ApiV1PlaylistsAppleIdCollectionsCollectionRoute
@@ -131,9 +156,12 @@ export interface FileRoutesById {
   '/api/v1/artists/$appleId': typeof ApiV1ArtistsAppleIdRouteWithChildren
   '/api/v1/assets/batch': typeof ApiV1AssetsBatchRoute
   '/api/v1/catalog/batch': typeof ApiV1CatalogBatchRoute
+  '/api/v1/catalog/search': typeof ApiV1CatalogSearchRouteWithChildren
   '/api/v1/playlists/$appleId': typeof ApiV1PlaylistsAppleIdRouteWithChildren
   '/api/v1/tracks/$appleId': typeof ApiV1TracksAppleIdRoute
   '/api/v1/tracks/batch': typeof ApiV1TracksBatchRoute
+  '/api/v1/catalog/search/hints': typeof ApiV1CatalogSearchHintsRoute
+  '/api/v1/catalog/search/suggestions': typeof ApiV1CatalogSearchSuggestionsRoute
   '/api/v1/albums/$appleId/collections/$collection': typeof ApiV1AlbumsAppleIdCollectionsCollectionRoute
   '/api/v1/artists/$appleId/collections/$collection': typeof ApiV1ArtistsAppleIdCollectionsCollectionRoute
   '/api/v1/playlists/$appleId/collections/$collection': typeof ApiV1PlaylistsAppleIdCollectionsCollectionRoute
@@ -148,9 +176,12 @@ export interface FileRouteTypes {
     | '/api/v1/artists/$appleId'
     | '/api/v1/assets/batch'
     | '/api/v1/catalog/batch'
+    | '/api/v1/catalog/search'
     | '/api/v1/playlists/$appleId'
     | '/api/v1/tracks/$appleId'
     | '/api/v1/tracks/batch'
+    | '/api/v1/catalog/search/hints'
+    | '/api/v1/catalog/search/suggestions'
     | '/api/v1/albums/$appleId/collections/$collection'
     | '/api/v1/artists/$appleId/collections/$collection'
     | '/api/v1/playlists/$appleId/collections/$collection'
@@ -163,9 +194,12 @@ export interface FileRouteTypes {
     | '/api/v1/artists/$appleId'
     | '/api/v1/assets/batch'
     | '/api/v1/catalog/batch'
+    | '/api/v1/catalog/search'
     | '/api/v1/playlists/$appleId'
     | '/api/v1/tracks/$appleId'
     | '/api/v1/tracks/batch'
+    | '/api/v1/catalog/search/hints'
+    | '/api/v1/catalog/search/suggestions'
     | '/api/v1/albums/$appleId/collections/$collection'
     | '/api/v1/artists/$appleId/collections/$collection'
     | '/api/v1/playlists/$appleId/collections/$collection'
@@ -178,9 +212,12 @@ export interface FileRouteTypes {
     | '/api/v1/artists/$appleId'
     | '/api/v1/assets/batch'
     | '/api/v1/catalog/batch'
+    | '/api/v1/catalog/search'
     | '/api/v1/playlists/$appleId'
     | '/api/v1/tracks/$appleId'
     | '/api/v1/tracks/batch'
+    | '/api/v1/catalog/search/hints'
+    | '/api/v1/catalog/search/suggestions'
     | '/api/v1/albums/$appleId/collections/$collection'
     | '/api/v1/artists/$appleId/collections/$collection'
     | '/api/v1/playlists/$appleId/collections/$collection'
@@ -194,6 +231,7 @@ export interface RootRouteChildren {
   ApiV1ArtistsAppleIdRoute: typeof ApiV1ArtistsAppleIdRouteWithChildren
   ApiV1AssetsBatchRoute: typeof ApiV1AssetsBatchRoute
   ApiV1CatalogBatchRoute: typeof ApiV1CatalogBatchRoute
+  ApiV1CatalogSearchRoute: typeof ApiV1CatalogSearchRouteWithChildren
   ApiV1PlaylistsAppleIdRoute: typeof ApiV1PlaylistsAppleIdRouteWithChildren
   ApiV1TracksAppleIdRoute: typeof ApiV1TracksAppleIdRoute
   ApiV1TracksBatchRoute: typeof ApiV1TracksBatchRoute
@@ -250,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1CatalogBatchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/catalog/search': {
+      id: '/api/v1/catalog/search'
+      path: '/api/v1/catalog/search'
+      fullPath: '/api/v1/catalog/search'
+      preLoaderRoute: typeof ApiV1CatalogSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/playlists/$appleId': {
       id: '/api/v1/playlists/$appleId'
       path: '/api/v1/playlists/$appleId'
@@ -270,6 +315,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/v1/tracks/batch'
       preLoaderRoute: typeof ApiV1TracksBatchRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/catalog/search/hints': {
+      id: '/api/v1/catalog/search/hints'
+      path: '/hints'
+      fullPath: '/api/v1/catalog/search/hints'
+      preLoaderRoute: typeof ApiV1CatalogSearchHintsRouteImport
+      parentRoute: typeof ApiV1CatalogSearchRoute
+    }
+    '/api/v1/catalog/search/suggestions': {
+      id: '/api/v1/catalog/search/suggestions'
+      path: '/suggestions'
+      fullPath: '/api/v1/catalog/search/suggestions'
+      preLoaderRoute: typeof ApiV1CatalogSearchSuggestionsRouteImport
+      parentRoute: typeof ApiV1CatalogSearchRoute
     }
     '/api/v1/albums/$appleId/collections/$collection': {
       id: '/api/v1/albums/$appleId/collections/$collection'
@@ -319,6 +378,19 @@ const ApiV1ArtistsAppleIdRouteChildren: ApiV1ArtistsAppleIdRouteChildren = {
 const ApiV1ArtistsAppleIdRouteWithChildren =
   ApiV1ArtistsAppleIdRoute._addFileChildren(ApiV1ArtistsAppleIdRouteChildren)
 
+interface ApiV1CatalogSearchRouteChildren {
+  ApiV1CatalogSearchHintsRoute: typeof ApiV1CatalogSearchHintsRoute
+  ApiV1CatalogSearchSuggestionsRoute: typeof ApiV1CatalogSearchSuggestionsRoute
+}
+
+const ApiV1CatalogSearchRouteChildren: ApiV1CatalogSearchRouteChildren = {
+  ApiV1CatalogSearchHintsRoute: ApiV1CatalogSearchHintsRoute,
+  ApiV1CatalogSearchSuggestionsRoute: ApiV1CatalogSearchSuggestionsRoute,
+}
+
+const ApiV1CatalogSearchRouteWithChildren =
+  ApiV1CatalogSearchRoute._addFileChildren(ApiV1CatalogSearchRouteChildren)
+
 interface ApiV1PlaylistsAppleIdRouteChildren {
   ApiV1PlaylistsAppleIdCollectionsCollectionRoute: typeof ApiV1PlaylistsAppleIdCollectionsCollectionRoute
 }
@@ -341,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1ArtistsAppleIdRoute: ApiV1ArtistsAppleIdRouteWithChildren,
   ApiV1AssetsBatchRoute: ApiV1AssetsBatchRoute,
   ApiV1CatalogBatchRoute: ApiV1CatalogBatchRoute,
+  ApiV1CatalogSearchRoute: ApiV1CatalogSearchRouteWithChildren,
   ApiV1PlaylistsAppleIdRoute: ApiV1PlaylistsAppleIdRouteWithChildren,
   ApiV1TracksAppleIdRoute: ApiV1TracksAppleIdRoute,
   ApiV1TracksBatchRoute: ApiV1TracksBatchRoute,

@@ -45,6 +45,7 @@ export const ArtworkSizeSchema = z
 export const CatalogItemTypeSchema = z
   .enum([
     'song',
+    'activity',
     'artist',
     'album',
     'playlist',
@@ -90,6 +91,160 @@ export const CatalogCollectionSchema = z
   })
   .strict()
   .openapi('CatalogCollection')
+
+export const CatalogSearchTypeSchema = z
+  .enum([
+    'activities',
+    'albums',
+    'apple-curators',
+    'artists',
+    'curators',
+    'music-videos',
+    'playlists',
+    'record-labels',
+    'songs',
+    'stations',
+  ])
+  .openapi('CatalogSearchType')
+
+export const DEFAULT_CATALOG_SEARCH_TYPES = ['songs', 'albums', 'artists', 'playlists'] as const
+
+export const CatalogSearchQuerySchema = z
+  .object({
+    term: z.string().trim().min(1).max(256).openapi({
+      description: 'Free-text Apple Music catalog query.',
+      example: 'Daft Punk Discovery',
+    }),
+    storefront: StorefrontSchema,
+    types: z.string().optional().openapi({
+      description:
+        'Comma-separated Apple catalog types: activities, albums, apple-curators, artists, curators, music-videos, playlists, record-labels, songs, or stations. Defaults to songs.',
+      example: 'songs,albums,artists',
+    }),
+    limit: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(25)
+      .default(5)
+      .openapi({ description: 'Maximum results per type, from 1 to 25.', example: 5 }),
+    offset: z.coerce.number().int().nonnegative().default(0).openapi({
+      description:
+        'Apple catalog result offset. Prefer each result group’s next URL for pagination.',
+      example: 0,
+    }),
+    artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
+  })
+  .strict()
+  .openapi('CatalogSearchQuery')
+
+export const CatalogSearchHintsQuerySchema = z
+  .object({
+    term: z.string().trim().min(1).max(256).openapi({
+      description: 'Partial free-text Apple Music catalog query.',
+      example: 'Daft',
+    }),
+    storefront: StorefrontSchema,
+    limit: z.coerce.number().int().min(1).max(25).default(10).openapi({
+      description: 'Maximum number of autocomplete terms, from 1 to 25.',
+      example: 10,
+    }),
+  })
+  .strict()
+  .openapi('CatalogSearchHintsQuery')
+
+export const CatalogSearchSuggestionKindSchema = z.enum(['terms', 'topResults'])
+
+export const CatalogSearchSuggestionsQuerySchema = z
+  .object({
+    term: z.string().trim().min(1).max(256).openapi({
+      description: 'Partial free-text Apple Music catalog query.',
+      example: 'Daft',
+    }),
+    storefront: StorefrontSchema,
+    kinds: z.string().optional().openapi({
+      description: 'Comma-separated suggestion kinds: terms or topResults. Defaults to both.',
+      example: 'terms,topResults',
+    }),
+    types: z.string().optional().openapi({
+      description:
+        'Comma-separated Apple catalog types to include in topResults. Supports activities, albums, apple-curators, artists, curators, music-videos, playlists, record-labels, songs, and stations. If omitted with topResults requested, defaults to songs, albums, artists, and playlists.',
+      example: 'songs,albums,artists',
+    }),
+    limit: z.coerce.number().int().min(1).max(10).default(5).openapi({
+      description: 'Maximum suggestions, from 1 to 10.',
+      example: 5,
+    }),
+    artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
+  })
+  .strict()
+  .openapi('CatalogSearchSuggestionsQuery')
+
+export const CatalogSearchResultGroupSchema = z
+  .object({
+    items: z.array(CatalogItemSchema),
+    next: z.string().optional().openapi({
+      description: 'Next proxied Lyricsporn search URL for this resource type.',
+    }),
+  })
+  .strict()
+  .openapi('CatalogSearchResultGroup')
+
+export const CatalogSearchResponseSchema = z
+  .object({
+    term: z.string(),
+    storefront: StorefrontSchema,
+    results: z
+      .object({
+        activities: CatalogSearchResultGroupSchema.optional(),
+        albums: CatalogSearchResultGroupSchema.optional(),
+        appleCurators: CatalogSearchResultGroupSchema.optional(),
+        artists: CatalogSearchResultGroupSchema.optional(),
+        curators: CatalogSearchResultGroupSchema.optional(),
+        musicVideos: CatalogSearchResultGroupSchema.optional(),
+        playlists: CatalogSearchResultGroupSchema.optional(),
+        recordLabels: CatalogSearchResultGroupSchema.optional(),
+        songs: CatalogSearchResultGroupSchema.optional(),
+        stations: CatalogSearchResultGroupSchema.optional(),
+      })
+      .strict(),
+  })
+  .strict()
+  .openapi('CatalogSearchResponse')
+
+export const CatalogSearchHintsResponseSchema = z
+  .object({
+    term: z.string(),
+    storefront: StorefrontSchema,
+    terms: z.array(z.string()),
+  })
+  .strict()
+  .openapi('CatalogSearchHintsResponse')
+
+export const CatalogSearchSuggestionSchema = z.discriminatedUnion('kind', [
+  z
+    .object({
+      kind: z.literal('terms'),
+      searchTerm: z.string(),
+      displayTerm: z.string(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal('topResults'),
+      content: CatalogItemSchema,
+    })
+    .strict(),
+])
+
+export const CatalogSearchSuggestionsResponseSchema = z
+  .object({
+    term: z.string(),
+    storefront: StorefrontSchema,
+    suggestions: z.array(CatalogSearchSuggestionSchema),
+  })
+  .strict()
+  .openapi('CatalogSearchSuggestionsResponse')
 
 const EditorialNotesSchema = z
   .object({
@@ -716,6 +871,18 @@ export type CatalogBatchRequest = z.infer<typeof CatalogBatchRequestSchema>
 export type CatalogBatchResponse = z.infer<typeof CatalogBatchResponseSchema>
 export type CatalogBatchItemResult = z.infer<typeof CatalogBatchItemResultSchema>
 export type CatalogCollectionName = z.infer<typeof CatalogCollectionNameSchema>
+export type CatalogSearchQuery = z.infer<typeof CatalogSearchQuerySchema>
+export type CatalogSearchResponse = z.infer<typeof CatalogSearchResponseSchema>
+export type CatalogSearchResultGroup = z.infer<typeof CatalogSearchResultGroupSchema>
+export type CatalogSearchHintsQuery = z.infer<typeof CatalogSearchHintsQuerySchema>
+export type CatalogSearchHintsResponse = z.infer<typeof CatalogSearchHintsResponseSchema>
+export type CatalogSearchSuggestion = z.infer<typeof CatalogSearchSuggestionSchema>
+export type CatalogSearchSuggestionKind = z.infer<typeof CatalogSearchSuggestionKindSchema>
+export type CatalogSearchSuggestionsQuery = z.infer<typeof CatalogSearchSuggestionsQuerySchema>
+export type CatalogSearchSuggestionsResponse = z.infer<
+  typeof CatalogSearchSuggestionsResponseSchema
+>
+export type CatalogSearchType = z.infer<typeof CatalogSearchTypeSchema>
 export type ArtistCollectionName = z.infer<typeof ArtistCollectionNameSchema>
 export type AlbumCollectionName = z.infer<typeof AlbumCollectionNameSchema>
 export type PlaylistCollectionName = z.infer<typeof PlaylistCollectionNameSchema>
