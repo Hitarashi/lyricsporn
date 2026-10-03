@@ -46,7 +46,7 @@ import {
 } from './catalog-contract'
 import { ArtworkSchema, DEFAULT_LYRICS_FORMATS } from './contract'
 import { createLyricsOutput } from './lyrics-formats'
-import { mapTrack, toApiJson } from './service'
+import { mapTrack, toApiJson } from './track-mapping'
 
 const RESOURCE_TYPES = {
   song: 'songs',

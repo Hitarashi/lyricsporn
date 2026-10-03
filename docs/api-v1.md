@@ -5,32 +5,7 @@ The API is public and does not require an API key.
 
 Apple Music supplies catalog metadata and artwork. Lyrics requests use every provider configured in the lyrics repository. Artwork responses contain Apple CDN URLs; clients fetch the image bytes from Apple.
 
-## Lyrics lookup
-
-`GET /api/v1/lookup` accepts one lookup. `POST /api/v1/lookup` accepts up to 10 independent lookups and returns one ordered result group for each input.
-
-Choose one identifier (`isrc`, `appleId`, or `appleLink`), or provide both `title` and `artist`. Search accepts an optional `album`. Identifier lookups accept optional title, artist, and album hints.
-
-```sh
-curl 'https://lyricsporn.netlify.app/api/v1/lookup?isrc=USRC17607839&include=track,artwork,lyrics&formats=json,ttml'
-```
-
-```sh
-curl 'https://lyricsporn.netlify.app/api/v1/lookup' \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "include": ["track", "artwork", "lyrics"],
-    "lyrics": { "formats": ["json", "ttml", "elrc"] },
-    "lookups": [
-      { "lookup": { "isrc": "USRC17607839" } },
-      { "lookup": { "title": "Dreams", "artist": "Fleetwood Mac", "album": "Rumours" }, "limit": 2 }
-    ]
-  }'
-```
-
-Search returns 5 Apple Music matches by default and accepts 1–10. Request-wide `include`, `lyrics`, and `limit` values are defaults; each item can override them. Each result reports `matched`, `not_found`, or `error` independently.
-
-Include sections are `track`, `artwork`, `lyrics`, and `appleCatalog`. Lyrics output can include normalized `json`, generated `ttml`, and generated `elrc`. Each requested format reports whether it is available; eLRC needs word-level timing.
+Track, artist, album, playlist, and artwork routes accept Apple Music catalog IDs. Track lyrics are requested through the track detail or queue routes; the API does not resolve ISRCs, Apple links, or title and artist searches.
 
 ## Track detail
 

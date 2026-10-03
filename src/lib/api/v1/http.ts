@@ -1,7 +1,7 @@
 import type { ZodIssue } from 'zod'
-import type { LookupError } from './contract'
+import type { ApiError } from './contract'
 
-function mapIssues(issues: ZodIssue[]): NonNullable<LookupError['issues']> {
+function mapIssues(issues: ZodIssue[]): NonNullable<ApiError['issues']> {
   return issues.map((issue) => ({
     path: issue.path.map(String).join('.'),
     message: issue.message,
@@ -9,20 +9,10 @@ function mapIssues(issues: ZodIssue[]): NonNullable<LookupError['issues']> {
 }
 
 export function invalidRequestResponse(issues: ZodIssue[]): Response {
-  const error: LookupError = {
+  const error: ApiError = {
     code: 'invalid_request',
     message: 'The request is invalid.',
     issues: mapIssues(issues),
-  }
-
-  return Response.json({ error }, { status: 400 })
-}
-
-export function invalidLookupResponse(path: string, message: string): Response {
-  const error: LookupError = {
-    code: 'invalid_lookup',
-    message: 'One or more lookup values are invalid.',
-    issues: [{ path, message }],
   }
 
   return Response.json({ error }, { status: 400 })

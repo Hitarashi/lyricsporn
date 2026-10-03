@@ -1,11 +1,6 @@
-import { createServerFn } from '@tanstack/react-start'
-
 const APPLE_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 const TOKEN_CACHE_MS = 24 * 60 * 60 * 1000
-const STOREFRONT_FALLBACKS = ['jp', 'gb', 'in', 'ca', 'de', 'fr', 'au']
-const TRACK_ID_PATTERN = /^\d{1,20}$/
-const ISRC_PATTERN = /^[A-Z]{2}[A-Z0-9]{3}\d{7}$/
 
 export type AppleJsonValue =
   | string
@@ -78,17 +73,6 @@ export interface AppleCatalogResponse extends Record<string, AppleJsonValue | un
   results?: Record<string, AppleJsonValue | undefined> & {
     songs?: Record<string, AppleJsonValue | undefined> & { data?: AppleCatalogResource[] }
   }
-}
-
-export type AppleCatalogLookupInput =
-  | { type: 'appleTrackId'; value: string; storefront?: string }
-  | { type: 'isrc'; value: string; storefront?: string }
-  | { type: 'search'; title: string; artist: string; album?: string; storefront?: string }
-
-export interface AppleCatalogLookupResult {
-  storefront: string
-  response: AppleCatalogResponse
-  songs: AppleCatalogResource[]
 }
 
 export type AppleCatalogResourceType = 'songs' | 'artists' | 'albums' | 'playlists'
@@ -268,22 +252,6 @@ async function fetchAmp(url: URL): Promise<AppleCatalogResponse | null> {
   return payload as AppleCatalogResponse
 }
 
-function storefrontAttempts(storefront: string): string[] {
-  return [
-    storefront,
-    ...(storefront === 'us' ? [] : ['us']),
-    ...STOREFRONT_FALLBACKS.filter((value) => value !== storefront),
-  ]
-}
-
-function songsFromResponse(response: AppleCatalogResponse): AppleCatalogResource[] {
-  const directData = response.data
-  if (Array.isArray(directData)) return directData
-
-  const searchData = response.results?.songs?.data
-  return Array.isArray(searchData) ? searchData : []
-}
-
 function catalogUrl(path: string): URL {
   return new URL(`https://amp-api.music.apple.com/v1/catalog/${path}`)
 }
@@ -423,113 +391,3 @@ export async function fetchAppleCatalogCollectionServer(
   if (collection.kind === 'view') url.searchParams.set('with', 'attributes')
   return fetchAmp(url)
 }
-
-async function requestForStorefront(
-  input: AppleCatalogLookupInput,
-  storefront: string,
-  limit: number,
-  includeRelations: boolean,
-): Promise<AppleCatalogResponse | null> {
-  if (input.type === 'appleTrackId') {
-    const url = catalogUrl(`${storefront}/songs/${encodeURIComponent(input.value)}`)
-    if (includeRelations) url.searchParams.set('include', 'albums,artists')
-    return fetchAmp(url)
-  }
-
-  if (input.type === 'isrc') {
-    const url = catalogUrl(`${storefront}/songs`)
-    url.searchParams.set('filter[isrc]', input.value)
-    url.searchParams.set('limit', String(limit))
-    if (includeRelations) url.searchParams.set('include', 'albums,artists')
-    return fetchAmp(url)
-  }
-
-  const url = catalogUrl(`${storefront}/search`)
-  url.searchParams.set('term', [input.title, input.artist, input.album].filter(Boolean).join(' '))
-  url.searchParams.set('types', 'songs')
-  url.searchParams.set('limit', String(limit))
-  return fetchAmp(url)
-}
-
-async function lookupAppleCatalog(
-  input: AppleCatalogLookupInput,
-  limit = 5,
-  includeRelations = false,
-): Promise<AppleCatalogLookupResult | null> {
-  let emptyResult: AppleCatalogLookupResult | null = null
-
-  for (const storefront of storefrontAttempts(input.storefront ?? 'us')) {
-    const response = await requestForStorefront(input, storefront, limit, includeRelations)
-    if (!response) continue
-
-    const songs = songsFromResponse(response)
-    if (songs.length > 0) return { storefront, response, songs: songs.slice(0, limit) }
-    emptyResult = { storefront, response, songs }
-  }
-
-  return emptyResult
-}
-
-export async function lookupAppleCatalogServer(
-  input: AppleCatalogLookupInput,
-  options: { limit?: number; includeRelations?: boolean } = {},
-): Promise<AppleCatalogLookupResult | null> {
-  const validatedInput = validateLookupInput(input)
-  const limit = options.limit ?? 5
-
-  if (!Number.isInteger(limit) || limit < 1 || limit > 10) {
-    throw new Error('limit must be an integer between 1 and 10')
-  }
-
-  return lookupAppleCatalog(validatedInput, limit, options.includeRelations)
-}
-
-function normalizeStorefront(value: unknown): string {
-  if (value === undefined || value === null || value === '') return 'us'
-  if (typeof value !== 'string' || !/^[a-z]{2}$/i.test(value.trim())) {
-    throw new Error('storefront must be a two-letter country code')
-  }
-  return value.trim().toLowerCase()
-}
-
-function validateLookupInput(input: unknown): AppleCatalogLookupInput {
-  if (!isRecord(input)) throw new Error('Apple Music catalog lookup input is required')
-
-  const storefront = normalizeStorefront(input.storefront)
-
-  if (input.type === 'appleTrackId') {
-    if (typeof input.value !== 'string' || !TRACK_ID_PATTERN.test(input.value.trim())) {
-      throw new Error('value must be a numeric Apple Music track ID')
-    }
-    return { type: 'appleTrackId', value: input.value.trim(), storefront }
-  }
-
-  if (input.type === 'isrc') {
-    const value =
-      typeof input.value === 'string' ? input.value.replace(/[\s-]/g, '').toUpperCase() : ''
-    if (!ISRC_PATTERN.test(value)) throw new Error('value must be a valid ISRC')
-    return { type: 'isrc', value, storefront }
-  }
-
-  if (input.type === 'search') {
-    const title = typeof input.title === 'string' ? input.title.normalize('NFKC').trim() : ''
-    const artist = typeof input.artist === 'string' ? input.artist.normalize('NFKC').trim() : ''
-    const album = typeof input.album === 'string' ? input.album.normalize('NFKC').trim() : ''
-
-    if (!title || title.length > 160) throw new Error('title must be between 1 and 160 characters')
-    if (!artist || artist.length > 160) {
-      throw new Error('artist must be between 1 and 160 characters')
-    }
-    if (album.length > 160) throw new Error('album must be at most 160 characters')
-
-    return { type: 'search', title, artist, ...(album ? { album } : {}), storefront }
-  }
-
-  throw new Error('Unsupported Apple Music catalog lookup type')
-}
-
-export const fetchAppleCatalogServerFn = createServerFn({ method: 'GET' })
-  .validator(validateLookupInput)
-  .handler(async ({ data }): Promise<AppleCatalogLookupResult | null> => {
-    return lookupAppleCatalog(data)
-  })

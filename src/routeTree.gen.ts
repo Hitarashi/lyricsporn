@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiDocsRouteImport } from './routes/api/docs'
 import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
-import { Route as ApiV1LookupRouteImport } from './routes/api/v1/lookup'
 import { Route as ApiV1AlbumsAppleIdRouteImport } from './routes/api/v1/albums/$appleId'
 import { Route as ApiV1ArtistsAppleIdRouteImport } from './routes/api/v1/artists/$appleId'
 import { Route as ApiV1AssetsBatchRouteImport } from './routes/api/v1/assets/batch'
@@ -37,11 +36,6 @@ const ApiDocsRoute = ApiDocsRouteImport.update({
 const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
   id: '/api/openapi.json',
   path: '/api/openapi.json',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1LookupRoute = ApiV1LookupRouteImport.update({
-  id: '/api/v1/lookup',
-  path: '/api/v1/lookup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1AlbumsAppleIdRoute = ApiV1AlbumsAppleIdRouteImport.update({
@@ -102,7 +96,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/docs': typeof ApiDocsRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
-  '/api/v1/lookup': typeof ApiV1LookupRoute
   '/api/v1/albums/$appleId': typeof ApiV1AlbumsAppleIdRouteWithChildren
   '/api/v1/artists/$appleId': typeof ApiV1ArtistsAppleIdRouteWithChildren
   '/api/v1/assets/batch': typeof ApiV1AssetsBatchRoute
@@ -118,7 +111,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/docs': typeof ApiDocsRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
-  '/api/v1/lookup': typeof ApiV1LookupRoute
   '/api/v1/albums/$appleId': typeof ApiV1AlbumsAppleIdRouteWithChildren
   '/api/v1/artists/$appleId': typeof ApiV1ArtistsAppleIdRouteWithChildren
   '/api/v1/assets/batch': typeof ApiV1AssetsBatchRoute
@@ -135,7 +127,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/api/docs': typeof ApiDocsRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
-  '/api/v1/lookup': typeof ApiV1LookupRoute
   '/api/v1/albums/$appleId': typeof ApiV1AlbumsAppleIdRouteWithChildren
   '/api/v1/artists/$appleId': typeof ApiV1ArtistsAppleIdRouteWithChildren
   '/api/v1/assets/batch': typeof ApiV1AssetsBatchRoute
@@ -153,7 +144,6 @@ export interface FileRouteTypes {
     | '/'
     | '/api/docs'
     | '/api/openapi.json'
-    | '/api/v1/lookup'
     | '/api/v1/albums/$appleId'
     | '/api/v1/artists/$appleId'
     | '/api/v1/assets/batch'
@@ -169,7 +159,6 @@ export interface FileRouteTypes {
     | '/'
     | '/api/docs'
     | '/api/openapi.json'
-    | '/api/v1/lookup'
     | '/api/v1/albums/$appleId'
     | '/api/v1/artists/$appleId'
     | '/api/v1/assets/batch'
@@ -185,7 +174,6 @@ export interface FileRouteTypes {
     | '/'
     | '/api/docs'
     | '/api/openapi.json'
-    | '/api/v1/lookup'
     | '/api/v1/albums/$appleId'
     | '/api/v1/artists/$appleId'
     | '/api/v1/assets/batch'
@@ -202,7 +190,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiDocsRoute: typeof ApiDocsRoute
   ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
-  ApiV1LookupRoute: typeof ApiV1LookupRoute
   ApiV1AlbumsAppleIdRoute: typeof ApiV1AlbumsAppleIdRouteWithChildren
   ApiV1ArtistsAppleIdRoute: typeof ApiV1ArtistsAppleIdRouteWithChildren
   ApiV1AssetsBatchRoute: typeof ApiV1AssetsBatchRoute
@@ -233,13 +220,6 @@ declare module '@tanstack/react-router' {
       path: '/api/openapi.json'
       fullPath: '/api/openapi.json'
       preLoaderRoute: typeof ApiOpenapiDotjsonRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/lookup': {
-      id: '/api/v1/lookup'
-      path: '/api/v1/lookup'
-      fullPath: '/api/v1/lookup'
-      preLoaderRoute: typeof ApiV1LookupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/albums/$appleId': {
@@ -357,7 +337,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiDocsRoute: ApiDocsRoute,
   ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
-  ApiV1LookupRoute: ApiV1LookupRoute,
   ApiV1AlbumsAppleIdRoute: ApiV1AlbumsAppleIdRouteWithChildren,
   ApiV1ArtistsAppleIdRoute: ApiV1ArtistsAppleIdRouteWithChildren,
   ApiV1AssetsBatchRoute: ApiV1AssetsBatchRoute,
