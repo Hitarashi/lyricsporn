@@ -61,6 +61,7 @@ import { ArtworkSchema, DEFAULT_LYRICS_FORMATS } from './contract'
 import { createLyricsOutput } from './lyrics-formats'
 import { fetchMotionArtworkForReferencesServer } from './motion-artwork'
 import { mapTrack, toApiJson } from './track-mapping'
+import { fetchTrackResourceWithFallback, getTrackStorefrontCandidates } from './track-storefront'
 
 const RESOURCE_TYPES = {
   song: 'songs',
@@ -164,6 +165,68 @@ function indexCatalogResults(results: AppleCatalogResourceResult[]) {
   }
 
   return { byKey, failedKeys }
+}
+
+async function resolveTrackQueueCatalogResults(
+  references: AppleCatalogResourceReference[],
+  initialResults: AppleCatalogResourceResult[],
+) {
+  const initial = indexCatalogResults(initialResults)
+  const byRequestKey = new Map(initial.byKey)
+  const failedRequestKeys = new Set(initial.failedKeys)
+  const unresolved = new Map<string, AppleCatalogResourceReference>()
+
+  for (const reference of references) {
+    const key = resourceKey(reference.storefront, reference.type, reference.id)
+    if (failedRequestKeys.has(key) || byRequestKey.get(key)?.resource) continue
+    unresolved.set(key, reference)
+  }
+
+  for (let attempt = 1; unresolved.size > 0; attempt += 1) {
+    const retryReferences: AppleCatalogResourceReference[] = []
+    const storefrontByRequestKey = new Map<string, string>()
+
+    for (const [requestKey, reference] of unresolved) {
+      const storefront = getTrackStorefrontCandidates(reference.storefront)[attempt]
+      if (!storefront) {
+        unresolved.delete(requestKey)
+        continue
+      }
+      storefrontByRequestKey.set(requestKey, storefront)
+      retryReferences.push({ ...reference, storefront })
+    }
+
+    if (retryReferences.length === 0) break
+
+    let retryResults: AppleCatalogResourceResult[]
+    try {
+      retryResults = await fetchAppleCatalogResourcesServer(retryReferences)
+    } catch {
+      for (const requestKey of storefrontByRequestKey.keys()) {
+        failedRequestKeys.add(requestKey)
+        unresolved.delete(requestKey)
+      }
+      break
+    }
+
+    const retryIndex = indexCatalogResults(retryResults)
+    for (const [requestKey, storefront] of storefrontByRequestKey) {
+      const reference = unresolved.get(requestKey)
+      if (!reference) continue
+      const retryKey = resourceKey(storefront, reference.type, reference.id)
+      const result = retryIndex.byKey.get(retryKey)
+
+      if (retryIndex.failedKeys.has(retryKey)) {
+        failedRequestKeys.add(requestKey)
+        unresolved.delete(requestKey)
+      } else if (result?.resource) {
+        byRequestKey.set(requestKey, result)
+        unresolved.delete(requestKey)
+      }
+    }
+  }
+
+  return { byRequestKey, failedRequestKeys }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -939,21 +1002,22 @@ export async function getTrackDetailServer(options: {
     ...(options.include.includes('artists') ? ['artists'] : []),
     ...(options.include.includes('album') ? ['albums'] : []),
   ]
-  const result = await fetchAppleCatalogResourceServer(
+  const result = await fetchTrackResourceWithFallback(
     { type: 'songs', id: options.appleId, storefront: options.storefront },
     { include: relationIncludes },
   )
-  const resource = result?.resource
-  if (!resource) return null
+  if (!result?.resource) return null
+  const resource = result.resource
+  const storefront = result.storefront
 
   const metadata = mapTrack(resource)
   const attributes = resource.attributes ?? {}
   const motionArtwork = options.include.includes('motionArtwork')
     ? ((
         await fetchMotionArtworkForReferencesServer([
-          { type: 'songs', id: options.appleId, storefront: options.storefront },
+          { type: 'songs', id: options.appleId, storefront },
         ])
-      ).get(resourceKey(options.storefront, 'songs', options.appleId)) ?? null)
+      ).get(resourceKey(storefront, 'songs', options.appleId)) ?? null)
     : undefined
   const artwork = options.include.includes('artwork')
     ? resizedArtwork(attributes.artwork, options.artworkSize)
@@ -998,10 +1062,11 @@ export async function getTrackDetailServer(options: {
   }
 
   return TrackDetailResponseSchema.parse({
+    storefront,
     track,
     ...(lyrics ? { lyrics } : {}),
-    ...(options.include.includes('appleCatalog') && result
-      ? { appleCatalog: { storefront: result.storefront, response: toApiJson(result.response) } }
+    ...(options.include.includes('appleCatalog')
+      ? { appleCatalog: { storefront, response: toApiJson(result.response) } }
       : {}),
   })
 }
@@ -1016,6 +1081,7 @@ function resolvedQueueIncludes(
 
 function toQueueTrack(
   resource: AppleCatalogResource,
+  storefront: string,
   include: QueueInclude[],
   artworkSize: number,
   lyrics?: ReturnType<typeof createLyricsOutput>,
@@ -1027,6 +1093,7 @@ function toQueueTrack(
     : undefined
   const base = {
     id: resource.id,
+    storefront,
     ...(getString(attributes.name) ? { title: getString(attributes.name) } : {}),
     ...(getString(attributes.artistName) ? { artist: getString(attributes.artistName) } : {}),
     ...(getString(attributes.albumName) ? { album: getString(attributes.albumName) } : {}),
@@ -1087,11 +1154,17 @@ export async function lookupTrackQueueServer(
     }
   }
 
-  const { byKey, failedKeys } = indexCatalogResults(fetched)
+  const { byRequestKey, failedRequestKeys } = await resolveTrackQueueCatalogResults(
+    references,
+    fetched,
+  )
   const motionReferences = request.items.flatMap((item) => {
     const include = resolvedQueueIncludes(item.include, request.include)
     if (!include.includes('motionArtwork')) return []
-    const storefront = item.storefront ?? request.storefront ?? 'us'
+    const requestedStorefront = item.storefront ?? request.storefront ?? 'us'
+    const result = byRequestKey.get(resourceKey(requestedStorefront, 'songs', item.appleId))
+    if (!result?.resource) return []
+    const storefront = result.storefront
     return [{ type: 'songs' as const, id: item.appleId, storefront }]
   })
   const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
@@ -1101,7 +1174,7 @@ export async function lookupTrackQueueServer(
     try {
       const storefront = item.storefront ?? request.storefront ?? 'us'
       const key = resourceKey(storefront, 'songs', item.appleId)
-      if (failedKeys.has(key)) {
+      if (failedRequestKeys.has(key)) {
         return {
           index,
           status: 'error' as const,
@@ -1109,20 +1182,23 @@ export async function lookupTrackQueueServer(
           message: 'Apple Music could not return this track.',
         }
       }
-      const resource = byKey.get(key)?.resource
-      if (!resource) return { index, status: 'not_found' as const, appleId: item.appleId }
+      const catalogResult = byRequestKey.get(key)
+      if (!catalogResult?.resource)
+        return { index, status: 'not_found' as const, appleId: item.appleId }
+      const resource = catalogResult.resource
+      const resolvedStorefront = catalogResult.storefront
 
       const include = resolvedQueueIncludes(item.include, request.include)
       const artworkSize = item.artworkSize ?? request.artworkSize ?? DEFAULT_ARTWORK_SIZE
       const motionArtwork = include.includes('motionArtwork')
-        ? (motionByKey.get(resourceKey(storefront, 'songs', item.appleId)) ?? null)
+        ? (motionByKey.get(resourceKey(resolvedStorefront, 'songs', item.appleId)) ?? null)
         : undefined
       let lyrics: ReturnType<typeof createLyricsOutput> | undefined
       if (include.includes('lyrics')) {
         const track = mapTrack(resource)
         const formats = item.lyrics?.formats ??
           request.lyrics?.formats ?? [...DEFAULT_LYRICS_FORMATS]
-        const lyricsKey = JSON.stringify([resource.id, formats])
+        const lyricsKey = JSON.stringify([resolvedStorefront, resource.id, formats])
         let promise = lyricPromises.get(lyricsKey)
         if (!promise) {
           const lookup: LyricsLookup = {
@@ -1147,7 +1223,14 @@ export async function lookupTrackQueueServer(
       return {
         index,
         status: 'matched' as const,
-        track: toQueueTrack(resource, include, artworkSize, lyrics, motionArtwork),
+        track: toQueueTrack(
+          resource,
+          resolvedStorefront,
+          include,
+          artworkSize,
+          lyrics,
+          motionArtwork,
+        ),
       }
     } catch {
       return {

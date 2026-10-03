@@ -32,6 +32,14 @@ export const StorefrontSchema = z
   .default('us')
   .openapi({ description: 'Two-letter Apple Music storefront code.', example: 'us' })
 
+const ResolvedTrackStorefrontSchema = z
+  .string()
+  .regex(/^[a-z]{2}$/)
+  .openapi({
+    description: 'The Apple Music storefront that supplied this track after fallback resolution.',
+    example: 'gb',
+  })
+
 export const ArtworkSizeSchema = z
   .number()
   .int()
@@ -677,6 +685,7 @@ export const TrackDetailSchema = TrackSchema.extend({
 
 export const TrackDetailResponseSchema = z
   .object({
+    storefront: ResolvedTrackStorefrontSchema,
     track: TrackDetailSchema,
     lyrics: LyricsOutputSchema.optional(),
     appleCatalog: z
@@ -734,6 +743,7 @@ export const TrackBatchRequestSchema = z
 export const QueueTrackSchema = z
   .object({
     id: TrackAppleIdSchema,
+    storefront: ResolvedTrackStorefrontSchema,
     title: z.string().optional(),
     artist: z.string().optional(),
     album: z.string().optional(),

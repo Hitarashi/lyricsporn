@@ -51,7 +51,7 @@ Hints return Apple’s suggested query strings. Suggestions can return query ter
 
 ## Track detail
 
-`GET /api/v1/tracks/{appleId}` returns normalized track metadata. `include` defaults to `artwork`; add `motionArtwork`, `artists`, `album`, `lyrics`, or `appleCatalog` when a screen needs those sections. Track motion artwork falls back to its album when Apple does not return a song-level video. When requested, `motionArtwork` is `null` if no video is available. `appleCatalog` returns the raw Apple response for that request. Lyrics format defaults to `json`.
+`GET /api/v1/tracks/{appleId}` returns normalized track metadata. The requested storefront is tried first; if Apple has no matching track there, the API tries `us`, `gb`, `ca`, `au`, `in`, and `jp`, skipping the storefront already tried. When `storefront` is omitted, `us` is the preferred storefront. The response's top-level `storefront` reports the catalog used. Fallback occurs only when Apple returns no resource; upstream errors are returned without trying another storefront. `include` defaults to `artwork`; add `motionArtwork`, `artists`, `album`, `lyrics`, or `appleCatalog` when a screen needs those sections. Track motion artwork falls back to its album when Apple does not return a song-level video. When requested, `motionArtwork` is `null` if no video is available. `appleCatalog` returns the raw Apple response for that request. Lyrics format defaults to `json`.
 
 ```sh
 curl 'https://lyricsporn.netlify.app/api/v1/tracks/1082506273?include=artwork,motionArtwork,artists,album,lyrics&formats=json,ttml'
@@ -61,7 +61,7 @@ The `track` object contains the Apple song ID and type, title, artist, album, al
 
 ## Queue hydration
 
-`POST /api/v1/tracks/batch` fetches up to 50 Apple song IDs for a playback queue. Apple metadata is requested in batches; duplicate queue entries and input order are preserved. Core queue fields are always returned: title, artist, album, and duration when available. Artwork is included by default. `identifiers`, `release`, and `lyrics` add ISRC, release date, or lyrics.
+`POST /api/v1/tracks/batch` fetches up to 50 Apple song IDs for a playback queue. Apple metadata is requested in batches; missing items are retried in storefront batches across `us`, `gb`, `ca`, `au`, `in`, and `jp`. Duplicate queue entries and input order are preserved. Each matched track reports its resolved `storefront`. Core queue fields are always returned: title, artist, album, and duration when available. Artwork is included by default. `identifiers`, `release`, and `lyrics` add ISRC, release date, or lyrics.
 
 ```json
 {

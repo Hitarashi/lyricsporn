@@ -116,7 +116,7 @@ registry.registerPath({
   tags: ['Tracks'],
   summary: 'Get full track details',
   description:
-    'Fetch one Apple Music song by catalog ID. Core track metadata is returned directly. Artwork, motion artwork, linked artist and album resources, lyrics, and the raw Apple response can be selected with include. A song uses its album motion artwork when Apple does not provide a song-level video. Lyrics are resolved through all supported lyrics providers.',
+    'Fetch one Apple Music song by catalog ID. The requested storefront is tried first (default: us); if the track is missing, the lookup tries us, gb, ca, au, in, and jp. The response storefront identifies where it was found. Core track metadata is returned directly. Artwork, motion artwork, linked artist and album resources, lyrics, and the raw Apple response can be selected with include. A song uses its album motion artwork when Apple does not provide a song-level video. Lyrics are resolved through all supported lyrics providers.',
   request: {
     params: z.object({ appleId: TrackAppleIdSchema }),
     query: TrackDetailQuerySchema,
@@ -147,7 +147,7 @@ registry.registerPath({
   tags: ['Tracks'],
   summary: 'Hydrate a playback queue',
   description:
-    'Resolve up to 50 Apple song IDs in one Apple catalog batch request. Results preserve input order and duplicate queue entries. The default projection contains title, artist, album, duration, and artwork. Request `motionArtwork` only for items or screens that need Apple video URLs. Each item can override request-wide includes and artwork size. Lyrics are fetched only for items that request them.',
+    'Resolve up to 50 Apple song IDs in batched Apple catalog requests. Results preserve input order and duplicate queue entries. Each requested storefront is tried first; missing tracks are retried across us, gb, ca, au, in, and jp, and each matched track reports the storefront that supplied it. The default projection contains title, artist, album, duration, and artwork. Request `motionArtwork` only for items or screens that need Apple video URLs. Each item can override request-wide includes and artwork size. Lyrics are fetched only for items that request them.',
   request: {
     body: {
       required: true,
