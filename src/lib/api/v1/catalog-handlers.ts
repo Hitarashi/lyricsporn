@@ -154,6 +154,9 @@ export async function handleCatalogSearchGet(request: Request): Promise<Response
     return invalidRequestResponse(prefixIssuePath('types', parsedTypes.issues))
   if (parsedTypes.data?.length === 0)
     return invalidValue('types', 'At least one Apple catalog type must be selected.')
+  const parsedInclude = parseCsvList(parsedQuery.data.include, z.literal('motionArtwork'))
+  if (!parsedInclude.success)
+    return invalidRequestResponse(prefixIssuePath('include', parsedInclude.issues))
 
   try {
     const data = await getCatalogSearchServer({
@@ -163,6 +166,7 @@ export async function handleCatalogSearchGet(request: Request): Promise<Response
       limit: parsedQuery.data.limit,
       offset: parsedQuery.data.offset,
       artworkSize: parsedQuery.data.artworkSize,
+      motionArtwork: parsedInclude.data?.includes('motionArtwork') ?? false,
     })
     return catalogJson(data)
   } catch {
@@ -199,6 +203,9 @@ export async function handleCatalogSearchSuggestionsGet(request: Request): Promi
     return invalidValue('kinds', 'At least one suggestion kind must be selected.')
   if (parsedTypes.data?.length === 0)
     return invalidValue('types', 'At least one Apple catalog type must be selected.')
+  const parsedInclude = parseCsvList(parsedQuery.data.include, z.literal('motionArtwork'))
+  if (!parsedInclude.success)
+    return invalidRequestResponse(prefixIssuePath('include', parsedInclude.issues))
   const kinds = parsedKinds.data ?? ['terms', 'topResults']
   const types =
     parsedTypes.data ??
@@ -212,6 +219,7 @@ export async function handleCatalogSearchSuggestionsGet(request: Request): Promi
       ...(types ? { types } : {}),
       limit: parsedQuery.data.limit,
       artworkSize: parsedQuery.data.artworkSize,
+      motionArtwork: parsedInclude.data?.includes('motionArtwork') ?? false,
     })
     return catalogJson(data)
   } catch {
@@ -239,6 +247,9 @@ export async function handleCatalogCollectionGet(
   if (query.error) return query.error
   const parsedQuery = CatalogCollectionQuerySchema.safeParse(query.values)
   if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
+  const parsedInclude = parseCsvList(parsedQuery.data.include, z.literal('motionArtwork'))
+  if (!parsedInclude.success)
+    return invalidRequestResponse(prefixIssuePath('include', parsedInclude.issues))
 
   try {
     const data = await getCatalogCollectionServer({
@@ -249,6 +260,7 @@ export async function handleCatalogCollectionGet(
       limit: parsedQuery.data.limit,
       offset: parsedQuery.data.offset,
       artworkSize: parsedQuery.data.artworkSize,
+      motionArtwork: parsedInclude.data?.includes('motionArtwork') ?? false,
     })
     if (!data) return resourceNotFoundResponse(`${type} ${idResult.id}`)
     return catalogJson(data)

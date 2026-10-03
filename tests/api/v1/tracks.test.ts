@@ -4,6 +4,7 @@ import { Route as TrackDetailRoute } from '@/routes/api/v1/tracks/$appleId'
 import { Route as TrackBatchRoute } from '@/routes/api/v1/tracks/batch'
 
 import { mockAppleCatalog, restoreFetch, routeHandler } from '../../helpers/apple-catalog'
+import { appleEditorialVideo, expectedMotionArtwork } from '../../helpers/apple-motion-artwork'
 
 const artwork = {
   url: 'https://images.test/track/{w}x{h}bb.jpg',
@@ -81,6 +82,7 @@ describe('track detail API', () => {
       artists: [{ id: 'artist.1', type: 'artist', name: 'Example Artist' }],
       albumResource: { id: 'album.1', type: 'album', name: 'Example Album' },
     })
+    expect(body.track).not.toHaveProperty('motionArtwork')
     expect(body.appleCatalog).toMatchObject({
       storefront: 'us',
       response: { data: [{ id: '1082506273', type: 'songs' }] },
@@ -153,6 +155,77 @@ describe('track detail API', () => {
     expect(notFound.status).toBe(404)
     expect(failure.status).toBe(500)
   })
+
+  it('opts into album motion artwork when Apple has no song-level video', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/songs/1082506273')) {
+        return Response.json({ data: [song('1082506273')] })
+      }
+      if (url.searchParams.get('ids[songs]') === '1082506273') {
+        return Response.json({
+          data: [
+            {
+              ...song('1082506273', {
+                url: 'https://music.apple.com/us/album/example-album/234?i=1082506273',
+              }),
+              relationships: { albums: { data: [{ id: '234', type: 'albums' }] } },
+            },
+          ],
+        })
+      }
+      if (url.searchParams.get('ids[albums]') === '234') {
+        return Response.json({
+          data: [
+            {
+              id: '234',
+              type: 'albums',
+              attributes: { editorialVideo: appleEditorialVideo },
+            },
+          ],
+        })
+      }
+      return Response.json({ data: [] })
+    })
+
+    const response = await routeHandler(
+      TrackDetailRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/tracks/1082506273?include=motionArtwork',
+      ),
+      params: { appleId: '1082506273' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.track.motionArtwork).toEqual(expectedMotionArtwork)
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
+    expect(appleRequests.some((url) => url.searchParams.get('ids[albums]') === '234')).toBe(true)
+  })
+
+  it('keeps the track response successful when optional motion metadata cannot be fetched', async () => {
+    mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/songs/123')) return Response.json({ data: [song('123')] })
+      if (url.searchParams.get('extend') === 'editorialVideo')
+        return new Response(null, { status: 503 })
+      return Response.json({ data: [] })
+    })
+
+    const response = await routeHandler(
+      TrackDetailRoute,
+      'GET',
+    )({
+      request: new Request('https://lyricsporn.test/api/v1/tracks/123?include=motionArtwork'),
+      params: { appleId: '123' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.track.motionArtwork).toBeNull()
+  })
 })
 
 describe('queue batch API', () => {
@@ -199,6 +272,7 @@ describe('queue batch API', () => {
       releaseDate: '2024-02-14',
       artwork: { width: 300, height: 300 },
     })
+    expect(body.items[0].track).not.toHaveProperty('motionArtwork')
     expect(body.items[2].track).toMatchObject({
       id: '102',
       isrc: 'USRC17607839',
@@ -250,5 +324,50 @@ describe('queue batch API', () => {
     expect(malformed.status).toBe(400)
     expect(invalidItem.status).toBe(400)
     expect(appleRequests).toHaveLength(1)
+  })
+
+  it('fetches motion artwork only for queue items whose effective include requests it', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      const songIds = url.searchParams.get('ids[songs]')?.split(',') ?? []
+      const requestedIds =
+        url.searchParams.get('extend') === 'editorialVideo'
+          ? songIds.filter((id) => id === '101')
+          : songIds
+      return Response.json({
+        data: requestedIds.map((id) =>
+          song(
+            id,
+            url.searchParams.get('extend') === 'editorialVideo'
+              ? { editorialVideo: appleEditorialVideo }
+              : {},
+          ),
+        ),
+      })
+    })
+
+    const response = await routeHandler(
+      TrackBatchRoute,
+      'POST',
+    )({
+      request: new Request('https://lyricsporn.test/api/v1/tracks/batch', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          include: ['artwork', 'motionArtwork'],
+          items: [{ appleId: '101' }, { appleId: '102', include: ['artwork'] }],
+        }),
+      }),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items[0].track.motionArtwork).toEqual(expectedMotionArtwork)
+    expect(body.items[1].track).not.toHaveProperty('motionArtwork')
+    expect(
+      appleRequests
+        .find((url) => url.searchParams.get('extend') === 'editorialVideo')
+        ?.searchParams.get('ids[songs]'),
+    ).toBe('101')
   })
 })

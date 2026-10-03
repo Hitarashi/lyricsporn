@@ -4,6 +4,7 @@ import { Route as AlbumRoute } from '@/routes/api/v1/albums/$appleId'
 import { Route as AlbumCollectionRoute } from '@/routes/api/v1/albums/$appleId/collections/$collection'
 
 import { mockAppleCatalog, restoreFetch, routeHandler } from '../../helpers/apple-catalog'
+import { appleEditorialVideo, expectedMotionArtwork } from '../../helpers/apple-motion-artwork'
 
 afterEach(restoreFetch)
 
@@ -163,5 +164,81 @@ describe('album API', () => {
     })
     expect(appleRequests[0]?.searchParams.get('limit')).toBe('5')
     expect(appleRequests).toHaveLength(1)
+  })
+
+  it('returns album motion artwork only when requested', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/albums/12345')) {
+        return Response.json({
+          data: [{ id: '12345', type: 'albums', attributes: { name: 'Example Album' } }],
+        })
+      }
+      if (url.searchParams.get('ids[albums]') === '12345') {
+        return Response.json({
+          data: [
+            {
+              id: '12345',
+              type: 'albums',
+              attributes: { name: 'Example Album', editorialVideo: appleEditorialVideo },
+            },
+          ],
+        })
+      }
+      return Response.json({ data: [] })
+    })
+
+    const response = await routeHandler(
+      AlbumRoute,
+      'GET',
+    )({
+      request: new Request('https://lyricsporn.test/api/v1/albums/12345?include=motionArtwork'),
+      params: { appleId: '12345' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.data.motionArtwork).toEqual(expectedMotionArtwork)
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
+  })
+
+  it('adds requested motion artwork to song items in a collection page', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/albums/12345/tracks')) {
+        return Response.json({
+          data: [{ id: '12346', type: 'songs', attributes: { name: 'Song' } }],
+        })
+      }
+      if (url.searchParams.get('ids[songs]') === '12346') {
+        return Response.json({
+          data: [
+            {
+              id: '12346',
+              type: 'songs',
+              attributes: { name: 'Song', editorialVideo: appleEditorialVideo },
+            },
+          ],
+        })
+      }
+      return Response.json({ data: [] })
+    })
+
+    const response = await routeHandler(
+      AlbumCollectionRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/albums/12345/collections/tracks?include=motionArtwork',
+      ),
+      params: { appleId: '12345', collection: 'tracks' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items[0].motionArtwork).toEqual(expectedMotionArtwork)
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
   })
 })

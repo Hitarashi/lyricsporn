@@ -158,6 +158,31 @@ export const ArtworkSchema = z
       'Apple Music artwork attributes, including its URL template, dimensions, and any additional artwork properties Apple returned.',
   })
 
+const MotionArtworkVariantSchema = z
+  .object({
+    url: z.string().url(),
+    format: z.enum(['hls', 'mp4']).optional(),
+  })
+  .strict()
+  .openapi('MotionArtworkVariant')
+
+export const MotionArtworkSchema = z
+  .object({
+    provider: z.literal('appleMusic'),
+    variants: z
+      .object({
+        default: MotionArtworkVariantSchema.optional(),
+        square: MotionArtworkVariantSchema.optional(),
+        portrait: MotionArtworkVariantSchema.optional(),
+      })
+      .strict(),
+  })
+  .strict()
+  .openapi('MotionArtwork', {
+    description:
+      'Apple Music motion artwork video URLs. The default variant is the preferred source; square and portrait are supplied when available.',
+  })
+
 export const ApiErrorSchema = z
   .object({
     code: z.enum(['invalid_request', 'not_found', 'internal_error']),
@@ -185,6 +210,7 @@ export type ApiError = z.infer<typeof ApiErrorSchema>
 export type ApiErrorResponse = z.infer<typeof ApiErrorResponseSchema>
 export type ApiJsonValue = z.infer<typeof ApiJsonValueSchema>
 export type Artwork = z.infer<typeof ArtworkSchema>
+export type MotionArtwork = z.infer<typeof MotionArtworkSchema>
 export type LyricsJson = z.infer<typeof LyricsJsonSchema>
 export type LyricsLine = z.infer<typeof LyricsLineSchema>
 export type LyricsOutput = z.infer<typeof LyricsOutputSchema>

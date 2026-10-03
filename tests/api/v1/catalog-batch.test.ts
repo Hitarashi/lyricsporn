@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { Route as CatalogBatchRoute } from '@/routes/api/v1/catalog/batch'
 
 import { mockAppleCatalog, restoreFetch, routeHandler } from '../../helpers/apple-catalog'
+import { appleEditorialVideo, expectedMotionArtwork } from '../../helpers/apple-motion-artwork'
 
 afterEach(restoreFetch)
 
@@ -158,6 +159,50 @@ describe('catalog batch API', () => {
     expect(errorResponse.status).toBe(200)
     expect(errorBody.items[0]).toMatchObject({ status: 'error', appleId: '500' })
     expect(appleRequests).toHaveLength(2)
+  })
+
+  it('adds album motion artwork when requested in the batch projection', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      const albumId = url.searchParams.get('ids[albums]')
+      if (!albumId) return Response.json({ data: [] })
+      return Response.json({
+        data: [
+          {
+            id: albumId,
+            type: 'albums',
+            attributes: {
+              name: 'Example Album',
+              ...(url.searchParams.get('extend') === 'editorialVideo'
+                ? { editorialVideo: appleEditorialVideo }
+                : {}),
+            },
+          },
+        ],
+      })
+    })
+
+    const response = await routeHandler(
+      CatalogBatchRoute,
+      'POST',
+    )({
+      request: new Request('https://lyricsporn.test/api/v1/catalog/batch', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          include: { album: ['motionArtwork'] },
+          items: [{ type: 'album', appleId: '12345' }],
+        }),
+      }),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items[0].status).toBe('matched')
+    expect(body.items[0].data.motionArtwork).toEqual(expectedMotionArtwork)
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
   })
 
   it('rejects malformed JSON and invalid catalog batch items', async () => {

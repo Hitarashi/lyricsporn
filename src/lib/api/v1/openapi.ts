@@ -38,7 +38,7 @@ registry.registerPath({
   tags: ['Apple catalog'],
   summary: 'Search the Apple Music catalog',
   description:
-    'Search Apple Music with one free-text term. `types` selects one or more resource groups and defaults to songs. Results are normalized into compact catalog items. Each group can include a proxied `next` URL for its next page.',
+    'Search Apple Music with one free-text term. `types` selects one or more resource groups and defaults to songs. Results are normalized into compact catalog items. Add `include=motionArtwork` to request video URLs for song and album results. Each group can include a proxied `next` URL for its next page.',
   request: {
     query: CatalogSearchQuerySchema,
   },
@@ -90,7 +90,7 @@ registry.registerPath({
   tags: ['Apple catalog'],
   summary: 'Get Apple Music search suggestions',
   description:
-    'Return Apple Music query suggestions, top catalog results, or both. `types` filters top results and has no effect on query term suggestions. If `types` is omitted with `topResults`, the proxy requests songs, albums, artists, and playlists.',
+    'Return Apple Music query suggestions, top catalog results, or both. `types` filters top results and has no effect on query term suggestions. If `types` is omitted with `topResults`, the proxy requests songs, albums, artists, and playlists. Add `include=motionArtwork` to request video URLs for song and album top results.',
   request: {
     query: CatalogSearchSuggestionsQuerySchema,
   },
@@ -116,7 +116,7 @@ registry.registerPath({
   tags: ['Tracks'],
   summary: 'Get full track details',
   description:
-    'Fetch one Apple Music song by catalog ID. Core track metadata is returned directly. Artwork, linked artist and album resources, lyrics, and the raw Apple response can be selected with include. Lyrics are resolved through all supported lyrics providers.',
+    'Fetch one Apple Music song by catalog ID. Core track metadata is returned directly. Artwork, motion artwork, linked artist and album resources, lyrics, and the raw Apple response can be selected with include. A song uses its album motion artwork when Apple does not provide a song-level video. Lyrics are resolved through all supported lyrics providers.',
   request: {
     params: z.object({ appleId: TrackAppleIdSchema }),
     query: TrackDetailQuerySchema,
@@ -147,7 +147,7 @@ registry.registerPath({
   tags: ['Tracks'],
   summary: 'Hydrate a playback queue',
   description:
-    'Resolve up to 50 Apple song IDs in one Apple catalog batch request. Results preserve input order and duplicate queue entries. The default projection contains title, artist, album, duration, and artwork. Each item can override request-wide includes and artwork size. Lyrics are fetched only for items that request them.',
+    'Resolve up to 50 Apple song IDs in one Apple catalog batch request. Results preserve input order and duplicate queue entries. The default projection contains title, artist, album, duration, and artwork. Request `motionArtwork` only for items or screens that need Apple video URLs. Each item can override request-wide includes and artwork size. Lyrics are fetched only for items that request them.',
   request: {
     body: {
       required: true,
@@ -181,7 +181,7 @@ for (const [resource, schema, summary, description] of [
     'albums',
     AlbumSchema,
     'Get album details',
-    'Fetch Apple Music album metadata and optionally its tracks, artists, genres, labels, or relationship views such as appears-on, other versions, related albums, and related videos.',
+    'Fetch Apple Music album metadata and optionally its motion artwork, tracks, artists, genres, labels, or relationship views such as appears-on, other versions, related albums, and related videos.',
   ],
   [
     'playlists',
@@ -234,7 +234,7 @@ for (const resource of ['artists', 'albums', 'playlists'] as const) {
     tags: ['Apple catalog'],
     summary: `Get a paginated ${resource.slice(0, -1)} collection`,
     description:
-      'Fetch one relationship or curated view page from Apple Music. Use the returned page.next URL to continue. Limit and offset let clients request only the data needed for the current screen.',
+      'Fetch one relationship or curated view page from Apple Music. Add `include=motionArtwork` to request video URLs for song or album items in the page. Use the returned page.next URL to continue. Limit and offset let clients request only the data needed for the current screen.',
     request: {
       params: z.object({
         appleId: AppleCatalogIdSchema,
@@ -269,7 +269,7 @@ registry.registerPath({
   tags: ['Apple catalog'],
   summary: 'Fetch mixed artist, album, and playlist details',
   description:
-    'Resolve up to 50 Apple catalog IDs in input order. Base resources are fetched with Apple’s typed multi-ID endpoint. Optional per-type includes and per-item overrides request collections or artist views only when needed.',
+    'Resolve up to 50 Apple catalog IDs in input order. Base resources are fetched with Apple’s typed multi-ID endpoint. Optional per-type includes and per-item overrides request collections, artist views, or album motion artwork only when needed.',
   request: {
     body: {
       required: true,
@@ -298,7 +298,7 @@ registry.registerPath({
   tags: ['Artwork'],
   summary: 'Fetch artwork URLs for mixed Apple resources',
   description:
-    'Resolve artwork for up to 50 songs, artists, albums, or playlists in one Apple catalog batch request. Returns Apple CDN URLs at the requested square size; image bytes are fetched directly by the client.',
+    'Resolve artwork for up to 50 songs, artists, albums, or playlists in one Apple catalog batch request. The optional `motionArtwork` include adds Apple video URLs for songs and albums. Image and video bytes are fetched directly by the client.',
   request: {
     body: {
       required: true,

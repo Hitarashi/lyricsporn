@@ -31,7 +31,8 @@ import type {
   TrackDetailInclude,
   TrackDetailResponse,
 } from './catalog-contract'
-import type { LyricsOutputFormat } from './contract'
+import type { LyricsOutputFormat, MotionArtwork } from './contract'
+import type { MotionArtworkReference } from './motion-artwork'
 
 import {
   AppleCatalogCollectionUnavailableError,
@@ -58,6 +59,7 @@ import {
 } from './catalog-contract'
 import { ArtworkSchema, DEFAULT_LYRICS_FORMATS } from './contract'
 import { createLyricsOutput } from './lyrics-formats'
+import { fetchMotionArtworkForReferencesServer } from './motion-artwork'
 import { mapTrack, toApiJson } from './track-mapping'
 
 const RESOURCE_TYPES = {
@@ -209,7 +211,31 @@ function mapResourceType(type: string): CatalogItem['type'] | undefined {
   return RESOURCE_SINGULAR_TYPES[type]
 }
 
-function mapCatalogItem(resource: AppleCatalogResource, artworkSize: number): CatalogItem | null {
+function getMotionArtworkReference(
+  resource: AppleCatalogResource,
+  storefront: string,
+): MotionArtworkReference | undefined {
+  if (resource.type !== 'songs' && resource.type !== 'albums') return undefined
+  return { type: resource.type, id: resource.id, storefront }
+}
+
+function motionArtworkForResource(
+  resource: AppleCatalogResource,
+  storefront: string,
+  motionByKey: Map<string, MotionArtwork | null>,
+  enabled: boolean,
+): MotionArtwork | null | undefined {
+  if (!enabled) return undefined
+  const reference = getMotionArtworkReference(resource, storefront)
+  if (!reference) return undefined
+  return motionByKey.get(resourceKey(storefront, reference.type, resource.id)) ?? null
+}
+
+function mapCatalogItem(
+  resource: AppleCatalogResource,
+  artworkSize: number,
+  motionArtwork?: MotionArtwork | null,
+): CatalogItem | null {
   const attributes = resource.attributes ?? {}
   const type = mapResourceType(resource.type)
   if (!type) return null
@@ -229,6 +255,7 @@ function mapCatalogItem(resource: AppleCatalogResource, artworkSize: number): Ca
       : {}),
     ...(getString(attributes.url) ? { url: getString(attributes.url) } : {}),
     ...(artwork ? { artwork } : {}),
+    ...(motionArtwork !== undefined ? { motionArtwork } : {}),
     ...(getStrings(attributes.genreNames) ? { genres: getStrings(attributes.genreNames) } : {}),
     ...(getString(attributes.releaseDate)
       ? { releaseDate: getString(attributes.releaseDate) }
@@ -311,6 +338,7 @@ function mapAlbum(
   storefront: string,
   limit: number,
   artworkSize: number,
+  motionArtwork?: MotionArtwork | null,
 ): Album {
   const attributes = resource.attributes ?? {}
   const collections = mapCollections(
@@ -337,6 +365,7 @@ function mapAlbum(
       : {}),
     ...(getString(attributes.url) ? { url: getString(attributes.url) } : {}),
     ...(artwork ? { artwork } : {}),
+    ...(motionArtwork !== undefined ? { motionArtwork } : {}),
     ...(getStrings(attributes.genreNames) ? { genres: getStrings(attributes.genreNames) } : {}),
     ...(getString(attributes.releaseDate)
       ? { releaseDate: getString(attributes.releaseDate) }
@@ -493,6 +522,7 @@ function makeCollectionUrl(
   limit: number,
   offset: number,
   artworkSize: number,
+  motionArtwork = false,
 ): string {
   const query = new URLSearchParams({
     storefront,
@@ -500,6 +530,7 @@ function makeCollectionUrl(
     offset: String(offset),
     artworkSize: String(artworkSize),
   })
+  if (motionArtwork) query.set('include', 'motionArtwork')
   return `/api/v1/${entity}/${encodeURIComponent(id)}/collections/${encodeURIComponent(collection)}?${query.toString()}`
 }
 
@@ -523,6 +554,7 @@ function makeCatalogSearchUrl(
   limit: number,
   offset: number,
   artworkSize: number,
+  motionArtwork = false,
 ): string {
   const query = new URLSearchParams({
     term,
@@ -532,6 +564,7 @@ function makeCatalogSearchUrl(
     offset: String(offset),
     artworkSize: String(artworkSize),
   })
+  if (motionArtwork) query.set('include', 'motionArtwork')
   return `/api/v1/catalog/search?${query.toString()}`
 }
 
@@ -558,6 +591,7 @@ function getIncludeNames(
 
   for (const name of include) {
     if (name === 'artwork') continue
+    if (name === 'motionArtwork') continue
     if (name === 'description' && resourceType === 'playlists') continue
     if (name === 'editorialNotes') {
       extend.push('editorialNotes')
@@ -591,11 +625,14 @@ function mapEntity(
   storefront: string,
   limit: number,
   artworkSize: number,
+  motionArtwork?: MotionArtwork | null,
 ): CatalogEntity {
   if (type === 'artists')
     return CatalogEntitySchema.parse(mapArtist(resource, include, storefront, limit, artworkSize))
   if (type === 'albums')
-    return CatalogEntitySchema.parse(mapAlbum(resource, include, storefront, limit, artworkSize))
+    return CatalogEntitySchema.parse(
+      mapAlbum(resource, include, storefront, limit, artworkSize, motionArtwork),
+    )
   return CatalogEntitySchema.parse(mapPlaylist(resource, include, storefront, limit, artworkSize))
 }
 
@@ -614,6 +651,14 @@ export async function getCatalogEntityServer(options: {
     ampOptions,
   )
   if (!result?.resource) return null
+  const motionArtwork =
+    options.type === 'album' && options.include.includes('motionArtwork')
+      ? ((
+          await fetchMotionArtworkForReferencesServer([
+            { type: 'albums', id: options.appleId, storefront: options.storefront },
+          ])
+        ).get(resourceKey(options.storefront, 'albums', options.appleId)) ?? null)
+      : undefined
   return mapEntity(
     plural,
     result.resource,
@@ -621,6 +666,7 @@ export async function getCatalogEntityServer(options: {
     result.storefront,
     options.limit,
     options.artworkSize,
+    motionArtwork,
   )
 }
 
@@ -631,19 +677,48 @@ export async function getCatalogSearchServer(options: {
   limit: number
   offset: number
   artworkSize: number
+  motionArtwork?: boolean
 }): Promise<CatalogSearchResponse> {
   const response = await fetchAppleCatalogSearchServer(options)
   const appleResults = getRecord(response?.results)
   const results: CatalogSearchResponse['results'] = {}
+  const rawItemsByType = new Map<AppleCatalogSearchType, AppleCatalogResource[]>()
 
   for (const type of options.types) {
     const appleGroup = getRecord(appleResults?.[type])
     const rawItems = Array.isArray(appleGroup?.data) ? appleGroup.data : []
-    const items = rawItems.flatMap((item) => {
-      if (!isRecord(item) || typeof item.id !== 'string' || typeof item.type !== 'string') return []
-      const mapped = mapCatalogItem(item as AppleCatalogResource, options.artworkSize)
-      return mapped ? [mapped] : []
-    })
+    rawItemsByType.set(
+      type,
+      rawItems.filter(
+        (item): item is AppleCatalogResource =>
+          isRecord(item) && typeof item.id === 'string' && typeof item.type === 'string',
+      ),
+    )
+  }
+
+  const includeMotionArtwork = options.motionArtwork ?? false
+  const motionReferences = includeMotionArtwork
+    ? [...rawItemsByType.values()].flatMap((items) =>
+        items.flatMap((item) => {
+          const reference = getMotionArtworkReference(item, options.storefront)
+          return reference ? [reference] : []
+        }),
+      )
+    : []
+  const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
+
+  for (const type of options.types) {
+    const appleGroup = getRecord(appleResults?.[type])
+    const rawItems = Array.isArray(appleGroup?.data) ? appleGroup.data : []
+    const items =
+      rawItemsByType.get(type)?.flatMap((item) => {
+        const mapped = mapCatalogItem(
+          item,
+          options.artworkSize,
+          motionArtworkForResource(item, options.storefront, motionByKey, includeMotionArtwork),
+        )
+        return mapped ? [mapped] : []
+      }) ?? []
     const appleNext = getString(appleGroup?.next)
     const nextOffset = appleNext
       ? (readOffset(appleNext) ?? options.offset + rawItems.length)
@@ -660,6 +735,7 @@ export async function getCatalogSearchServer(options: {
               options.limit,
               nextOffset,
               options.artworkSize,
+              includeMotionArtwork,
             ),
           }
         : {}),
@@ -698,10 +774,25 @@ export async function getCatalogSearchSuggestionsServer(options: {
   types?: CatalogSearchType[]
   limit: number
   artworkSize: number
+  motionArtwork?: boolean
 }): Promise<CatalogSearchSuggestionsResponse> {
   const response = await fetchAppleCatalogSearchSuggestionsServer(options)
   const appleResults = getRecord(response?.results)
   const rawSuggestions = Array.isArray(appleResults?.suggestions) ? appleResults.suggestions : []
+  const topResults = rawSuggestions.flatMap((value) => {
+    if (!isRecord(value) || value.kind !== 'topResults' || !isRecord(value.content)) return []
+    const content = value.content
+    if (typeof content.id !== 'string' || typeof content.type !== 'string') return []
+    return [content as AppleCatalogResource]
+  })
+  const includeMotionArtwork = options.motionArtwork ?? false
+  const motionReferences = includeMotionArtwork
+    ? topResults.flatMap((resource) => {
+        const reference = getMotionArtworkReference(resource, options.storefront)
+        return reference ? [reference] : []
+      })
+    : []
+  const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
   const suggestions = rawSuggestions.flatMap(
     (value): CatalogSearchSuggestionsResponse['suggestions'] => {
       if (!isRecord(value) || typeof value.kind !== 'string') return []
@@ -718,7 +809,12 @@ export async function getCatalogSearchSuggestionsServer(options: {
       if (value.kind === 'topResults' && isRecord(value.content)) {
         const content = value.content
         if (typeof content.id !== 'string' || typeof content.type !== 'string') return []
-        const mapped = mapCatalogItem(content as AppleCatalogResource, options.artworkSize)
+        const resource = content as AppleCatalogResource
+        const mapped = mapCatalogItem(
+          resource,
+          options.artworkSize,
+          motionArtworkForResource(resource, options.storefront, motionByKey, includeMotionArtwork),
+        )
         return mapped ? [{ kind: 'topResults' as const, content: mapped }] : []
       }
       return []
@@ -740,6 +836,7 @@ export async function getCatalogCollectionServer(options: {
   limit: number
   offset: number
   artworkSize: number
+  motionArtwork?: boolean
 }): Promise<CatalogCollectionResponse | null> {
   const plural = ENTITY_RESOURCE_TYPES[options.type]
   const config = getCollectionConfig(plural, options.collection)
@@ -770,12 +867,23 @@ export async function getCatalogCollectionServer(options: {
   }
   if (!response) return null
 
-  const items = Array.isArray(response.data)
-    ? response.data.flatMap((resource) => {
-        const mapped = mapCatalogItem(resource, options.artworkSize)
-        return mapped ? [mapped] : []
+  const resources = Array.isArray(response.data) ? response.data : []
+  const includeMotionArtwork = options.motionArtwork ?? false
+  const motionReferences = includeMotionArtwork
+    ? resources.flatMap((resource) => {
+        const reference = getMotionArtworkReference(resource, options.storefront)
+        return reference ? [reference] : []
       })
     : []
+  const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
+  const items = resources.flatMap((resource) => {
+    const mapped = mapCatalogItem(
+      resource,
+      options.artworkSize,
+      motionArtworkForResource(resource, options.storefront, motionByKey, includeMotionArtwork),
+    )
+    return mapped ? [mapped] : []
+  })
   const nextOffset = response.next
     ? (readOffset(response.next) ?? options.offset + items.length)
     : null
@@ -789,6 +897,7 @@ export async function getCatalogCollectionServer(options: {
           pageLimit,
           nextOffset,
           options.artworkSize,
+          includeMotionArtwork,
         )
       : undefined
 
@@ -839,6 +948,13 @@ export async function getTrackDetailServer(options: {
 
   const metadata = mapTrack(resource)
   const attributes = resource.attributes ?? {}
+  const motionArtwork = options.include.includes('motionArtwork')
+    ? ((
+        await fetchMotionArtworkForReferencesServer([
+          { type: 'songs', id: options.appleId, storefront: options.storefront },
+        ])
+      ).get(resourceKey(options.storefront, 'songs', options.appleId)) ?? null)
+    : undefined
   const artwork = options.include.includes('artwork')
     ? resizedArtwork(attributes.artwork, options.artworkSize)
     : undefined
@@ -856,6 +972,7 @@ export async function getTrackDetailServer(options: {
     ...metadata,
     ...(getString(attributes.url) ? { url: getString(attributes.url) } : {}),
     ...(artwork ? { artwork } : {}),
+    ...(motionArtwork !== undefined ? { motionArtwork } : {}),
     ...(artists ? { artists } : {}),
     ...(album ? { albumResource: album } : {}),
     ...(getBoolean(attributes.hasLyrics) !== undefined
@@ -902,6 +1019,7 @@ function toQueueTrack(
   include: QueueInclude[],
   artworkSize: number,
   lyrics?: ReturnType<typeof createLyricsOutput>,
+  motionArtwork?: MotionArtwork | null,
 ): QueueTrack {
   const attributes = resource.attributes ?? {}
   const artwork = include.includes('artwork')
@@ -916,6 +1034,7 @@ function toQueueTrack(
       ? { durationMs: getNumber(attributes.durationInMillis) }
       : {}),
     ...(artwork ? { artwork } : {}),
+    ...(include.includes('motionArtwork') ? { motionArtwork: motionArtwork ?? null } : {}),
     ...(include.includes('identifiers') && getString(attributes.isrc)
       ? { isrc: getString(attributes.isrc) }
       : {}),
@@ -969,6 +1088,13 @@ export async function lookupTrackQueueServer(
   }
 
   const { byKey, failedKeys } = indexCatalogResults(fetched)
+  const motionReferences = request.items.flatMap((item) => {
+    const include = resolvedQueueIncludes(item.include, request.include)
+    if (!include.includes('motionArtwork')) return []
+    const storefront = item.storefront ?? request.storefront ?? 'us'
+    return [{ type: 'songs' as const, id: item.appleId, storefront }]
+  })
+  const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
   const lyricPromises = new Map<string, Promise<ReturnType<typeof createLyricsOutput>>>()
 
   const items = await runWithConcurrency(request.items, 5, async (item, index) => {
@@ -988,6 +1114,9 @@ export async function lookupTrackQueueServer(
 
       const include = resolvedQueueIncludes(item.include, request.include)
       const artworkSize = item.artworkSize ?? request.artworkSize ?? DEFAULT_ARTWORK_SIZE
+      const motionArtwork = include.includes('motionArtwork')
+        ? (motionByKey.get(resourceKey(storefront, 'songs', item.appleId)) ?? null)
+        : undefined
       let lyrics: ReturnType<typeof createLyricsOutput> | undefined
       if (include.includes('lyrics')) {
         const track = mapTrack(resource)
@@ -1018,7 +1147,7 @@ export async function lookupTrackQueueServer(
       return {
         index,
         status: 'matched' as const,
-        track: toQueueTrack(resource, include, artworkSize, lyrics),
+        track: toQueueTrack(resource, include, artworkSize, lyrics, motionArtwork),
       }
     } catch {
       return {
@@ -1053,7 +1182,9 @@ export async function lookupCatalogBatchServer(
     limit: item.limit ?? request.limit ?? DEFAULT_COLLECTION_LIMIT,
     artworkSize: item.artworkSize ?? request.artworkSize ?? DEFAULT_ARTWORK_SIZE,
   }))
-  const base = prepared.filter((entry) => entry.include.every((name) => name === 'artwork'))
+  const base = prepared.filter((entry) =>
+    entry.include.every((name) => name === 'artwork' || name === 'motionArtwork'),
+  )
   const expanded = prepared.filter((entry) => !base.includes(entry))
   const baseRefs = base.map(({ item, storefront }) => ({
     type: RESOURCE_TYPES[item.type],
@@ -1147,6 +1278,13 @@ export async function lookupCatalogBatchServer(
     }
   })
 
+  const motionReferences = prepared.flatMap((entry) =>
+    entry.item.type === 'album' && entry.include.includes('motionArtwork')
+      ? [{ type: 'albums' as const, id: entry.item.appleId, storefront: entry.storefront }]
+      : [],
+  )
+  const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
+
   const items = prepared.map((entry) => {
     const plural = RESOURCE_TYPES[entry.item.type]
     const isBase = base.includes(entry)
@@ -1190,6 +1328,9 @@ export async function lookupCatalogBatchServer(
           expandedResult?.storefront ?? entry.storefront,
           entry.limit,
           entry.artworkSize,
+          entry.item.type === 'album' && entry.include.includes('motionArtwork')
+            ? (motionByKey.get(resourceKey(entry.storefront, 'albums', entry.item.appleId)) ?? null)
+            : undefined,
         ),
       }
     } catch {
@@ -1209,6 +1350,19 @@ export async function lookupCatalogBatchServer(
 export async function lookupAssetBatchServer(
   request: AssetBatchRequest,
 ): Promise<AssetBatchResponse> {
+  const motionReferences = request.items.flatMap((item) => {
+    const includeMotionArtwork =
+      (item.type === 'song' || item.type === 'album') &&
+      (item.include ?? request.include ?? []).includes('motionArtwork')
+    if (!includeMotionArtwork) return []
+    return [
+      {
+        type: item.type === 'song' ? ('songs' as const) : ('albums' as const),
+        id: item.appleId,
+        storefront: item.storefront ?? request.storefront ?? 'us',
+      },
+    ]
+  })
   const references = request.items.map((item) => ({
     type: catalogResourceType(item.type),
     id: item.appleId,
@@ -1229,6 +1383,7 @@ export async function lookupAssetBatchServer(
     }
   }
   const { byKey, failedKeys } = indexCatalogResults(fetched)
+  const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
 
   return {
     items: request.items.map((item, index) => {
@@ -1249,10 +1404,18 @@ export async function lookupAssetBatchServer(
       const artwork = resource
         ? resizedArtwork(resource.attributes?.artwork, artworkSize)
         : undefined
+      const includeMotionArtwork =
+        (item.type === 'song' || item.type === 'album') &&
+        (item.include ?? request.include ?? []).includes('motionArtwork')
+      const motionArtwork = includeMotionArtwork
+        ? (motionByKey.get(
+            resourceKey(storefront, item.type === 'song' ? 'songs' : 'albums', item.appleId),
+          ) ?? null)
+        : undefined
       if (!resource) {
         return { index, status: 'not_found' as const, type: item.type, appleId: item.appleId }
       }
-      if (!artwork) {
+      if (!artwork && !motionArtwork) {
         return { index, status: 'unavailable' as const, type: item.type, appleId: item.appleId }
       }
       return {
@@ -1267,7 +1430,8 @@ export async function lookupAssetBatchServer(
           ...(getString(resource.attributes?.artistName)
             ? { artistName: getString(resource.attributes?.artistName) }
             : {}),
-          artwork,
+          ...(artwork ? { artwork } : {}),
+          ...(includeMotionArtwork ? { motionArtwork } : {}),
         },
       }
     }),

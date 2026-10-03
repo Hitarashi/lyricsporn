@@ -7,6 +7,7 @@ import {
   ArtworkSchema,
   LyricsOutputSchema,
   LyricsRequestSchema,
+  MotionArtworkSchema,
   TrackSchema,
 } from './contract'
 
@@ -69,6 +70,7 @@ export const CatalogItemSchema = z
     curatorName: z.string().optional(),
     url: z.string().url().optional(),
     artwork: ArtworkSchema.optional(),
+    motionArtwork: MotionArtworkSchema.nullable().optional(),
     genres: z.array(z.string()).optional(),
     releaseDate: z.string().optional(),
     durationMs: z.number().int().nonnegative().optional(),
@@ -134,6 +136,11 @@ export const CatalogSearchQuerySchema = z
       example: 0,
     }),
     artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
+    include: z.string().optional().openapi({
+      description:
+        'Comma-separated optional result sections. Use motionArtwork to request Apple motion video URLs for songs and albums.',
+      example: 'motionArtwork',
+    }),
   })
   .strict()
   .openapi('CatalogSearchQuery')
@@ -176,6 +183,11 @@ export const CatalogSearchSuggestionsQuerySchema = z
       example: 5,
     }),
     artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
+    include: z.string().optional().openapi({
+      description:
+        'Comma-separated optional result sections. Use motionArtwork to request video URLs for song or album top results.',
+      example: 'motionArtwork',
+    }),
   })
   .strict()
   .openapi('CatalogSearchSuggestionsQuery')
@@ -320,6 +332,7 @@ export const AlbumSchema = z
     artistUrl: z.string().url().optional(),
     url: z.string().url().optional(),
     artwork: ArtworkSchema.optional(),
+    motionArtwork: MotionArtworkSchema.nullable().optional(),
     genres: z.array(z.string()).optional(),
     releaseDate: z.string().optional(),
     trackCount: z.number().int().nonnegative().optional(),
@@ -395,6 +408,7 @@ export const AlbumIncludeSchema = z.enum([
   'editorialNotes',
   'artistUrl',
   'audioVariants',
+  'motionArtwork',
 ])
 
 export const PlaylistIncludeSchema = z.enum([
@@ -418,7 +432,7 @@ export const CatalogGetQuerySchema = z
     storefront: StorefrontSchema,
     include: z.string().optional().openapi({
       description:
-        'Comma-separated optional collections, relationship views, or extended fields for this resource. Use artwork to request artwork.',
+        'Comma-separated optional collections, relationship views, or extended fields for this resource. Use artwork to request artwork and motionArtwork on albums to request motion video URLs.',
       example: 'topSongs,latestRelease',
     }),
     limit: z.coerce
@@ -454,7 +468,7 @@ export const CatalogBatchItemSchema = z
         storefront: StorefrontSchema.optional(),
         include: z
           .array(z.union([AlbumIncludeSchema, z.literal('artwork')]))
-          .max(12)
+          .max(13)
           .optional(),
         limit: z.number().int().min(1).max(MAX_COLLECTION_LIMIT).optional(),
         artworkSize: z.number().int().min(50).max(3000).optional(),
@@ -607,6 +621,11 @@ export const CatalogCollectionQuerySchema = z
       .default(DEFAULT_COLLECTION_LIMIT),
     offset: z.coerce.number().int().min(0).max(10000).default(0),
     artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
+    include: z.string().optional().openapi({
+      description:
+        'Comma-separated optional item sections. Use motionArtwork for song or album items in this page.',
+      example: 'motionArtwork',
+    }),
   })
   .strict()
 
@@ -630,8 +649,8 @@ export const TrackDetailQuerySchema = z
     storefront: StorefrontSchema,
     include: z.string().optional().openapi({
       description:
-        'Comma-separated optional sections: artwork, artists, album, lyrics, and appleCatalog.',
-      example: 'artwork,artists,album,lyrics',
+        'Comma-separated optional sections: artwork, motionArtwork, artists, album, lyrics, and appleCatalog.',
+      example: 'artwork,motionArtwork,artists,album,lyrics',
     }),
     formats: z.string().optional().openapi({
       description: 'Comma-separated lyrics formats: json, ttml, elrc.',
@@ -650,6 +669,7 @@ export const TrackDetailSchema = TrackSchema.extend({
   id: TrackAppleIdSchema,
   url: z.string().url().optional(),
   artwork: ArtworkSchema.optional(),
+  motionArtwork: MotionArtworkSchema.nullable().optional(),
   artists: z.array(CatalogItemSchema).optional(),
   albumResource: CatalogItemSchema.optional(),
   hasLyrics: z.boolean().optional(),
@@ -673,19 +693,26 @@ export const TrackDetailResponseSchema = z
 
 export const TrackDetailIncludeSchema = z.enum([
   'artwork',
+  'motionArtwork',
   'artists',
   'album',
   'lyrics',
   'appleCatalog',
 ])
 
-export const QueueIncludeSchema = z.enum(['artwork', 'identifiers', 'release', 'lyrics'])
+export const QueueIncludeSchema = z.enum([
+  'artwork',
+  'motionArtwork',
+  'identifiers',
+  'release',
+  'lyrics',
+])
 
 export const QueueTrackRequestItemSchema = z
   .object({
     appleId: TrackAppleIdSchema,
     storefront: StorefrontSchema.optional(),
-    include: z.array(QueueIncludeSchema).max(4).optional(),
+    include: z.array(QueueIncludeSchema).max(5).optional(),
     lyrics: LyricsRequestSchema.optional(),
     artworkSize: z.number().int().min(50).max(3000).optional(),
   })
@@ -694,7 +721,7 @@ export const QueueTrackRequestItemSchema = z
 export const TrackBatchRequestSchema = z
   .object({
     storefront: StorefrontSchema.optional(),
-    include: z.array(QueueIncludeSchema).max(4).optional(),
+    include: z.array(QueueIncludeSchema).max(5).optional(),
     lyrics: LyricsRequestSchema.optional(),
     artworkSize: z.number().int().min(50).max(3000).optional(),
     items: z.array(QueueTrackRequestItemSchema).min(1).max(MAX_TRACK_BATCH),
@@ -712,6 +739,7 @@ export const QueueTrackSchema = z
     album: z.string().optional(),
     durationMs: z.number().int().nonnegative().optional(),
     artwork: ArtworkSchema.optional(),
+    motionArtwork: MotionArtworkSchema.nullable().optional(),
     isrc: z.string().optional(),
     releaseDate: z.string().optional(),
     lyrics: LyricsOutputSchema.optional(),
@@ -752,6 +780,7 @@ export const TrackBatchResponseSchema = z
   .openapi('TrackBatchResponse')
 
 export const AssetTypeSchema = z.enum(['song', 'artist', 'album', 'playlist'])
+const AssetIncludeSchema = z.array(z.literal('motionArtwork')).max(1)
 
 export const AssetBatchItemSchema = z
   .discriminatedUnion('type', [
@@ -761,6 +790,7 @@ export const AssetBatchItemSchema = z
         appleId: TrackAppleIdSchema,
         storefront: StorefrontSchema.optional(),
         size: z.number().int().min(50).max(3000).optional(),
+        include: AssetIncludeSchema.optional(),
       })
       .strict(),
     z
@@ -777,6 +807,7 @@ export const AssetBatchItemSchema = z
         appleId: AppleCatalogIdSchema,
         storefront: StorefrontSchema.optional(),
         size: z.number().int().min(50).max(3000).optional(),
+        include: AssetIncludeSchema.optional(),
       })
       .strict(),
     z
@@ -794,6 +825,11 @@ export const AssetBatchRequestSchema = z
   .object({
     storefront: StorefrontSchema.optional(),
     size: ArtworkSizeSchema.optional(),
+    include: AssetIncludeSchema.optional().openapi({
+      description:
+        'Optional asset sections for songs and albums. Item-level include overrides this value.',
+      example: ['motionArtwork'],
+    }),
     items: z.array(AssetBatchItemSchema).min(1).max(MAX_ASSET_BATCH),
   })
   .strict()
@@ -805,7 +841,8 @@ export const AssetSchema = z
     type: AssetTypeSchema,
     name: z.string().optional(),
     artistName: z.string().optional(),
-    artwork: ArtworkSchema,
+    artwork: ArtworkSchema.optional(),
+    motionArtwork: MotionArtworkSchema.nullable().optional(),
   })
   .strict()
   .openapi('Asset')

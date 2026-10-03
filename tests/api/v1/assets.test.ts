@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { Route as AssetBatchRoute } from '@/routes/api/v1/assets/batch'
 
 import { mockAppleCatalog, restoreFetch, routeHandler } from '../../helpers/apple-catalog'
+import { appleEditorialVideo, expectedMotionArtwork } from '../../helpers/apple-motion-artwork'
 
 const artwork = {
   url: 'https://images.test/art/{w}x{h}bb.jpg',
@@ -100,5 +101,56 @@ describe('asset batch API', () => {
     expect(invalidJson.status).toBe(400)
     expect(invalidBody.status).toBe(400)
     expect(appleRequests).toHaveLength(0)
+  })
+
+  it('supports motion-only assets and item-level overrides', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      const songIds = url.searchParams.get('ids[songs]')?.split(',') ?? []
+      const isMotionRequest = url.searchParams.get('extend') === 'editorialVideo'
+      return Response.json({
+        data: songIds.map((id) => ({
+          id,
+          type: 'songs',
+          attributes: {
+            name: `Song ${id}`,
+            ...(id === '101' ? { artwork } : {}),
+            ...(isMotionRequest && id === '100' ? { editorialVideo: appleEditorialVideo } : {}),
+          },
+        })),
+      })
+    })
+
+    const response = await routeHandler(
+      AssetBatchRoute,
+      'POST',
+    )({
+      request: new Request('https://lyricsporn.test/api/v1/assets/batch', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          include: ['motionArtwork'],
+          items: [
+            { type: 'song', appleId: '100' },
+            { type: 'song', appleId: '101', include: [] },
+          ],
+        }),
+      }),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items[0]).toMatchObject({
+      status: 'matched',
+      asset: { id: '100', motionArtwork: expectedMotionArtwork },
+    })
+    expect(body.items[0].asset).not.toHaveProperty('artwork')
+    expect(body.items[1].asset.artwork).toBeDefined()
+    expect(body.items[1].asset).not.toHaveProperty('motionArtwork')
+    expect(
+      appleRequests
+        .find((url) => url.searchParams.get('extend') === 'editorialVideo')
+        ?.searchParams.get('ids[songs]'),
+    ).toBe('100')
   })
 })
