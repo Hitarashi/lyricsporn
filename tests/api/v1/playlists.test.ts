@@ -9,8 +9,12 @@ afterEach(restoreFetch)
 
 describe('playlist API', () => {
   it('returns playlist metadata, relationships, and views', async () => {
-    mockAppleCatalog(() =>
-      Response.json({
+    const appleRequests = mockAppleCatalog((url) => {
+      expect(url.pathname).toBe('/v1/catalog/us/playlists/pl.example')
+      expect(url.searchParams.get('include')).toBe('curator,tracks')
+      expect(url.searchParams.get('views')).toBe('featured-artists,more-by-curator')
+      expect(url.searchParams.get('extend')).toBe('trackTypes')
+      return Response.json({
         data: [
           {
             id: 'pl.example',
@@ -50,8 +54,8 @@ describe('playlist API', () => {
             },
           },
         ],
-      }),
-    )
+      })
+    })
 
     const response = await routeHandler(
       PlaylistRoute,
@@ -79,6 +83,7 @@ describe('playlist API', () => {
         moreByCurator: { items: [{ id: 'pl.more', type: 'playlist', name: 'More Music' }] },
       },
     })
+    expect(appleRequests).toHaveLength(1)
   })
 
   it('rejects unsupported playlist include values', async () => {
@@ -144,5 +149,34 @@ describe('playlist API', () => {
     })
     expect(body.page.next).toContain('offset=1')
     expect(appleRequests).toHaveLength(1)
+  })
+
+  it('accepts motionArtwork on a playlist collection page', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/playlists/pl.example/tracks')) {
+        return Response.json({
+          data: [{ id: 'song.playlist', type: 'songs', attributes: { name: 'Playlist Song' } }],
+        })
+      }
+      return Response.json({ data: [] })
+    })
+
+    const response = await routeHandler(
+      PlaylistCollectionRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/playlists/pl.example/collections/tracks?include=motionArtwork',
+      ),
+      params: { appleId: 'pl.example', collection: 'tracks' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items[0]).toMatchObject({ id: 'song.playlist', motionArtwork: null })
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
+    expect(appleRequests).toHaveLength(2)
   })
 })

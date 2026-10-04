@@ -279,7 +279,23 @@ describe('queue batch API', () => {
     })
     expect(body.items[2].track).not.toHaveProperty('artwork')
     expect(body.items[2].track).not.toHaveProperty('releaseDate')
-    expect(appleRequests).toHaveLength(1)
+    expect(appleRequests).toHaveLength(6)
+    expect(appleRequests.map((url) => url.pathname)).toEqual([
+      '/v1/catalog/us',
+      '/v1/catalog/gb',
+      '/v1/catalog/ca',
+      '/v1/catalog/au',
+      '/v1/catalog/in',
+      '/v1/catalog/jp',
+    ])
+    expect(appleRequests.map((url) => url.searchParams.get('ids[songs]'))).toEqual([
+      '101,404,102',
+      '404',
+      '404',
+      '404',
+      '404',
+      '404',
+    ])
   })
 
   it('returns per-item errors when Apple cannot fetch a queue batch and validates request bodies', async () => {

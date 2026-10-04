@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 
+import { ArtistIncludeSchema } from '@/lib/api/v1/catalog-contract'
 import { Route as ArtistRoute } from '@/routes/api/v1/artists/$appleId'
 import { Route as ArtistCollectionRoute } from '@/routes/api/v1/artists/$appleId/collections/$collection'
 
@@ -8,6 +9,50 @@ import { mockAppleCatalog, restoreFetch, routeHandler } from '../../helpers/appl
 afterEach(restoreFetch)
 
 describe('artist API', () => {
+  it('accepts every artist include and maps each option to Apple', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      expect(url.pathname).toBe('/v1/catalog/us/artists/28721078')
+      expect(url.searchParams.get('include')).toBe('albums,genres,music-videos,playlists,station')
+      expect(url.searchParams.get('views')).toBe(
+        'top-songs,latest-release,featured-albums,featured-playlists,featured-music-videos,top-music-videos,full-albums,singles,live-albums,appears-on-albums,compilation-albums,similar-artists',
+      )
+      expect(url.searchParams.get('extend')).toBe('editorialNotes')
+      return Response.json({
+        data: [
+          {
+            id: '28721078',
+            type: 'artists',
+            attributes: {
+              name: 'Sia',
+              genreNames: ['Pop'],
+              editorialNotes: { standard: 'Artist notes.' },
+            },
+          },
+        ],
+      })
+    })
+    const requestUrl = new URL('https://lyricsporn.test/api/v1/artists/28721078')
+    requestUrl.searchParams.set('include', ArtistIncludeSchema.options.join(','))
+
+    const response = await routeHandler(
+      ArtistRoute,
+      'GET',
+    )({
+      request: new Request(requestUrl),
+      params: { appleId: '28721078' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.data.editorialNotes).toEqual({ standard: 'Artist notes.' })
+    expect(Object.keys(body.data.collections).sort()).toEqual(
+      ArtistIncludeSchema.options
+        .filter((name) => name !== 'artwork' && name !== 'editorialNotes')
+        .sort(),
+    )
+    expect(appleRequests).toHaveLength(1)
+  })
+
   it('returns artist details and a requested view', async () => {
     const appleRequests = mockAppleCatalog((url) => {
       expect(url.pathname).toBe('/v1/catalog/us/artists/28721078')
@@ -133,6 +178,35 @@ describe('artist API', () => {
     })
     expect(body.page.next).toContain('offset=4')
     expect(appleRequests).toHaveLength(1)
+  })
+
+  it('accepts motionArtwork on an artist collection page', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/view/top-songs')) {
+        return Response.json({
+          data: [{ id: 'song.artist', type: 'songs', attributes: { name: 'Artist Song' } }],
+        })
+      }
+      return Response.json({ data: [] })
+    })
+
+    const response = await routeHandler(
+      ArtistCollectionRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/artists/28721078/collections/topSongs?include=motionArtwork',
+      ),
+      params: { appleId: '28721078', collection: 'topSongs' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items[0]).toMatchObject({ id: 'song.artist', motionArtwork: null })
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
+    expect(appleRequests).toHaveLength(2)
   })
 
   it('returns an empty view when Apple reports no related resources for an existing artist', async () => {

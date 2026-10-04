@@ -119,6 +119,8 @@ export const CatalogSearchTypeSchema = z
 
 export const DEFAULT_CATALOG_SEARCH_TYPES = ['songs', 'albums', 'artists', 'playlists'] as const
 
+export const MotionArtworkIncludeSchema = z.enum(['motionArtwork']).openapi('MotionArtworkInclude')
+
 export const CatalogSearchQuerySchema = z
   .object({
     term: z.string().trim().min(1).max(256).openapi({
@@ -144,11 +146,15 @@ export const CatalogSearchQuerySchema = z
       example: 0,
     }),
     artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
-    include: z.string().optional().openapi({
-      description:
-        'Comma-separated optional result sections. Use motionArtwork to request Apple motion video URLs for songs and albums.',
-      example: 'motionArtwork',
-    }),
+    include: z
+      .array(MotionArtworkIncludeSchema)
+      .optional()
+      .openapi({
+        description:
+          'Optional result sections. Pass motionArtwork to request Apple motion video URLs for songs and albums.',
+        example: ['motionArtwork'],
+        param: { style: 'form', explode: false },
+      }),
   })
   .strict()
   .openapi('CatalogSearchQuery')
@@ -191,11 +197,15 @@ export const CatalogSearchSuggestionsQuerySchema = z
       example: 5,
     }),
     artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
-    include: z.string().optional().openapi({
-      description:
-        'Comma-separated optional result sections. Use motionArtwork to request video URLs for song or album top results.',
-      example: 'motionArtwork',
-    }),
+    include: z
+      .array(MotionArtworkIncludeSchema)
+      .optional()
+      .openapi({
+        description:
+          'Optional result sections. Pass motionArtwork to request video URLs for song or album top results.',
+        example: ['motionArtwork'],
+        param: { style: 'form', explode: false },
+      }),
   })
   .strict()
   .openapi('CatalogSearchSuggestionsQuery')
@@ -383,66 +393,69 @@ export const CatalogEntitySchema = z.discriminatedUnion('type', [
   PlaylistSchema,
 ])
 
-export const ArtistIncludeSchema = z.enum([
-  'editorialNotes',
-  'albums',
-  'genres',
-  'musicVideos',
-  'playlists',
-  'station',
-  'topSongs',
-  'latestRelease',
-  'featuredAlbums',
-  'featuredPlaylists',
-  'featuredMusicVideos',
-  'topMusicVideos',
-  'fullAlbums',
-  'singles',
-  'liveAlbums',
-  'appearsOnAlbums',
-  'compilationAlbums',
-  'similarArtists',
-])
+export const ArtistIncludeSchema = z
+  .enum([
+    'artwork',
+    'editorialNotes',
+    'albums',
+    'genres',
+    'musicVideos',
+    'playlists',
+    'station',
+    'topSongs',
+    'latestRelease',
+    'featuredAlbums',
+    'featuredPlaylists',
+    'featuredMusicVideos',
+    'topMusicVideos',
+    'fullAlbums',
+    'singles',
+    'liveAlbums',
+    'appearsOnAlbums',
+    'compilationAlbums',
+    'similarArtists',
+  ])
+  .openapi('ArtistInclude')
 
-export const AlbumIncludeSchema = z.enum([
-  'artists',
-  'genres',
-  'tracks',
-  'recordLabels',
-  'appearsOn',
-  'otherVersions',
-  'relatedAlbums',
-  'relatedVideos',
-  'editorialNotes',
-  'artistUrl',
-  'audioVariants',
-  'motionArtwork',
-])
+export const AlbumIncludeSchema = z
+  .enum([
+    'artwork',
+    'artists',
+    'genres',
+    'tracks',
+    'recordLabels',
+    'appearsOn',
+    'otherVersions',
+    'relatedAlbums',
+    'relatedVideos',
+    'editorialNotes',
+    'artistUrl',
+    'audioVariants',
+    'motionArtwork',
+  ])
+  .openapi('AlbumInclude')
 
-export const PlaylistIncludeSchema = z.enum([
-  'curator',
-  'tracks',
-  'description',
-  'trackTypes',
-  'featuredArtists',
-  'moreByCurator',
-])
+export const PlaylistIncludeSchema = z
+  .enum([
+    'artwork',
+    'curator',
+    'tracks',
+    'description',
+    'trackTypes',
+    'featuredArtists',
+    'moreByCurator',
+  ])
+  .openapi('PlaylistInclude')
 
 export const CatalogIncludeSchema = z.union([
-  z.literal('artwork'),
   ArtistIncludeSchema,
   AlbumIncludeSchema,
   PlaylistIncludeSchema,
 ])
 
-export const CatalogGetQuerySchema = z
+const CatalogGetQueryBaseSchema = z
   .object({
     storefront: StorefrontSchema,
-    include: z.string().optional().openapi({
-      description:
-        'Comma-separated optional collections, relationship views, or extended fields for this resource. Use artwork to request artwork and motionArtwork on albums to request motion video URLs.',
-      example: 'topSongs,latestRelease',
-    }),
     limit: z.coerce
       .number()
       .int()
@@ -454,6 +467,39 @@ export const CatalogGetQuerySchema = z
   })
   .strict()
 
+export const ArtistGetQuerySchema = CatalogGetQueryBaseSchema.extend({
+  include: z
+    .array(ArtistIncludeSchema)
+    .optional()
+    .openapi({
+      description: 'Artist sections to include. Values are comma-separated.',
+      example: ['artwork', 'topSongs', 'latestRelease'],
+      param: { style: 'form', explode: false },
+    }),
+}).openapi('ArtistGetQuery')
+
+export const AlbumGetQuerySchema = CatalogGetQueryBaseSchema.extend({
+  include: z
+    .array(AlbumIncludeSchema)
+    .optional()
+    .openapi({
+      description: 'Album sections to include. Values are comma-separated.',
+      example: ['artwork', 'tracks', 'artists', 'motionArtwork'],
+      param: { style: 'form', explode: false },
+    }),
+}).openapi('AlbumGetQuery')
+
+export const PlaylistGetQuerySchema = CatalogGetQueryBaseSchema.extend({
+  include: z
+    .array(PlaylistIncludeSchema)
+    .optional()
+    .openapi({
+      description: 'Playlist sections to include. Values are comma-separated.',
+      example: ['artwork', 'tracks', 'curator'],
+      param: { style: 'form', explode: false },
+    }),
+}).openapi('PlaylistGetQuery')
+
 export const CatalogBatchItemSchema = z
   .discriminatedUnion('type', [
     z
@@ -462,9 +508,13 @@ export const CatalogBatchItemSchema = z
         appleId: AppleCatalogIdSchema,
         storefront: StorefrontSchema.optional(),
         include: z
-          .array(z.union([ArtistIncludeSchema, z.literal('artwork')]))
+          .array(ArtistIncludeSchema)
           .max(19)
-          .optional(),
+          .optional()
+          .openapi({
+            description: 'Artist include options for this item.',
+            example: ['artwork', 'topSongs'],
+          }),
         limit: z.number().int().min(1).max(MAX_COLLECTION_LIMIT).optional(),
         artworkSize: z.number().int().min(50).max(3000).optional(),
       })
@@ -475,9 +525,13 @@ export const CatalogBatchItemSchema = z
         appleId: AppleCatalogIdSchema,
         storefront: StorefrontSchema.optional(),
         include: z
-          .array(z.union([AlbumIncludeSchema, z.literal('artwork')]))
+          .array(AlbumIncludeSchema)
           .max(13)
-          .optional(),
+          .optional()
+          .openapi({
+            description: 'Album include options for this item.',
+            example: ['artwork', 'tracks'],
+          }),
         limit: z.number().int().min(1).max(MAX_COLLECTION_LIMIT).optional(),
         artworkSize: z.number().int().min(50).max(3000).optional(),
       })
@@ -488,9 +542,13 @@ export const CatalogBatchItemSchema = z
         appleId: AppleCatalogIdSchema,
         storefront: StorefrontSchema.optional(),
         include: z
-          .array(z.union([PlaylistIncludeSchema, z.literal('artwork')]))
+          .array(PlaylistIncludeSchema)
           .max(7)
-          .optional(),
+          .optional()
+          .openapi({
+            description: 'Playlist include options for this item.',
+            example: ['artwork', 'tracks'],
+          }),
         limit: z.number().int().min(1).max(MAX_COLLECTION_LIMIT).optional(),
         artworkSize: z.number().int().min(50).max(3000).optional(),
       })
@@ -503,9 +561,27 @@ export const CatalogBatchRequestSchema = z
     storefront: StorefrontSchema.optional(),
     include: z
       .object({
-        artist: z.array(z.union([ArtistIncludeSchema, z.literal('artwork')])).optional(),
-        album: z.array(z.union([AlbumIncludeSchema, z.literal('artwork')])).optional(),
-        playlist: z.array(z.union([PlaylistIncludeSchema, z.literal('artwork')])).optional(),
+        artist: z
+          .array(ArtistIncludeSchema)
+          .optional()
+          .openapi({
+            description: 'Default artist includes for items that do not override them.',
+            example: ['artwork', 'topSongs'],
+          }),
+        album: z
+          .array(AlbumIncludeSchema)
+          .optional()
+          .openapi({
+            description: 'Default album includes for items that do not override them.',
+            example: ['artwork', 'tracks'],
+          }),
+        playlist: z
+          .array(PlaylistIncludeSchema)
+          .optional()
+          .openapi({
+            description: 'Default playlist includes for items that do not override them.',
+            example: ['artwork', 'tracks'],
+          }),
       })
       .strict()
       .optional(),
@@ -629,11 +705,14 @@ export const CatalogCollectionQuerySchema = z
       .default(DEFAULT_COLLECTION_LIMIT),
     offset: z.coerce.number().int().min(0).max(10000).default(0),
     artworkSize: z.coerce.number().int().min(50).max(3000).default(DEFAULT_ARTWORK_SIZE),
-    include: z.string().optional().openapi({
-      description:
-        'Comma-separated optional item sections. Use motionArtwork for song or album items in this page.',
-      example: 'motionArtwork',
-    }),
+    include: z
+      .array(MotionArtworkIncludeSchema)
+      .optional()
+      .openapi({
+        description: 'Optional item sections. Pass motionArtwork for song or album items.',
+        example: ['motionArtwork'],
+        param: { style: 'form', explode: false },
+      }),
   })
   .strict()
 
@@ -652,14 +731,21 @@ export const CatalogCollectionResponseSchema = z
   .strict()
   .openapi('CatalogCollectionResponse')
 
+export const TrackDetailIncludeSchema = z
+  .enum(['artwork', 'motionArtwork', 'artists', 'album', 'lyrics', 'appleCatalog'])
+  .openapi('TrackDetailInclude')
+
 export const TrackDetailQuerySchema = z
   .object({
     storefront: StorefrontSchema,
-    include: z.string().optional().openapi({
-      description:
-        'Comma-separated optional sections: artwork, motionArtwork, artists, album, lyrics, and appleCatalog.',
-      example: 'artwork,motionArtwork,artists,album,lyrics',
-    }),
+    include: z
+      .array(TrackDetailIncludeSchema)
+      .optional()
+      .openapi({
+        description: 'Track sections to include. Values are comma-separated.',
+        example: ['artwork', 'motionArtwork', 'artists', 'album', 'lyrics'],
+        param: { style: 'form', explode: false },
+      }),
     formats: z.string().optional().openapi({
       description: 'Comma-separated lyrics formats: json, ttml, elrc.',
       example: 'json,ttml',
@@ -700,28 +786,22 @@ export const TrackDetailResponseSchema = z
   .strict()
   .openapi('TrackDetailResponse')
 
-export const TrackDetailIncludeSchema = z.enum([
-  'artwork',
-  'motionArtwork',
-  'artists',
-  'album',
-  'lyrics',
-  'appleCatalog',
-])
-
-export const QueueIncludeSchema = z.enum([
-  'artwork',
-  'motionArtwork',
-  'identifiers',
-  'release',
-  'lyrics',
-])
+export const QueueIncludeSchema = z
+  .enum(['artwork', 'motionArtwork', 'identifiers', 'release', 'lyrics'])
+  .openapi('QueueInclude')
 
 export const QueueTrackRequestItemSchema = z
   .object({
     appleId: TrackAppleIdSchema,
     storefront: StorefrontSchema.optional(),
-    include: z.array(QueueIncludeSchema).max(5).optional(),
+    include: z
+      .array(QueueIncludeSchema)
+      .max(5)
+      .optional()
+      .openapi({
+        description: 'Queue track fields for this item; overrides the request-wide list.',
+        example: ['artwork', 'motionArtwork', 'lyrics'],
+      }),
     lyrics: LyricsRequestSchema.optional(),
     artworkSize: z.number().int().min(50).max(3000).optional(),
   })
@@ -730,7 +810,14 @@ export const QueueTrackRequestItemSchema = z
 export const TrackBatchRequestSchema = z
   .object({
     storefront: StorefrontSchema.optional(),
-    include: z.array(QueueIncludeSchema).max(5).optional(),
+    include: z
+      .array(QueueIncludeSchema)
+      .max(5)
+      .optional()
+      .openapi({
+        description: 'Default queue track fields. Individual items can override this list.',
+        example: ['artwork', 'identifiers'],
+      }),
     lyrics: LyricsRequestSchema.optional(),
     artworkSize: z.number().int().min(50).max(3000).optional(),
     items: z.array(QueueTrackRequestItemSchema).min(1).max(MAX_TRACK_BATCH),
@@ -790,7 +877,13 @@ export const TrackBatchResponseSchema = z
   .openapi('TrackBatchResponse')
 
 export const AssetTypeSchema = z.enum(['song', 'artist', 'album', 'playlist'])
-const AssetIncludeSchema = z.array(z.literal('motionArtwork')).max(1)
+const AssetIncludeSchema = z
+  .array(MotionArtworkIncludeSchema)
+  .max(1)
+  .openapi({
+    description: 'Optional motion artwork for this song or album.',
+    example: ['motionArtwork'],
+  })
 
 export const AssetBatchItemSchema = z
   .discriminatedUnion('type', [
@@ -910,9 +1003,16 @@ export type CatalogEntity = z.infer<typeof CatalogEntitySchema>
 export type CatalogItem = z.infer<typeof CatalogItemSchema>
 export type CatalogCollectionItem = CatalogItem
 export type CatalogInclude = z.infer<typeof CatalogIncludeSchema>
+export type ArtistInclude = z.infer<typeof ArtistIncludeSchema>
+export type AlbumInclude = z.infer<typeof AlbumIncludeSchema>
+export type PlaylistInclude = z.infer<typeof PlaylistIncludeSchema>
+export type MotionArtworkInclude = z.infer<typeof MotionArtworkIncludeSchema>
 export type Artist = z.infer<typeof ArtistSchema>
 export type Album = z.infer<typeof AlbumSchema>
 export type Playlist = z.infer<typeof PlaylistSchema>
+export type ArtistGetQuery = z.infer<typeof ArtistGetQuerySchema>
+export type AlbumGetQuery = z.infer<typeof AlbumGetQuerySchema>
+export type PlaylistGetQuery = z.infer<typeof PlaylistGetQuerySchema>
 export type CatalogBatchItem = z.infer<typeof CatalogBatchItemSchema>
 export type CatalogBatchRequest = z.infer<typeof CatalogBatchRequestSchema>
 export type CatalogBatchResponse = z.infer<typeof CatalogBatchResponseSchema>

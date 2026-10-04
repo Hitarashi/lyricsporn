@@ -1,15 +1,16 @@
+import type { CatalogInclude } from './catalog-contract'
+
 import { z } from 'zod'
 
 import {
   AlbumCollectionNameSchema,
-  AlbumIncludeSchema,
+  AlbumGetQuerySchema,
   AppleCatalogIdSchema,
   ArtistCollectionNameSchema,
-  ArtistIncludeSchema,
+  ArtistGetQuerySchema,
   AssetBatchRequestSchema,
   CatalogBatchRequestSchema,
   CatalogCollectionQuerySchema,
-  CatalogGetQuerySchema,
   CatalogSearchHintsQuerySchema,
   CatalogSearchQuerySchema,
   CatalogSearchSuggestionKindSchema,
@@ -17,10 +18,9 @@ import {
   CatalogSearchTypeSchema,
   DEFAULT_CATALOG_SEARCH_TYPES,
   PlaylistCollectionNameSchema,
-  PlaylistIncludeSchema,
+  PlaylistGetQuerySchema,
   TrackAppleIdSchema,
   TrackBatchRequestSchema,
-  TrackDetailIncludeSchema,
   TrackDetailQuerySchema,
 } from './catalog-contract'
 import {
@@ -57,7 +57,7 @@ function prefixIssuePath(path: string, issues: z.ZodIssue[]): z.ZodIssue[] {
 
 function queryParameters(
   request: Request,
-): { values: Record<string, string>; error?: never } | { values?: never; error: Response } {
+): { values: Record<string, unknown>; error?: never } | { values?: never; error: Response } {
   const parameters = new URL(request.url).searchParams
   const duplicateKey = [...parameters.keys()].find((key) => parameters.getAll(key).length > 1)
   if (duplicateKey) {
@@ -65,7 +65,14 @@ function queryParameters(
       error: invalidValue(duplicateKey, `The ${duplicateKey} parameter must be supplied once.`),
     }
   }
-  return { values: Object.fromEntries(parameters.entries()) }
+  const values: Record<string, unknown> = Object.fromEntries(parameters.entries())
+  const include = parameters.get('include')
+  if (include !== null) {
+    values.include = include.trim()
+      ? [...new Set(include.split(',').map((item) => item.trim()))]
+      : []
+  }
+  return { values }
 }
 
 function parseCsvList<T>(value: string | undefined, schema: z.ZodType<T>) {
@@ -115,18 +122,16 @@ export async function handleCatalogEntityGet(
   if (idResult.error) return idResult.error
   const query = queryParameters(request)
   if (query.error) return query.error
-  const parsedQuery = CatalogGetQuerySchema.safeParse(query.values)
+  const querySchema =
+    type === 'artist'
+      ? ArtistGetQuerySchema
+      : type === 'album'
+        ? AlbumGetQuerySchema
+        : PlaylistGetQuerySchema
+  const parsedQuery = querySchema.safeParse(query.values)
   if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
 
-  const includeSchema =
-    type === 'artist'
-      ? z.union([ArtistIncludeSchema, z.literal('artwork')])
-      : type === 'album'
-        ? z.union([AlbumIncludeSchema, z.literal('artwork')])
-        : z.union([PlaylistIncludeSchema, z.literal('artwork')])
-  const parsedInclude = parseCsvList(parsedQuery.data.include, includeSchema)
-  if (!parsedInclude.success) return invalidRequestResponse(parsedInclude.issues)
-  const include = parsedInclude.data ?? ['artwork']
+  const include: CatalogInclude[] = parsedQuery.data.include ?? ['artwork']
 
   try {
     const data = await getCatalogEntityServer({
@@ -154,10 +159,6 @@ export async function handleCatalogSearchGet(request: Request): Promise<Response
     return invalidRequestResponse(prefixIssuePath('types', parsedTypes.issues))
   if (parsedTypes.data?.length === 0)
     return invalidValue('types', 'At least one Apple catalog type must be selected.')
-  const parsedInclude = parseCsvList(parsedQuery.data.include, z.literal('motionArtwork'))
-  if (!parsedInclude.success)
-    return invalidRequestResponse(prefixIssuePath('include', parsedInclude.issues))
-
   try {
     const data = await getCatalogSearchServer({
       term: parsedQuery.data.term,
@@ -166,7 +167,7 @@ export async function handleCatalogSearchGet(request: Request): Promise<Response
       limit: parsedQuery.data.limit,
       offset: parsedQuery.data.offset,
       artworkSize: parsedQuery.data.artworkSize,
-      motionArtwork: parsedInclude.data?.includes('motionArtwork') ?? false,
+      motionArtwork: parsedQuery.data.include?.includes('motionArtwork') ?? false,
     })
     return catalogJson(data)
   } catch {
@@ -203,9 +204,6 @@ export async function handleCatalogSearchSuggestionsGet(request: Request): Promi
     return invalidValue('kinds', 'At least one suggestion kind must be selected.')
   if (parsedTypes.data?.length === 0)
     return invalidValue('types', 'At least one Apple catalog type must be selected.')
-  const parsedInclude = parseCsvList(parsedQuery.data.include, z.literal('motionArtwork'))
-  if (!parsedInclude.success)
-    return invalidRequestResponse(prefixIssuePath('include', parsedInclude.issues))
   const kinds = parsedKinds.data ?? ['terms', 'topResults']
   const types =
     parsedTypes.data ??
@@ -219,7 +217,7 @@ export async function handleCatalogSearchSuggestionsGet(request: Request): Promi
       ...(types ? { types } : {}),
       limit: parsedQuery.data.limit,
       artworkSize: parsedQuery.data.artworkSize,
-      motionArtwork: parsedInclude.data?.includes('motionArtwork') ?? false,
+      motionArtwork: parsedQuery.data.include?.includes('motionArtwork') ?? false,
     })
     return catalogJson(data)
   } catch {
@@ -247,10 +245,6 @@ export async function handleCatalogCollectionGet(
   if (query.error) return query.error
   const parsedQuery = CatalogCollectionQuerySchema.safeParse(query.values)
   if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
-  const parsedInclude = parseCsvList(parsedQuery.data.include, z.literal('motionArtwork'))
-  if (!parsedInclude.success)
-    return invalidRequestResponse(prefixIssuePath('include', parsedInclude.issues))
-
   try {
     const data = await getCatalogCollectionServer({
       type,
@@ -260,7 +254,7 @@ export async function handleCatalogCollectionGet(
       limit: parsedQuery.data.limit,
       offset: parsedQuery.data.offset,
       artworkSize: parsedQuery.data.artworkSize,
-      motionArtwork: parsedInclude.data?.includes('motionArtwork') ?? false,
+      motionArtwork: parsedQuery.data.include?.includes('motionArtwork') ?? false,
     })
     if (!data) return resourceNotFoundResponse(`${type} ${idResult.id}`)
     return catalogJson(data)
@@ -313,8 +307,6 @@ export async function handleTrackDetailGet(request: Request, appleId: string): P
   const parsedQuery = TrackDetailQuerySchema.safeParse(query.values)
   if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
 
-  const parsedInclude = parseCsvList(parsedQuery.data.include, TrackDetailIncludeSchema)
-  if (!parsedInclude.success) return invalidRequestResponse(parsedInclude.issues)
   const parsedFormats = parseCsvList(parsedQuery.data.formats, LyricsOutputFormatSchema)
   if (!parsedFormats.success) return invalidRequestResponse(parsedFormats.issues)
 
@@ -322,7 +314,7 @@ export async function handleTrackDetailGet(request: Request, appleId: string): P
     const data = await getTrackDetailServer({
       appleId: idResult.id,
       storefront: parsedQuery.data.storefront,
-      include: parsedInclude.data ?? ['artwork'],
+      include: parsedQuery.data.include ?? ['artwork'],
       formats: parsedFormats.data ?? [...DEFAULT_LYRICS_FORMATS],
       artworkSize: parsedQuery.data.artworkSize,
     })

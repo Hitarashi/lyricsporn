@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 
+import { AlbumIncludeSchema } from '@/lib/api/v1/catalog-contract'
 import { Route as AlbumRoute } from '@/routes/api/v1/albums/$appleId'
 import { Route as AlbumCollectionRoute } from '@/routes/api/v1/albums/$appleId/collections/$collection'
 
@@ -9,6 +10,67 @@ import { appleEditorialVideo, expectedMotionArtwork } from '../../helpers/apple-
 afterEach(restoreFetch)
 
 describe('album API', () => {
+  it('accepts every album include and maps each option to Apple', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.searchParams.get('extend') === 'editorialVideo') {
+        return Response.json({ data: [] })
+      }
+
+      expect(url.pathname).toBe('/v1/catalog/us/albums/12345')
+      expect(url.searchParams.get('include')).toBe('artists,genres,tracks,record-labels')
+      expect(url.searchParams.get('views')).toBe(
+        'appears-on,other-versions,related-albums,related-videos',
+      )
+      expect(url.searchParams.get('extend')).toBe('editorialNotes,artistUrl,audioVariants')
+      return Response.json({
+        data: [
+          {
+            id: '12345',
+            type: 'albums',
+            attributes: {
+              name: 'Example Album',
+              artistUrl: 'https://music.apple.com/artist/example/67890',
+              editorialNotes: { standard: 'Album notes.' },
+              audioVariants: ['lossless'],
+            },
+          },
+        ],
+      })
+    })
+    const requestUrl = new URL('https://lyricsporn.test/api/v1/albums/12345')
+    requestUrl.searchParams.set('include', AlbumIncludeSchema.options.join(','))
+
+    const response = await routeHandler(
+      AlbumRoute,
+      'GET',
+    )({
+      request: new Request(requestUrl),
+      params: { appleId: '12345' },
+    })
+    const body = await response.json()
+    const collectionNames = AlbumIncludeSchema.options.filter(
+      (name) =>
+        name !== 'artwork' &&
+        name !== 'editorialNotes' &&
+        name !== 'artistUrl' &&
+        name !== 'audioVariants' &&
+        name !== 'motionArtwork',
+    )
+
+    expect(response.status).toBe(200)
+    expect(body.data).toMatchObject({
+      artistUrl: 'https://music.apple.com/artist/example/67890',
+      editorialNotes: { standard: 'Album notes.' },
+      audioVariants: ['lossless'],
+      motionArtwork: null,
+    })
+    expect(Object.keys(body.data.collections).sort()).toEqual(collectionNames.sort())
+    expect(appleRequests).toHaveLength(2)
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
+  })
+
   it('returns album metadata, extended fields, and requested relationships', async () => {
     mockAppleCatalog(() =>
       Response.json({

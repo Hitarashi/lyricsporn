@@ -9,7 +9,7 @@ Track, artist, album, playlist, and artwork routes accept Apple Music catalog ID
 
 ## Apple Music catalog search
 
-`GET /api/v1/catalog/search` proxies Apple's free-text catalog search and returns compact normalized results grouped by resource type. The default search type is songs; request `albums`, `artists`, `playlists`, `music-videos`, `stations`, `activities`, `curators`, `apple-curators`, or `record-labels` as needed. Apple ranks the text query; this route does not perform exact title or artist matching. Add `include=motionArtwork` to request motion video URLs on song and album results. The group's `next` URL preserves this option.
+`GET /api/v1/catalog/search` proxies Apple's free-text catalog search and returns compact normalized results grouped by resource type. The default search type is songs; request `albums`, `artists`, `playlists`, `music-videos`, `stations`, `activities`, `curators`, `apple-curators`, or `record-labels` as needed. Apple ranks the text query; this route does not perform exact title or artist matching. Its only `include` value is `motionArtwork`, which requests motion video URLs on song and album results. The group's `next` URL preserves this option.
 
 ```text
 GET /api/v1/catalog/search?term=Daft%20Punk%20Discovery&types=songs,albums,artists&storefront=us&limit=5&include=motionArtwork
@@ -24,7 +24,7 @@ GET /api/v1/catalog/search/hints?term=daft
 GET /api/v1/catalog/search/suggestions?term=daft&kinds=terms,topResults&types=songs,albums
 ```
 
-Hints return Apple’s suggested query strings. Suggestions can return query terms, compact top catalog results, or both. The default kinds are `terms,topResults`; `types` filters only the top results and defaults to `songs,albums,artists,playlists` when top results are requested. Suggestion limits range from 1 to 10. Add `include=motionArtwork` to request video URLs for song and album top results.
+Hints return Apple’s suggested query strings. Suggestions can return query terms, compact top catalog results, or both. The default kinds are `terms,topResults`; `types` filters only the top results and defaults to `songs,albums,artists,playlists` when top results are requested. Suggestion limits range from 1 to 10. The suggestions route's only `include` value is `motionArtwork`, which requests video URLs for song and album top results.
 
 ```json
 {
@@ -51,7 +51,7 @@ Hints return Apple’s suggested query strings. Suggestions can return query ter
 
 ## Track detail
 
-`GET /api/v1/tracks/{appleId}` returns normalized track metadata. The requested storefront is tried first; if Apple has no matching track there, the API tries `us`, `gb`, `ca`, `au`, `in`, and `jp`, skipping the storefront already tried. When `storefront` is omitted, `us` is the preferred storefront. The response's top-level `storefront` reports the catalog used. Fallback occurs only when Apple returns no resource; upstream errors are returned without trying another storefront. `include` defaults to `artwork`; add `motionArtwork`, `artists`, `album`, `lyrics`, or `appleCatalog` when a screen needs those sections. Track motion artwork falls back to its album when Apple does not return a song-level video. When requested, `motionArtwork` is `null` if no video is available. `appleCatalog` returns the raw Apple response for that request. Lyrics format defaults to `json`.
+`GET /api/v1/tracks/{appleId}` returns normalized track metadata. The requested storefront is tried first; if Apple has no matching track there, the API tries `us`, `gb`, `ca`, `au`, `in`, and `jp`, skipping the storefront already tried. When `storefront` is omitted, `us` is the preferred storefront. The response's top-level `storefront` reports the catalog used. Fallback occurs only when Apple returns no resource; upstream errors are returned without trying another storefront. The allowed `include` values are `artwork`, `motionArtwork`, `artists`, `album`, `lyrics`, and `appleCatalog`; it defaults to `artwork`. Track motion artwork falls back to its album when Apple does not return a song-level video. When requested, `motionArtwork` is `null` if no video is available. `appleCatalog` returns the raw Apple response for that request. Lyrics format defaults to `json`.
 
 ```sh
 curl 'https://lyricsporn.netlify.app/api/v1/tracks/1082506273?include=artwork,motionArtwork,artists,album,lyrics&formats=json,ttml'
@@ -61,7 +61,7 @@ The `track` object contains the Apple song ID and type, title, artist, album, al
 
 ## Queue hydration
 
-`POST /api/v1/tracks/batch` fetches up to 50 Apple song IDs for a playback queue. Apple metadata is requested in batches; missing items are retried in storefront batches across `us`, `gb`, `ca`, `au`, `in`, and `jp`. Duplicate queue entries and input order are preserved. Each matched track reports its resolved `storefront`. Core queue fields are always returned: title, artist, album, and duration when available. Artwork is included by default. `identifiers`, `release`, and `lyrics` add ISRC, release date, or lyrics.
+`POST /api/v1/tracks/batch` fetches up to 50 Apple song IDs for a playback queue. Apple metadata is requested in batches; missing items are retried in storefront batches across `us`, `gb`, `ca`, `au`, `in`, and `jp`. Duplicate queue entries and input order are preserved. Each matched track reports its resolved `storefront`. Core queue fields are always returned: title, artist, album, and duration when available. The allowed `include` values are `artwork`, `motionArtwork`, `identifiers`, `release`, and `lyrics`. Artwork is included by default; `identifiers`, `release`, and `lyrics` add ISRC, release date, or lyrics.
 
 ```json
 {
@@ -78,7 +78,7 @@ Item `include`, `storefront`, `artworkSize`, and `lyrics.formats` override their
 
 ## Artist, album, and playlist catalog
 
-Single-resource routes return one normalized entity. The default include is artwork; collections and extended fields are opt-in.
+Single-resource routes return one normalized entity. The default include is artwork; collections and extended fields are opt-in. Each route has its own enum of allowed `include` values, shown in Scalar's interactive reference.
 
 ```text
 GET /api/v1/artists/{appleId}?include=artwork,editorialNotes,topSongs,latestRelease
@@ -86,15 +86,15 @@ GET /api/v1/albums/{appleId}?include=artwork,motionArtwork,artistUrl,audioVarian
 GET /api/v1/playlists/{appleId}?include=artwork,description,trackTypes,curator,tracks,featuredArtists,moreByCurator
 ```
 
-Artist details include name, Apple URL, and genres, plus requested artwork/editorial notes and collections. Supported collections and views are `albums`, `genres`, `musicVideos`, `playlists`, `station`, `topSongs`, `latestRelease`, `featuredAlbums`, `featuredPlaylists`, `featuredMusicVideos`, `topMusicVideos`, `fullAlbums`, `singles`, `liveAlbums`, `appearsOnAlbums`, `compilationAlbums`, and `similarArtists`.
+Artist `include` accepts `artwork`, `editorialNotes`, `albums`, `genres`, `musicVideos`, `playlists`, `station`, `topSongs`, `latestRelease`, `featuredAlbums`, `featuredPlaylists`, `featuredMusicVideos`, `topMusicVideos`, `fullAlbums`, `singles`, `liveAlbums`, `appearsOnAlbums`, `compilationAlbums`, and `similarArtists`. Artist details include name, Apple URL, and genres; selected collections and views are returned under `collections`.
 
-Album details include name, artist name, Apple URL, genres, release date, track count, content rating, copyright, record label, UPC, and single/compilation/completeness/mastering flags, plus requested artwork, motion artwork, editorial notes, or collections. Motion artwork is `null` when Apple has no video for the album. Supported additions are `artistUrl`, `audioVariants`, `artists`, `genres`, `tracks`, `recordLabels`, `appearsOn`, `otherVersions`, `relatedAlbums`, and `relatedVideos`.
+Album `include` accepts `artwork`, `artists`, `genres`, `tracks`, `recordLabels`, `appearsOn`, `otherVersions`, `relatedAlbums`, `relatedVideos`, `editorialNotes`, `artistUrl`, `audioVariants`, and `motionArtwork`. Album details include name, artist name, Apple URL, genres, release date, track count, content rating, copyright, record label, UPC, and single/compilation/completeness/mastering flags. Motion artwork is `null` when Apple has no video for the album.
 
-Playlist details include name, curator name, Apple URL, chart flag, last-modified date, and playlist type, plus requested artwork, description, track types, curator, tracks, `featuredArtists`, and `moreByCurator`.
+Playlist `include` accepts `artwork`, `curator`, `tracks`, `description`, `trackTypes`, `featuredArtists`, and `moreByCurator`. Playlist details include name, curator name, Apple URL, chart flag, last-modified date, and playlist type.
 
 Collection values contain compact catalog items with Apple ID, type, name, artist/album/curator names, URL, artwork, genres, release date, duration, track count, ISRC, content rating, and playlist type when Apple provides those fields. Collection items are a page-sized projection, not complete nested artist/album/playlist records.
 
-Use collection routes to paginate a relationship or artist view. Add `include=motionArtwork` when a page contains song or album rows that need video URLs:
+Use collection routes to paginate a relationship or artist view. Their only `include` value is `motionArtwork`; add it when a page contains song or album rows that need video URLs:
 
 ```text
 GET /api/v1/artists/{appleId}/collections/topSongs?limit=20&offset=0&include=motionArtwork

@@ -153,4 +153,48 @@ describe('asset batch API', () => {
         ?.searchParams.get('ids[songs]'),
     ).toBe('100')
   })
+
+  it('accepts a per-item motionArtwork include without a global include', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      const ids = url.searchParams.get('ids[songs]')?.split(',') ?? []
+      const withMotion = url.searchParams.get('extend') === 'editorialVideo'
+      return Response.json({
+        data: ids.map((id) => ({
+          id,
+          type: 'songs',
+          attributes: {
+            name: `Song ${id}`,
+            ...(withMotion && id === '100' ? { editorialVideo: appleEditorialVideo } : {}),
+          },
+        })),
+      })
+    })
+
+    const response = await routeHandler(
+      AssetBatchRoute,
+      'POST',
+    )({
+      request: new Request('https://lyricsporn.test/api/v1/assets/batch', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          items: [
+            { type: 'song', appleId: '100', include: ['motionArtwork'] },
+            { type: 'song', appleId: '101' },
+          ],
+        }),
+      }),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items[0].asset.motionArtwork).toEqual(expectedMotionArtwork)
+    expect(body.items[1].asset).not.toHaveProperty('motionArtwork')
+    expect(
+      appleRequests
+        .find((url) => url.searchParams.get('extend') === 'editorialVideo')
+        ?.searchParams.get('ids[songs]'),
+    ).toBe('100')
+  })
 })

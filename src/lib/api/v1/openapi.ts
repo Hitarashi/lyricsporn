@@ -3,9 +3,11 @@ import { z } from 'zod'
 
 import {
   AlbumCollectionNameSchema,
+  AlbumGetQuerySchema,
   AlbumSchema,
   AppleCatalogIdSchema,
   ArtistCollectionNameSchema,
+  ArtistGetQuerySchema,
   ArtistSchema,
   AssetBatchRequestSchema,
   AssetBatchResponseSchema,
@@ -13,7 +15,6 @@ import {
   CatalogBatchResponseSchema,
   CatalogCollectionQuerySchema,
   CatalogCollectionResponseSchema,
-  CatalogGetQuerySchema,
   CatalogSearchHintsQuerySchema,
   CatalogSearchHintsResponseSchema,
   CatalogSearchQuerySchema,
@@ -21,6 +22,7 @@ import {
   CatalogSearchSuggestionsQuerySchema,
   CatalogSearchSuggestionsResponseSchema,
   PlaylistCollectionNameSchema,
+  PlaylistGetQuerySchema,
   PlaylistSchema,
   TrackAppleIdSchema,
   TrackBatchRequestSchema,
@@ -170,22 +172,25 @@ registry.registerPath({
   },
 })
 
-for (const [resource, schema, summary, description] of [
+for (const [resource, responseSchema, querySchema, summary, description] of [
   [
     'artists',
     ArtistSchema,
+    ArtistGetQuerySchema,
     'Get artist details',
     'Fetch an Apple Music artist header, genres, and requested Apple artist collections or views.',
   ],
   [
     'albums',
     AlbumSchema,
+    AlbumGetQuerySchema,
     'Get album details',
     'Fetch Apple Music album metadata and optionally its motion artwork, tracks, artists, genres, labels, or relationship views such as appears-on, other versions, related albums, and related videos.',
   ],
   [
     'playlists',
     PlaylistSchema,
+    PlaylistGetQuerySchema,
     'Get playlist details',
     'Fetch Apple Music playlist metadata and optionally its curator, tracks, featured artists, or more by curator view.',
   ],
@@ -198,12 +203,14 @@ for (const [resource, schema, summary, description] of [
     description,
     request: {
       params: z.object({ appleId: AppleCatalogIdSchema }),
-      query: CatalogGetQuerySchema,
+      query: querySchema,
     },
     responses: {
       200: {
         description: 'Normalized Apple Music catalog resource.',
-        content: { 'application/json': { schema: z.object({ data: schema }).strict() } },
+        content: {
+          'application/json': { schema: z.object({ data: responseSchema }).strict() },
+        },
       },
       400: {
         description: 'Invalid Apple ID or include option.',

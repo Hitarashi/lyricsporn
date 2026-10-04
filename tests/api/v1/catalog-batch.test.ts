@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 
+import {
+  AlbumIncludeSchema,
+  ArtistIncludeSchema,
+  PlaylistIncludeSchema,
+} from '@/lib/api/v1/catalog-contract'
 import { Route as CatalogBatchRoute } from '@/routes/api/v1/catalog/batch'
 
 import { mockAppleCatalog, restoreFetch, routeHandler } from '../../helpers/apple-catalog'
@@ -8,6 +13,105 @@ import { appleEditorialVideo, expectedMotionArtwork } from '../../helpers/apple-
 afterEach(restoreFetch)
 
 describe('catalog batch API', () => {
+  it('accepts all global and per-item include options for every catalog entity', async () => {
+    const include = {
+      artist: [...ArtistIncludeSchema.options],
+      album: [...AlbumIncludeSchema.options],
+      playlist: [...PlaylistIncludeSchema.options],
+    }
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.searchParams.get('extend') === 'editorialVideo') return Response.json({ data: [] })
+
+      const resources = [
+        ['artists', 'ids[artists]'],
+        ['albums', 'ids[albums]'],
+        ['playlists', 'ids[playlists]'],
+      ] as const
+      const resource = resources.find(([, queryKey]) => url.searchParams.has(queryKey))
+      if (!resource) return Response.json({ data: [] })
+      const [type, queryKey] = resource
+      const ids = url.searchParams.get(queryKey)?.split(',') ?? []
+
+      return Response.json({
+        data: ids.map((id) => ({ id, type, attributes: { name: `${type} ${id}` } })),
+      })
+    })
+    const items = [
+      { type: 'artist', appleId: 'artist.1' },
+      { type: 'artist', appleId: 'artist.2', include: include.artist },
+      { type: 'album', appleId: 'album.1' },
+      { type: 'album', appleId: 'album.2', include: include.album },
+      { type: 'playlist', appleId: 'playlist.1' },
+      { type: 'playlist', appleId: 'playlist.2', include: include.playlist },
+    ]
+    const response = await routeHandler(
+      CatalogBatchRoute,
+      'POST',
+    )({
+      request: new Request('https://lyricsporn.test/api/v1/catalog/batch', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ include, items }),
+      }),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.items.map((item: { status: string }) => item.status)).toEqual([
+      'matched',
+      'matched',
+      'matched',
+      'matched',
+      'matched',
+      'matched',
+    ])
+    expect(
+      appleRequests
+        .find((url) => url.searchParams.has('ids[artists]'))
+        ?.searchParams.get('include'),
+    ).toBe('albums,genres,music-videos,playlists,station')
+    expect(
+      appleRequests.find((url) => url.searchParams.has('ids[artists]'))?.searchParams.get('views'),
+    ).toBe(
+      'top-songs,latest-release,featured-albums,featured-playlists,featured-music-videos,top-music-videos,full-albums,singles,live-albums,appears-on-albums,compilation-albums,similar-artists',
+    )
+    expect(
+      appleRequests
+        .find(
+          (url) =>
+            url.searchParams.has('ids[albums]') &&
+            url.searchParams.get('extend') !== 'editorialVideo',
+        )
+        ?.searchParams.get('views'),
+    ).toBe('appears-on,other-versions,related-albums,related-videos')
+    expect(
+      appleRequests
+        .find(
+          (url) =>
+            url.searchParams.has('ids[albums]') &&
+            url.searchParams.get('extend') !== 'editorialVideo',
+        )
+        ?.searchParams.get('extend'),
+    ).toBe('editorialNotes,artistUrl,audioVariants')
+    expect(
+      appleRequests
+        .find((url) => url.searchParams.has('ids[playlists]'))
+        ?.searchParams.get('include'),
+    ).toBe('curator,tracks')
+    expect(
+      appleRequests
+        .find((url) => url.searchParams.has('ids[playlists]'))
+        ?.searchParams.get('views'),
+    ).toBe('featured-artists,more-by-curator')
+    expect(
+      appleRequests
+        .find((url) => url.searchParams.has('ids[playlists]'))
+        ?.searchParams.get('extend'),
+    ).toBe('trackTypes')
+    expect(appleRequests).toHaveLength(4)
+  })
+
   it('returns mixed artist, album, and playlist projections in request order', async () => {
     const appleRequests = mockAppleCatalog((url) => {
       const artistId = url.searchParams.get('ids[artists]')
