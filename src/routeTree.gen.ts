@@ -18,6 +18,7 @@ import { Route as ApiV1AssetsBatchRouteImport } from './routes/api/v1/assets/bat
 import { Route as ApiV1CatalogBatchRouteImport } from './routes/api/v1/catalog/batch'
 import { Route as ApiV1CatalogSearchRouteImport } from './routes/api/v1/catalog/search'
 import { Route as ApiV1PlaylistsAppleIdRouteImport } from './routes/api/v1/playlists/$appleId'
+import { Route as ApiV1RecordLabelsAppleIdRouteImport } from './routes/api/v1/record-labels/$appleId'
 import { Route as ApiV1TracksAppleIdRouteImport } from './routes/api/v1/tracks/$appleId'
 import { Route as ApiV1TracksBatchRouteImport } from './routes/api/v1/tracks/batch'
 import { Route as ApiV1CatalogSearchHintsRouteImport } from './routes/api/v1/catalog/search/hints'
@@ -25,6 +26,7 @@ import { Route as ApiV1CatalogSearchSuggestionsRouteImport } from './routes/api/
 import { Route as ApiV1AlbumsAppleIdCollectionsCollectionRouteImport } from './routes/api/v1/albums/$appleId/collections/$collection'
 import { Route as ApiV1ArtistsAppleIdCollectionsCollectionRouteImport } from './routes/api/v1/artists/$appleId/collections/$collection'
 import { Route as ApiV1PlaylistsAppleIdCollectionsCollectionRouteImport } from './routes/api/v1/playlists/$appleId/collections/$collection'
+import { Route as ApiV1RecordLabelsAppleIdCollectionsCollectionRouteImport } from './routes/api/v1/record-labels/$appleId/collections/$collection'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,6 +73,12 @@ const ApiV1PlaylistsAppleIdRoute = ApiV1PlaylistsAppleIdRouteImport.update({
   path: '/api/v1/playlists/$appleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1RecordLabelsAppleIdRoute =
+  ApiV1RecordLabelsAppleIdRouteImport.update({
+    id: '/api/v1/record-labels/$appleId',
+    path: '/api/v1/record-labels/$appleId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1TracksAppleIdRoute = ApiV1TracksAppleIdRouteImport.update({
   id: '/api/v1/tracks/$appleId',
   path: '/api/v1/tracks/$appleId',
@@ -110,6 +118,12 @@ const ApiV1PlaylistsAppleIdCollectionsCollectionRoute =
     path: '/collections/$collection',
     getParentRoute: () => ApiV1PlaylistsAppleIdRoute,
   } as any)
+const ApiV1RecordLabelsAppleIdCollectionsCollectionRoute =
+  ApiV1RecordLabelsAppleIdCollectionsCollectionRouteImport.update({
+    id: '/collections/$collection',
+    path: '/collections/$collection',
+    getParentRoute: () => ApiV1RecordLabelsAppleIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -121,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/catalog/batch': typeof ApiV1CatalogBatchRoute
   '/api/v1/catalog/search': typeof ApiV1CatalogSearchRouteWithChildren
   '/api/v1/playlists/$appleId': typeof ApiV1PlaylistsAppleIdRouteWithChildren
+  '/api/v1/record-labels/$appleId': typeof ApiV1RecordLabelsAppleIdRouteWithChildren
   '/api/v1/tracks/$appleId': typeof ApiV1TracksAppleIdRoute
   '/api/v1/tracks/batch': typeof ApiV1TracksBatchRoute
   '/api/v1/catalog/search/hints': typeof ApiV1CatalogSearchHintsRoute
@@ -128,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/albums/$appleId/collections/$collection': typeof ApiV1AlbumsAppleIdCollectionsCollectionRoute
   '/api/v1/artists/$appleId/collections/$collection': typeof ApiV1ArtistsAppleIdCollectionsCollectionRoute
   '/api/v1/playlists/$appleId/collections/$collection': typeof ApiV1PlaylistsAppleIdCollectionsCollectionRoute
+  '/api/v1/record-labels/$appleId/collections/$collection': typeof ApiV1RecordLabelsAppleIdCollectionsCollectionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -139,6 +155,7 @@ export interface FileRoutesByTo {
   '/api/v1/catalog/batch': typeof ApiV1CatalogBatchRoute
   '/api/v1/catalog/search': typeof ApiV1CatalogSearchRouteWithChildren
   '/api/v1/playlists/$appleId': typeof ApiV1PlaylistsAppleIdRouteWithChildren
+  '/api/v1/record-labels/$appleId': typeof ApiV1RecordLabelsAppleIdRouteWithChildren
   '/api/v1/tracks/$appleId': typeof ApiV1TracksAppleIdRoute
   '/api/v1/tracks/batch': typeof ApiV1TracksBatchRoute
   '/api/v1/catalog/search/hints': typeof ApiV1CatalogSearchHintsRoute
@@ -146,6 +163,7 @@ export interface FileRoutesByTo {
   '/api/v1/albums/$appleId/collections/$collection': typeof ApiV1AlbumsAppleIdCollectionsCollectionRoute
   '/api/v1/artists/$appleId/collections/$collection': typeof ApiV1ArtistsAppleIdCollectionsCollectionRoute
   '/api/v1/playlists/$appleId/collections/$collection': typeof ApiV1PlaylistsAppleIdCollectionsCollectionRoute
+  '/api/v1/record-labels/$appleId/collections/$collection': typeof ApiV1RecordLabelsAppleIdCollectionsCollectionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -158,6 +176,7 @@ export interface FileRoutesById {
   '/api/v1/catalog/batch': typeof ApiV1CatalogBatchRoute
   '/api/v1/catalog/search': typeof ApiV1CatalogSearchRouteWithChildren
   '/api/v1/playlists/$appleId': typeof ApiV1PlaylistsAppleIdRouteWithChildren
+  '/api/v1/record-labels/$appleId': typeof ApiV1RecordLabelsAppleIdRouteWithChildren
   '/api/v1/tracks/$appleId': typeof ApiV1TracksAppleIdRoute
   '/api/v1/tracks/batch': typeof ApiV1TracksBatchRoute
   '/api/v1/catalog/search/hints': typeof ApiV1CatalogSearchHintsRoute
@@ -165,6 +184,7 @@ export interface FileRoutesById {
   '/api/v1/albums/$appleId/collections/$collection': typeof ApiV1AlbumsAppleIdCollectionsCollectionRoute
   '/api/v1/artists/$appleId/collections/$collection': typeof ApiV1ArtistsAppleIdCollectionsCollectionRoute
   '/api/v1/playlists/$appleId/collections/$collection': typeof ApiV1PlaylistsAppleIdCollectionsCollectionRoute
+  '/api/v1/record-labels/$appleId/collections/$collection': typeof ApiV1RecordLabelsAppleIdCollectionsCollectionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -178,6 +198,7 @@ export interface FileRouteTypes {
     | '/api/v1/catalog/batch'
     | '/api/v1/catalog/search'
     | '/api/v1/playlists/$appleId'
+    | '/api/v1/record-labels/$appleId'
     | '/api/v1/tracks/$appleId'
     | '/api/v1/tracks/batch'
     | '/api/v1/catalog/search/hints'
@@ -185,6 +206,7 @@ export interface FileRouteTypes {
     | '/api/v1/albums/$appleId/collections/$collection'
     | '/api/v1/artists/$appleId/collections/$collection'
     | '/api/v1/playlists/$appleId/collections/$collection'
+    | '/api/v1/record-labels/$appleId/collections/$collection'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -196,6 +218,7 @@ export interface FileRouteTypes {
     | '/api/v1/catalog/batch'
     | '/api/v1/catalog/search'
     | '/api/v1/playlists/$appleId'
+    | '/api/v1/record-labels/$appleId'
     | '/api/v1/tracks/$appleId'
     | '/api/v1/tracks/batch'
     | '/api/v1/catalog/search/hints'
@@ -203,6 +226,7 @@ export interface FileRouteTypes {
     | '/api/v1/albums/$appleId/collections/$collection'
     | '/api/v1/artists/$appleId/collections/$collection'
     | '/api/v1/playlists/$appleId/collections/$collection'
+    | '/api/v1/record-labels/$appleId/collections/$collection'
   id:
     | '__root__'
     | '/'
@@ -214,6 +238,7 @@ export interface FileRouteTypes {
     | '/api/v1/catalog/batch'
     | '/api/v1/catalog/search'
     | '/api/v1/playlists/$appleId'
+    | '/api/v1/record-labels/$appleId'
     | '/api/v1/tracks/$appleId'
     | '/api/v1/tracks/batch'
     | '/api/v1/catalog/search/hints'
@@ -221,6 +246,7 @@ export interface FileRouteTypes {
     | '/api/v1/albums/$appleId/collections/$collection'
     | '/api/v1/artists/$appleId/collections/$collection'
     | '/api/v1/playlists/$appleId/collections/$collection'
+    | '/api/v1/record-labels/$appleId/collections/$collection'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -233,6 +259,7 @@ export interface RootRouteChildren {
   ApiV1CatalogBatchRoute: typeof ApiV1CatalogBatchRoute
   ApiV1CatalogSearchRoute: typeof ApiV1CatalogSearchRouteWithChildren
   ApiV1PlaylistsAppleIdRoute: typeof ApiV1PlaylistsAppleIdRouteWithChildren
+  ApiV1RecordLabelsAppleIdRoute: typeof ApiV1RecordLabelsAppleIdRouteWithChildren
   ApiV1TracksAppleIdRoute: typeof ApiV1TracksAppleIdRoute
   ApiV1TracksBatchRoute: typeof ApiV1TracksBatchRoute
 }
@@ -302,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1PlaylistsAppleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/record-labels/$appleId': {
+      id: '/api/v1/record-labels/$appleId'
+      path: '/api/v1/record-labels/$appleId'
+      fullPath: '/api/v1/record-labels/$appleId'
+      preLoaderRoute: typeof ApiV1RecordLabelsAppleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/tracks/$appleId': {
       id: '/api/v1/tracks/$appleId'
       path: '/api/v1/tracks/$appleId'
@@ -350,6 +384,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/v1/playlists/$appleId/collections/$collection'
       preLoaderRoute: typeof ApiV1PlaylistsAppleIdCollectionsCollectionRouteImport
       parentRoute: typeof ApiV1PlaylistsAppleIdRoute
+    }
+    '/api/v1/record-labels/$appleId/collections/$collection': {
+      id: '/api/v1/record-labels/$appleId/collections/$collection'
+      path: '/collections/$collection'
+      fullPath: '/api/v1/record-labels/$appleId/collections/$collection'
+      preLoaderRoute: typeof ApiV1RecordLabelsAppleIdCollectionsCollectionRouteImport
+      parentRoute: typeof ApiV1RecordLabelsAppleIdRoute
     }
   }
 }
@@ -405,6 +446,21 @@ const ApiV1PlaylistsAppleIdRouteWithChildren =
     ApiV1PlaylistsAppleIdRouteChildren,
   )
 
+interface ApiV1RecordLabelsAppleIdRouteChildren {
+  ApiV1RecordLabelsAppleIdCollectionsCollectionRoute: typeof ApiV1RecordLabelsAppleIdCollectionsCollectionRoute
+}
+
+const ApiV1RecordLabelsAppleIdRouteChildren: ApiV1RecordLabelsAppleIdRouteChildren =
+  {
+    ApiV1RecordLabelsAppleIdCollectionsCollectionRoute:
+      ApiV1RecordLabelsAppleIdCollectionsCollectionRoute,
+  }
+
+const ApiV1RecordLabelsAppleIdRouteWithChildren =
+  ApiV1RecordLabelsAppleIdRoute._addFileChildren(
+    ApiV1RecordLabelsAppleIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiDocsRoute: ApiDocsRoute,
@@ -415,6 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1CatalogBatchRoute: ApiV1CatalogBatchRoute,
   ApiV1CatalogSearchRoute: ApiV1CatalogSearchRouteWithChildren,
   ApiV1PlaylistsAppleIdRoute: ApiV1PlaylistsAppleIdRouteWithChildren,
+  ApiV1RecordLabelsAppleIdRoute: ApiV1RecordLabelsAppleIdRouteWithChildren,
   ApiV1TracksAppleIdRoute: ApiV1TracksAppleIdRoute,
   ApiV1TracksBatchRoute: ApiV1TracksBatchRoute,
 }

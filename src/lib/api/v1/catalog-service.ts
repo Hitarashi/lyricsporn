@@ -1,4 +1,5 @@
 import type {
+  AppleCatalogRecordLabelReference,
   AppleCatalogResource,
   AppleCatalogResourceReference,
   AppleCatalogResourceResult,
@@ -26,6 +27,10 @@ import type {
   Playlist,
   QueueInclude,
   QueueTrack,
+  RecordLabel,
+  RecordLabelCollectionName,
+  RecordLabelCollectionResponse,
+  RecordLabelInclude,
   TrackBatchRequest,
   TrackBatchResponse,
   TrackDetailInclude,
@@ -55,6 +60,7 @@ import {
   DEFAULT_COLLECTION_LIMIT,
   MAX_COLLECTION_LIMIT,
   QueueTrackSchema as QueueTrackValidator,
+  RecordLabelSchema,
   TrackDetailResponseSchema,
 } from './catalog-contract'
 import { ArtworkSchema, DEFAULT_LYRICS_FORMATS } from './contract'
@@ -126,6 +132,11 @@ const PLAYLIST_COLLECTIONS = {
   tracks: { kind: 'relationship', wire: 'tracks' },
   featuredArtists: { kind: 'view', wire: 'featured-artists' },
   moreByCurator: { kind: 'view', wire: 'more-by-curator' },
+} as const
+
+const RECORD_LABEL_COLLECTIONS = {
+  latestReleases: { kind: 'view', wire: 'latest-releases' },
+  topReleases: { kind: 'view', wire: 'top-releases' },
 } as const
 
 type CatalogEntityType = keyof typeof RESOURCE_TYPES
@@ -562,6 +573,81 @@ function mapCollections(
   return collections
 }
 
+function mapRecordLabelCollection(
+  raw: unknown,
+  resource: AppleCatalogResource,
+  collection: RecordLabelCollectionName,
+  storefront: string,
+  limit: number,
+  artworkSize: number,
+): { items: CatalogItem[]; next?: string } {
+  if (!raw) return { items: [] }
+
+  const allItems = mapCollectionItems(raw, artworkSize)
+  const items = allItems.slice(0, limit)
+  const next = getRecord(raw)?.next
+  const nextOffset =
+    allItems.length > items.length ? limit : next ? (readOffset(next) ?? allItems.length) : null
+  const nextUrl =
+    nextOffset !== null
+      ? makeCollectionUrl(
+          'record-labels',
+          resource.id,
+          collection,
+          storefront,
+          limit,
+          nextOffset,
+          artworkSize,
+        )
+      : undefined
+
+  return { items, ...(nextUrl ? { next: nextUrl } : {}) }
+}
+
+function mapRecordLabel(
+  resource: AppleCatalogResource,
+  include: RecordLabelInclude[],
+  storefront: string,
+  limit: number,
+  artworkSize: number,
+): RecordLabel {
+  const attributes = resource.attributes ?? {}
+  const views = getRecord(resource.views)
+  const collections: Record<string, { items: CatalogItem[]; next?: string }> = {}
+
+  for (const name of ['latestReleases', 'topReleases'] as const) {
+    if (!include.includes(name)) continue
+    const wireName = RECORD_LABEL_COLLECTIONS[name].wire
+    collections[name] = mapRecordLabelCollection(
+      views?.[wireName],
+      resource,
+      name,
+      storefront,
+      limit,
+      artworkSize,
+    )
+  }
+
+  const description = include.includes('description') ? mapNotes(attributes.description) : undefined
+  const artwork = include.includes('artwork')
+    ? resizedArtwork(attributes.artwork, artworkSize)
+    : undefined
+  const editorialArtwork = include.includes('editorialArtwork')
+    ? resizedArtwork(attributes.editorialArtwork, artworkSize)
+    : undefined
+
+  return RecordLabelSchema.parse({
+    id: resource.id,
+    type: 'recordLabel',
+    name: getString(attributes.name) ?? '',
+    ...(getString(attributes.url) ? { url: getString(attributes.url) } : {}),
+    ...(description ? { description } : {}),
+    ...(artwork ? { artwork } : {}),
+    ...(editorialArtwork ? { editorialArtwork } : {}),
+    ...(Object.keys(collections).length > 0 ? { collections } : {}),
+  })
+}
+
 function readOffset(next: unknown): number | null {
   if (typeof next !== 'string') return null
   try {
@@ -730,6 +816,35 @@ export async function getCatalogEntityServer(options: {
     options.limit,
     options.artworkSize,
     motionArtwork,
+  )
+}
+
+export async function getRecordLabelServer(options: {
+  appleId: string
+  storefront: string
+  include: RecordLabelInclude[]
+  limit: number
+  artworkSize: number
+}): Promise<RecordLabel | null> {
+  const reference: AppleCatalogRecordLabelReference = {
+    type: 'record-labels',
+    id: options.appleId,
+    storefront: options.storefront,
+  }
+  const views = options.include.flatMap((name) => {
+    if (name === 'latestReleases' || name === 'topReleases')
+      return [RECORD_LABEL_COLLECTIONS[name].wire]
+    return []
+  })
+  const result = await fetchAppleCatalogResourceServer(reference, { views })
+  if (!result?.resource) return null
+
+  return mapRecordLabel(
+    result.resource,
+    options.include,
+    result.storefront,
+    options.limit,
+    options.artworkSize,
   )
 }
 
@@ -969,6 +1084,86 @@ export async function getCatalogCollectionServer(options: {
     items,
     page: {
       limit: pageLimit,
+      offset: options.offset,
+      ...(next ? { next } : {}),
+    },
+  }
+}
+
+export async function getRecordLabelCollectionServer(options: {
+  appleId: string
+  collection: RecordLabelCollectionName
+  storefront: string
+  limit: number
+  offset: number
+  artworkSize: number
+  motionArtwork?: boolean
+}): Promise<RecordLabelCollectionResponse | null> {
+  const config = RECORD_LABEL_COLLECTIONS[options.collection]
+  const reference: AppleCatalogRecordLabelReference = {
+    type: 'record-labels',
+    id: options.appleId,
+    storefront: options.storefront,
+  }
+
+  let response: Awaited<ReturnType<typeof fetchAppleCatalogCollectionServer>>
+  try {
+    response = await fetchAppleCatalogCollectionServer(
+      reference,
+      { kind: config.kind, name: config.wire },
+      { limit: options.limit, offset: options.offset },
+    )
+  } catch (error) {
+    if (!(error instanceof AppleCatalogCollectionUnavailableError)) throw error
+    const parent = await fetchAppleCatalogResourceServer(reference)
+    if (!parent?.resource) return null
+    return {
+      type: options.collection,
+      items: [],
+      page: { limit: options.limit, offset: options.offset },
+    }
+  }
+  if (!response) return null
+
+  const resources = Array.isArray(response.data) ? response.data : []
+  const includeMotionArtwork = options.motionArtwork ?? false
+  const motionReferences = includeMotionArtwork
+    ? resources.flatMap((resource) => {
+        const motionReference = getMotionArtworkReference(resource, options.storefront)
+        return motionReference ? [motionReference] : []
+      })
+    : []
+  const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
+  const items = resources.flatMap((resource) => {
+    const mapped = mapCatalogItem(
+      resource,
+      options.artworkSize,
+      motionArtworkForResource(resource, options.storefront, motionByKey, includeMotionArtwork),
+    )
+    return mapped ? [mapped] : []
+  })
+  const nextOffset = response.next
+    ? (readOffset(response.next) ?? options.offset + items.length)
+    : null
+  const next =
+    nextOffset !== null
+      ? makeCollectionUrl(
+          'record-labels',
+          options.appleId,
+          options.collection,
+          options.storefront,
+          options.limit,
+          nextOffset,
+          options.artworkSize,
+          includeMotionArtwork,
+        )
+      : undefined
+
+  return {
+    type: options.collection,
+    items,
+    page: {
+      limit: options.limit,
       offset: options.offset,
       ...(next ? { next } : {}),
     },

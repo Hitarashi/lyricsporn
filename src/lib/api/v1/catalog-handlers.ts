@@ -1,4 +1,4 @@
-import type { CatalogInclude } from './catalog-contract'
+import type { CatalogInclude, RecordLabelInclude } from './catalog-contract'
 
 import { z } from 'zod'
 
@@ -19,6 +19,8 @@ import {
   DEFAULT_CATALOG_SEARCH_TYPES,
   PlaylistCollectionNameSchema,
   PlaylistGetQuerySchema,
+  RecordLabelCollectionNameSchema,
+  RecordLabelGetQuerySchema,
   TrackAppleIdSchema,
   TrackBatchRequestSchema,
   TrackDetailQuerySchema,
@@ -29,6 +31,8 @@ import {
   getCatalogSearchHintsServer,
   getCatalogSearchServer,
   getCatalogSearchSuggestionsServer,
+  getRecordLabelCollectionServer,
+  getRecordLabelServer,
   getTrackDetailServer,
   lookupAssetBatchServer,
   lookupCatalogBatchServer,
@@ -149,6 +153,34 @@ export async function handleCatalogEntityGet(
   }
 }
 
+export async function handleRecordLabelEntityGet(
+  request: Request,
+  appleId: string,
+): Promise<Response> {
+  const idResult = parseResourceId(appleId)
+  if (idResult.error) return idResult.error
+  const query = queryParameters(request)
+  if (query.error) return query.error
+  const parsedQuery = RecordLabelGetQuerySchema.safeParse(query.values)
+  if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
+
+  const include: RecordLabelInclude[] = parsedQuery.data.include ?? ['artwork']
+
+  try {
+    const data = await getRecordLabelServer({
+      appleId: idResult.id,
+      storefront: parsedQuery.data.storefront,
+      include,
+      limit: parsedQuery.data.limit,
+      artworkSize: parsedQuery.data.artworkSize,
+    })
+    if (!data) return resourceNotFoundResponse(`record label ${idResult.id}`)
+    return catalogJson({ data })
+  } catch {
+    return unexpectedErrorResponse()
+  }
+}
+
 export async function handleCatalogSearchGet(request: Request): Promise<Response> {
   const query = queryParameters(request)
   if (query.error) return query.error
@@ -257,6 +289,37 @@ export async function handleCatalogCollectionGet(
       motionArtwork: parsedQuery.data.include?.includes('motionArtwork') ?? false,
     })
     if (!data) return resourceNotFoundResponse(`${type} ${idResult.id}`)
+    return catalogJson(data)
+  } catch {
+    return unexpectedErrorResponse()
+  }
+}
+
+export async function handleRecordLabelCollectionGet(
+  request: Request,
+  appleId: string,
+  collection: string,
+): Promise<Response> {
+  const idResult = parseResourceId(appleId)
+  if (idResult.error) return idResult.error
+  const parsedCollection = RecordLabelCollectionNameSchema.safeParse(collection)
+  if (!parsedCollection.success) return invalidRequestResponse(parsedCollection.error.issues)
+  const query = queryParameters(request)
+  if (query.error) return query.error
+  const parsedQuery = CatalogCollectionQuerySchema.safeParse(query.values)
+  if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
+
+  try {
+    const data = await getRecordLabelCollectionServer({
+      appleId: idResult.id,
+      collection: parsedCollection.data,
+      storefront: parsedQuery.data.storefront,
+      limit: parsedQuery.data.limit,
+      offset: parsedQuery.data.offset,
+      artworkSize: parsedQuery.data.artworkSize,
+      motionArtwork: parsedQuery.data.include?.includes('motionArtwork') ?? false,
+    })
+    if (!data) return resourceNotFoundResponse(`record label ${idResult.id}`)
     return catalogJson(data)
   } catch {
     return unexpectedErrorResponse()

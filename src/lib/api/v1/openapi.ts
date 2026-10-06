@@ -24,6 +24,10 @@ import {
   PlaylistCollectionNameSchema,
   PlaylistGetQuerySchema,
   PlaylistSchema,
+  RecordLabelCollectionNameSchema,
+  RecordLabelCollectionResponseSchema,
+  RecordLabelGetQuerySchema,
+  RecordLabelSchema,
   TrackAppleIdSchema,
   TrackBatchRequestSchema,
   TrackBatchResponseSchema,
@@ -194,6 +198,13 @@ for (const [resource, responseSchema, querySchema, summary, description] of [
     'Get playlist details',
     'Fetch Apple Music playlist metadata and optionally its curator, tracks, featured artists, or more by curator view.',
   ],
+  [
+    'record-labels',
+    RecordLabelSchema,
+    RecordLabelGetQuerySchema,
+    'Get record label details',
+    'Fetch Apple Music record label metadata and optionally its latest releases or top releases views.',
+  ],
 ] as const) {
   registry.registerPath({
     method: 'get',
@@ -232,9 +243,10 @@ const collectionNameSchemas = {
   artists: ArtistCollectionNameSchema,
   albums: AlbumCollectionNameSchema,
   playlists: PlaylistCollectionNameSchema,
+  'record-labels': RecordLabelCollectionNameSchema,
 } as const
 
-for (const resource of ['artists', 'albums', 'playlists'] as const) {
+for (const resource of ['artists', 'albums', 'playlists', 'record-labels'] as const) {
   registry.registerPath({
     method: 'get',
     path: `/api/v1/${resource}/{appleId}/collections/{collection}`,
@@ -252,7 +264,14 @@ for (const resource of ['artists', 'albums', 'playlists'] as const) {
     responses: {
       200: {
         description: 'One collection page of normalized catalog items.',
-        content: { 'application/json': { schema: CatalogCollectionResponseSchema } },
+        content: {
+          'application/json': {
+            schema:
+              resource === 'record-labels'
+                ? RecordLabelCollectionResponseSchema
+                : CatalogCollectionResponseSchema,
+          },
+        },
       },
       400: {
         description: 'Invalid collection name or pagination options.',

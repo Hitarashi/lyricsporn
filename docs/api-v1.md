@@ -105,6 +105,26 @@ GET /api/v1/playlists/{appleId}/collections/tracks?limit=50&offset=0&include=mot
 Each response contains `items` and `page` (`limit`, `offset`, and an optional `next` URL). Follow `page.next` for the next page. Requested limits range from 1 to 100. Apple caps some collections more narrowly, so `page.limit` reports the effective limit for that collection.
 If the parent exists but Apple has no resources for that collection or view, the route returns an empty `items` array. An unknown parent returns 404.
 
+## Record labels
+
+`GET /api/v1/record-labels/{appleId}` returns normalized label details. Its `include` values are `artwork`, `editorialArtwork`, `description`, `latestReleases`, and `topReleases`; artwork is included by default, and requested release views appear under `collections`. These are selected Apple Music views, not a guaranteed exhaustive catalog of the label's releases.
+
+For T-Series (Apple ID `1546385316`):
+
+```text
+GET /api/v1/record-labels/1546385316?storefront=us&include=artwork,latestReleases,topReleases
+GET /api/v1/record-labels/1546385316/collections/latestReleases?storefront=us&limit=20&offset=0&artworkSize=300
+GET /api/v1/record-labels/1546385316/collections/topReleases?storefront=us&limit=20&offset=0&artworkSize=300&include=motionArtwork
+```
+
+The collection names `latestReleases` and `topReleases` map to Apple's corresponding views. Collection requests accept `limit`, `offset`, `storefront`, and `artworkSize`; `motionArtwork` is an optional `include`. Responses contain `items` and `page`; follow `page.next` to continue paging. To fetch tracks for a release, pass an album ID from a release item to the existing album tracks collection:
+
+```text
+GET /api/v1/albums/{appleId}/collections/tracks?storefront=us&limit=50&offset=0
+```
+
+Follow the tracks response's `page.next` as well.
+
 ## Mixed catalog batch
 
 `POST /api/v1/catalog/batch` fetches up to 50 artists, albums, and playlists in one request. The default projection is artwork plus core metadata. Request-wide `include` sets defaults by entity type; an item can override its own include list, storefront, collection limit, and artwork size.

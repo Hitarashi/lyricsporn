@@ -104,12 +104,25 @@ export interface AppleCatalogResourceReference {
   storefront: string
 }
 
+export interface AppleCatalogRecordLabelReference {
+  type: 'record-labels'
+  id: string
+  storefront: string
+}
+
 export interface AppleCatalogResourceResult {
   reference: AppleCatalogResourceReference
   storefront: string
   response: AppleCatalogResponse
   resource: AppleCatalogResource | null
   error?: boolean
+}
+
+export interface AppleCatalogRecordLabelResourceResult {
+  reference: AppleCatalogRecordLabelReference
+  storefront: string
+  response: AppleCatalogResponse
+  resource: AppleCatalogResource | null
 }
 
 export class AppleCatalogCollectionUnavailableError extends Error {
@@ -286,10 +299,18 @@ function resourcesFromResponse(response: AppleCatalogResponse): AppleCatalogReso
   return Array.isArray(response.data) ? response.data : []
 }
 
-export async function fetchAppleCatalogResourceServer(
+export function fetchAppleCatalogResourceServer(
   reference: AppleCatalogResourceReference,
+  options?: { include?: string[]; views?: string[]; extend?: string[] },
+): Promise<AppleCatalogResourceResult | null>
+export function fetchAppleCatalogResourceServer(
+  reference: AppleCatalogRecordLabelReference,
+  options?: { include?: string[]; views?: string[]; extend?: string[] },
+): Promise<AppleCatalogRecordLabelResourceResult | null>
+export async function fetchAppleCatalogResourceServer(
+  reference: AppleCatalogResourceReference | AppleCatalogRecordLabelReference,
   options: { include?: string[]; views?: string[]; extend?: string[] } = {},
-): Promise<AppleCatalogResourceResult | null> {
+): Promise<AppleCatalogResourceResult | AppleCatalogRecordLabelResourceResult | null> {
   const storefront = normalizeCatalogStorefront(reference.storefront)
   const id = normalizeCatalogId(reference.id)
   const url = catalogUrl(`${storefront}/${reference.type}/${encodeURIComponent(id)}`)
@@ -301,12 +322,15 @@ export async function fetchAppleCatalogResourceServer(
 
   const response = await fetchAmp(url)
   if (!response) return null
-  return {
+  const result = {
     reference: { ...reference, id, storefront },
     storefront,
     response,
     resource: resourcesFromResponse(response)[0] ?? null,
   }
+  return reference.type === 'record-labels'
+    ? (result as AppleCatalogRecordLabelResourceResult)
+    : (result as AppleCatalogResourceResult)
 }
 
 export async function fetchAppleCatalogSearchServer(options: {
@@ -432,7 +456,7 @@ export async function fetchAppleCatalogResourcesServer(
 }
 
 export async function fetchAppleCatalogCollectionServer(
-  reference: AppleCatalogResourceReference,
+  reference: AppleCatalogResourceReference | AppleCatalogRecordLabelReference,
   collection: { kind: 'relationship' | 'view'; name: string },
   options: { limit: number; offset: number } = { limit: 20, offset: 0 },
 ): Promise<AppleCatalogResponse | null> {

@@ -5,6 +5,7 @@ import {
   ArtistIncludeSchema,
   MotionArtworkIncludeSchema,
   PlaylistIncludeSchema,
+  RecordLabelIncludeSchema,
   TrackDetailIncludeSchema,
 } from '@/lib/api/v1/catalog-contract'
 import { openApiDocument } from '@/lib/api/v1/openapi'
@@ -37,6 +38,8 @@ describe('OpenAPI routes and include enums', () => {
 
     expect(routePaths).toContain('/api/v1/tracks/{appleId}')
     expect(routePaths).toContain('/api/v1/tracks/batch')
+    expect(routePaths).toContain('/api/v1/record-labels/{appleId}')
+    expect(routePaths).toContain('/api/v1/record-labels/{appleId}/collections/{collection}')
     expect(routePaths).not.toContain('/api/v1/lookup')
     expect(paths['/api/v1/tracks/{appleId}']).toHaveProperty('get')
     expect(paths['/api/v1/tracks/batch']).toHaveProperty('post')
@@ -75,6 +78,11 @@ describe('OpenAPI routes and include enums', () => {
         values: PlaylistIncludeSchema.options,
       },
       {
+        path: '/api/v1/record-labels/{appleId}',
+        component: 'RecordLabelInclude',
+        values: RecordLabelIncludeSchema.options,
+      },
+      {
         path: '/api/v1/artists/{appleId}/collections/{collection}',
         component: 'MotionArtworkInclude',
         values: MotionArtworkIncludeSchema.options,
@@ -86,6 +94,11 @@ describe('OpenAPI routes and include enums', () => {
       },
       {
         path: '/api/v1/playlists/{appleId}/collections/{collection}',
+        component: 'MotionArtworkInclude',
+        values: MotionArtworkIncludeSchema.options,
+      },
+      {
+        path: '/api/v1/record-labels/{appleId}/collections/{collection}',
         component: 'MotionArtworkInclude',
         values: MotionArtworkIncludeSchema.options,
       },

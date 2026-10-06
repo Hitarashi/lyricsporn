@@ -327,6 +327,13 @@ const PlaylistCollectionsSchema = z
   })
   .strict()
 
+const RecordLabelCollectionsSchema = z
+  .object({
+    latestReleases: CatalogCollectionSchema.optional(),
+    topReleases: CatalogCollectionSchema.optional(),
+  })
+  .strict()
+
 export const ArtistSchema = z
   .object({
     id: AppleCatalogIdSchema,
@@ -386,6 +393,20 @@ export const PlaylistSchema = z
   })
   .strict()
   .openapi('Playlist')
+
+export const RecordLabelSchema = z
+  .object({
+    id: AppleCatalogIdSchema,
+    type: z.literal('recordLabel'),
+    name: z.string(),
+    url: z.string().url().optional(),
+    description: EditorialNotesSchema.optional(),
+    artwork: ArtworkSchema.optional(),
+    editorialArtwork: ArtworkSchema.optional(),
+    collections: RecordLabelCollectionsSchema.optional(),
+  })
+  .strict()
+  .openapi('RecordLabel')
 
 export const CatalogEntitySchema = z.discriminatedUnion('type', [
   ArtistSchema,
@@ -447,6 +468,10 @@ export const PlaylistIncludeSchema = z
   ])
   .openapi('PlaylistInclude')
 
+export const RecordLabelIncludeSchema = z
+  .enum(['artwork', 'editorialArtwork', 'description', 'latestReleases', 'topReleases'])
+  .openapi('RecordLabelInclude')
+
 export const CatalogIncludeSchema = z.union([
   ArtistIncludeSchema,
   AlbumIncludeSchema,
@@ -499,6 +524,17 @@ export const PlaylistGetQuerySchema = CatalogGetQueryBaseSchema.extend({
       param: { style: 'form', explode: false },
     }),
 }).openapi('PlaylistGetQuery')
+
+export const RecordLabelGetQuerySchema = CatalogGetQueryBaseSchema.extend({
+  include: z
+    .array(RecordLabelIncludeSchema)
+    .optional()
+    .openapi({
+      description: 'Record label sections to include. Values are comma-separated.',
+      example: ['artwork', 'latestReleases'],
+      param: { style: 'form', explode: false },
+    }),
+}).openapi('RecordLabelGetQuery')
 
 export const CatalogBatchItemSchema = z
   .discriminatedUnion('type', [
@@ -694,6 +730,8 @@ export const PlaylistCollectionNameSchema = z.enum([
   'moreByCurator',
 ])
 
+export const RecordLabelCollectionNameSchema = z.enum(['latestReleases', 'topReleases'])
+
 export const CatalogCollectionQuerySchema = z
   .object({
     storefront: StorefrontSchema,
@@ -716,20 +754,31 @@ export const CatalogCollectionQuerySchema = z
   })
   .strict()
 
+const CatalogCollectionPageSchema = z
+  .object({
+    limit: z.number().int().positive(),
+    offset: z.number().int().nonnegative(),
+    next: z.string().optional(),
+  })
+  .strict()
+
 export const CatalogCollectionResponseSchema = z
   .object({
     type: CatalogCollectionNameSchema,
     items: z.array(CatalogItemSchema),
-    page: z
-      .object({
-        limit: z.number().int().positive(),
-        offset: z.number().int().nonnegative(),
-        next: z.string().optional(),
-      })
-      .strict(),
+    page: CatalogCollectionPageSchema,
   })
   .strict()
   .openapi('CatalogCollectionResponse')
+
+export const RecordLabelCollectionResponseSchema = z
+  .object({
+    type: RecordLabelCollectionNameSchema,
+    items: z.array(CatalogItemSchema),
+    page: CatalogCollectionPageSchema,
+  })
+  .strict()
+  .openapi('RecordLabelCollectionResponse')
 
 export const TrackDetailIncludeSchema = z
   .enum(['artwork', 'motionArtwork', 'artists', 'album', 'lyrics', 'appleCatalog'])
@@ -997,6 +1046,11 @@ export const SingleCatalogResponseSchema = z
   .strict()
   .openapi('SingleCatalogResponse')
 
+export const SingleRecordLabelResponseSchema = z
+  .object({ data: RecordLabelSchema })
+  .strict()
+  .openapi('SingleRecordLabelResponse')
+
 export const SingleTrackErrorSchema = ApiErrorResponseSchema
 
 export type CatalogEntity = z.infer<typeof CatalogEntitySchema>
@@ -1006,13 +1060,16 @@ export type CatalogInclude = z.infer<typeof CatalogIncludeSchema>
 export type ArtistInclude = z.infer<typeof ArtistIncludeSchema>
 export type AlbumInclude = z.infer<typeof AlbumIncludeSchema>
 export type PlaylistInclude = z.infer<typeof PlaylistIncludeSchema>
+export type RecordLabelInclude = z.infer<typeof RecordLabelIncludeSchema>
 export type MotionArtworkInclude = z.infer<typeof MotionArtworkIncludeSchema>
 export type Artist = z.infer<typeof ArtistSchema>
 export type Album = z.infer<typeof AlbumSchema>
 export type Playlist = z.infer<typeof PlaylistSchema>
+export type RecordLabel = z.infer<typeof RecordLabelSchema>
 export type ArtistGetQuery = z.infer<typeof ArtistGetQuerySchema>
 export type AlbumGetQuery = z.infer<typeof AlbumGetQuerySchema>
 export type PlaylistGetQuery = z.infer<typeof PlaylistGetQuerySchema>
+export type RecordLabelGetQuery = z.infer<typeof RecordLabelGetQuerySchema>
 export type CatalogBatchItem = z.infer<typeof CatalogBatchItemSchema>
 export type CatalogBatchRequest = z.infer<typeof CatalogBatchRequestSchema>
 export type CatalogBatchResponse = z.infer<typeof CatalogBatchResponseSchema>
@@ -1033,7 +1090,9 @@ export type CatalogSearchType = z.infer<typeof CatalogSearchTypeSchema>
 export type ArtistCollectionName = z.infer<typeof ArtistCollectionNameSchema>
 export type AlbumCollectionName = z.infer<typeof AlbumCollectionNameSchema>
 export type PlaylistCollectionName = z.infer<typeof PlaylistCollectionNameSchema>
+export type RecordLabelCollectionName = z.infer<typeof RecordLabelCollectionNameSchema>
 export type CatalogCollectionResponse = z.infer<typeof CatalogCollectionResponseSchema>
+export type RecordLabelCollectionResponse = z.infer<typeof RecordLabelCollectionResponseSchema>
 export type TrackDetailQuery = z.infer<typeof TrackDetailQuerySchema>
 export type TrackDetailResponse = z.infer<typeof TrackDetailResponseSchema>
 export type AppleCatalogRaw = z.infer<typeof TrackDetailResponseSchema>['appleCatalog']
