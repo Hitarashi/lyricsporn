@@ -1208,11 +1208,13 @@ export async function getTrackDetailServer(options: {
   const metadata = mapTrack(resource)
   const attributes = resource.attributes ?? {}
   const motionArtwork = options.include.includes('motionArtwork')
-    ? ((
-        await fetchMotionArtworkForReferencesServer([
-          { type: 'songs', id: options.appleId, storefront },
-        ])
-      ).get(resourceKey(storefront, 'songs', options.appleId)) ?? null)
+    ? resource.type === 'songs'
+      ? ((
+          await fetchMotionArtworkForReferencesServer([
+            { type: 'songs', id: options.appleId, storefront },
+          ])
+        ).get(resourceKey(storefront, 'songs', options.appleId)) ?? null)
+      : null
     : undefined
   const artwork = options.include.includes('artwork')
     ? resizedArtwork(attributes.artwork, options.artworkSize)

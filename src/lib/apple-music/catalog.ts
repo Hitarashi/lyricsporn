@@ -75,7 +75,7 @@ export interface AppleCatalogResponse extends Record<string, AppleJsonValue | un
   }
 }
 
-export type AppleCatalogResourceType = 'songs' | 'artists' | 'albums' | 'playlists'
+export type AppleCatalogResourceType = 'songs' | 'artists' | 'albums' | 'playlists' | 'music-videos'
 
 export type AppleCatalogSearchType =
   | 'activities'
@@ -91,11 +91,20 @@ export type AppleCatalogSearchType =
 
 export type AppleCatalogSuggestionKind = 'terms' | 'topResults'
 
+export const APPLE_CATALOG_RESOURCE_TYPES: readonly AppleCatalogResourceType[] = [
+  'songs',
+  'artists',
+  'albums',
+  'playlists',
+  'music-videos',
+]
+
 const APPLE_CATALOG_ID_LIMITS: Record<AppleCatalogResourceType, number> = {
   songs: 300,
   artists: 25,
   albums: 25,
   playlists: 25,
+  'music-videos': 300,
 }
 
 export interface AppleCatalogResourceReference {
@@ -401,7 +410,7 @@ export async function fetchAppleCatalogResourcesServer(
   const requests = await Promise.all(
     [...groups.entries()].flatMap(([storefront, group]) => {
       const batches: AppleCatalogResourceReference[][] = []
-      for (const type of ['songs', 'artists', 'albums', 'playlists'] as const) {
+      for (const type of APPLE_CATALOG_RESOURCE_TYPES) {
         const typedReferences = group.filter((item) => item.type === type)
         const chunkSize = APPLE_CATALOG_ID_LIMITS[type]
         for (let offset = 0; offset < typedReferences.length; offset += chunkSize) {
@@ -420,7 +429,7 @@ export async function fetchAppleCatalogResourcesServer(
           url.searchParams.set('views', [...new Set(options.views)].join(','))
         if (options.extend?.length)
           url.searchParams.set('extend', [...new Set(options.extend)].join(','))
-        for (const type of ['songs', 'artists', 'albums', 'playlists'] as const) {
+        for (const type of APPLE_CATALOG_RESOURCE_TYPES) {
           const ids = batch.filter((item) => item.type === type).map((item) => item.id)
           if (ids.length > 0) url.searchParams.set(`ids[${type}]`, ids.join(','))
         }

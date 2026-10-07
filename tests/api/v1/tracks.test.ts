@@ -90,6 +90,85 @@ describe('track detail API', () => {
     expect(appleRequests).toHaveLength(1)
   })
 
+  it('falls back to music-videos when a track is not found as a song', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.pathname === '/v1/catalog/us/songs/1615128367') {
+        return new Response(null, { status: 404 })
+      }
+      if (url.pathname === '/v1/catalog/us/music-videos/1615128367') {
+        return Response.json({
+          data: [
+            {
+              id: '1615128367',
+              type: 'music-videos',
+              attributes: {
+                name: 'Heartless',
+                artistName: 'The Weeknd',
+                albumName: 'After Hours (Deluxe Video Album)',
+                durationInMillis: 249727,
+                releaseDate: '2020-03-19',
+                isrc: 'USUMV1902062',
+                artwork,
+                url: 'https://music.apple.com/us/music-video/heartless/1615128367',
+              },
+              relationships: {
+                artists: {
+                  data: [{ id: '479756766', type: 'artists', attributes: { name: 'The Weeknd' } }],
+                },
+                albums: {
+                  data: [
+                    {
+                      id: '1615127777',
+                      type: 'albums',
+                      attributes: { name: 'After Hours (Deluxe Video Album)' },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        })
+      }
+      return Response.json({ data: [] })
+    })
+
+    const response = await routeHandler(
+      TrackDetailRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/tracks/1615128367?include=artwork,artists,album,appleCatalog&artworkSize=600',
+      ),
+      params: { appleId: '1615128367' },
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.track).toMatchObject({
+      id: '1615128367',
+      type: 'music-videos',
+      title: 'Heartless',
+      artist: 'The Weeknd',
+      album: 'After Hours (Deluxe Video Album)',
+      durationMs: 249727,
+      isrc: 'USUMV1902062',
+      artwork: { width: 600, height: 600 },
+      artists: [{ id: '479756766', type: 'artist', name: 'The Weeknd' }],
+      albumResource: {
+        id: '1615127777',
+        type: 'album',
+        name: 'After Hours (Deluxe Video Album)',
+      },
+    })
+    expect(body.appleCatalog).toMatchObject({
+      storefront: 'us',
+      response: { data: [{ id: '1615128367', type: 'music-videos' }] },
+    })
+    expect(appleRequests).toHaveLength(2)
+    expect(appleRequests[0].pathname).toBe('/v1/catalog/us/songs/1615128367')
+    expect(appleRequests[1].pathname).toBe('/v1/catalog/us/music-videos/1615128367')
+  })
+
   it('validates track IDs, includes, formats, and repeated query keys', async () => {
     const appleRequests = mockAppleCatalog(() => Response.json({ data: [] }))
     const invalidId = await routeHandler(

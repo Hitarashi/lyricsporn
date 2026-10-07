@@ -1,6 +1,7 @@
 import type {
   AppleCatalogResourceReference,
   AppleCatalogResourceResult,
+  AppleCatalogResourceType,
 } from '@/lib/apple-music/catalog'
 
 import { fetchAppleCatalogResourceServer } from '@/lib/apple-music/catalog'
@@ -12,13 +13,33 @@ export function getTrackStorefrontCandidates(preferredStorefront: string): strin
   return [preferred, ...FALLBACK_STOREFRONTS.filter((storefront) => storefront !== preferred)]
 }
 
+function getTrackTypeCandidates(
+  preferredType: AppleCatalogResourceType,
+): AppleCatalogResourceType[] {
+  if (preferredType === 'music-videos') {
+    return ['music-videos', 'songs']
+  }
+  if (preferredType === 'songs') {
+    return ['songs', 'music-videos']
+  }
+  return [preferredType]
+}
+
 export async function fetchTrackResourceWithFallback(
   reference: AppleCatalogResourceReference,
   options: { include?: string[]; views?: string[]; extend?: string[] } = {},
 ): Promise<AppleCatalogResourceResult | null> {
-  for (const storefront of getTrackStorefrontCandidates(reference.storefront)) {
-    const result = await fetchAppleCatalogResourceServer({ ...reference, storefront }, options)
-    if (result?.resource) return result
+  const typeCandidates = getTrackTypeCandidates(reference.type)
+  const storefrontCandidates = getTrackStorefrontCandidates(reference.storefront)
+
+  for (const storefront of storefrontCandidates) {
+    for (const type of typeCandidates) {
+      const result = await fetchAppleCatalogResourceServer(
+        { ...reference, type, storefront },
+        options,
+      )
+      if (result?.resource) return result
+    }
   }
 
   return null
