@@ -6,6 +6,7 @@ import {
   AlbumCollectionNameSchema,
   AlbumGetQuerySchema,
   AppleCatalogIdSchema,
+  AppleCatalogSearchTypeSchema,
   ArtistCollectionNameSchema,
   ArtistGetQuerySchema,
   AssetBatchRequestSchema,
@@ -229,7 +230,7 @@ export async function handleCatalogSearchSuggestionsGet(request: Request): Promi
   const parsedKinds = parseCsvList(parsedQuery.data.kinds, CatalogSearchSuggestionKindSchema)
   if (!parsedKinds.success)
     return invalidRequestResponse(prefixIssuePath('kinds', parsedKinds.issues))
-  const parsedTypes = parseCsvList(parsedQuery.data.types, CatalogSearchTypeSchema)
+  const parsedTypes = parseCsvList(parsedQuery.data.types, AppleCatalogSearchTypeSchema)
   if (!parsedTypes.success)
     return invalidRequestResponse(prefixIssuePath('types', parsedTypes.issues))
   if (parsedKinds.data?.length === 0)

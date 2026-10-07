@@ -102,6 +102,21 @@ export const CatalogCollectionSchema = z
   .strict()
   .openapi('CatalogCollection')
 
+export const AppleCatalogSearchTypeSchema = z
+  .enum([
+    'activities',
+    'albums',
+    'apple-curators',
+    'artists',
+    'curators',
+    'music-videos',
+    'playlists',
+    'record-labels',
+    'songs',
+    'stations',
+  ])
+  .openapi('AppleCatalogSearchType')
+
 export const CatalogSearchTypeSchema = z
   .enum([
     'activities',
@@ -114,6 +129,8 @@ export const CatalogSearchTypeSchema = z
     'record-labels',
     'songs',
     'stations',
+    'top-results',
+    'topResults',
   ])
   .openapi('CatalogSearchType')
 
@@ -130,7 +147,7 @@ export const CatalogSearchQuerySchema = z
     storefront: StorefrontSchema,
     types: z.string().optional().openapi({
       description:
-        'Comma-separated Apple catalog types: activities, albums, apple-curators, artists, curators, music-videos, playlists, record-labels, songs, or stations. Defaults to songs.',
+        'Comma-separated Apple catalog types: activities, albums, apple-curators, artists, curators, music-videos, playlists, record-labels, songs, stations, or top-results. Defaults to songs.',
       example: 'songs,albums,artists',
     }),
     limit: z.coerce
@@ -236,6 +253,7 @@ export const CatalogSearchResponseSchema = z
         recordLabels: CatalogSearchResultGroupSchema.optional(),
         songs: CatalogSearchResultGroupSchema.optional(),
         stations: CatalogSearchResultGroupSchema.optional(),
+        topResults: CatalogSearchResultGroupSchema.optional(),
       })
       .strict(),
   })
@@ -1086,6 +1104,7 @@ export type CatalogSearchSuggestionsQuery = z.infer<typeof CatalogSearchSuggesti
 export type CatalogSearchSuggestionsResponse = z.infer<
   typeof CatalogSearchSuggestionsResponseSchema
 >
+export type AppleCatalogSearchType = z.infer<typeof AppleCatalogSearchTypeSchema>
 export type CatalogSearchType = z.infer<typeof CatalogSearchTypeSchema>
 export type ArtistCollectionName = z.infer<typeof ArtistCollectionNameSchema>
 export type AlbumCollectionName = z.infer<typeof AlbumCollectionNameSchema>

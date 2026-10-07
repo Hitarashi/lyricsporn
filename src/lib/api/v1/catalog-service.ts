@@ -57,6 +57,7 @@ import {
   CatalogSearchResponseSchema,
   CatalogSearchSuggestionsResponseSchema,
   DEFAULT_ARTWORK_SIZE,
+  DEFAULT_CATALOG_SEARCH_TYPES,
   DEFAULT_COLLECTION_LIMIT,
   MAX_COLLECTION_LIMIT,
   QueueTrackSchema as QueueTrackValidator,
@@ -694,7 +695,9 @@ const SEARCH_RESULT_KEYS = {
   'record-labels': 'recordLabels',
   songs: 'songs',
   stations: 'stations',
-} as const satisfies Record<AppleCatalogSearchType, keyof CatalogSearchResponse['results']>
+  'top-results': 'topResults',
+  topResults: 'topResults',
+} as const satisfies Record<CatalogSearchType, keyof CatalogSearchResponse['results']>
 
 function makeCatalogSearchUrl(
   term: string,
@@ -857,12 +860,41 @@ export async function getCatalogSearchServer(options: {
   artworkSize: number
   motionArtwork?: boolean
 }): Promise<CatalogSearchResponse> {
-  const response = await fetchAppleCatalogSearchServer(options)
-  const appleResults = getRecord(response?.results)
+  const wantsTopResults = options.types.some((t) => t === 'top-results' || t === 'topResults')
+  const appleSearchTypes = [
+    ...new Set(
+      options.types.filter(
+        (t): t is AppleCatalogSearchType => t !== 'top-results' && t !== 'topResults',
+      ),
+    ),
+  ]
+
+  const [searchResponse, suggestionsResponse] = await Promise.all([
+    appleSearchTypes.length > 0
+      ? fetchAppleCatalogSearchServer({
+          term: options.term,
+          storefront: options.storefront,
+          types: appleSearchTypes,
+          limit: options.limit,
+          offset: options.offset,
+        })
+      : null,
+    wantsTopResults
+      ? fetchAppleCatalogSearchSuggestionsServer({
+          term: options.term,
+          storefront: options.storefront,
+          kinds: ['topResults'],
+          types: ['songs', 'albums', 'artists', 'playlists', 'stations', 'music-videos'],
+          limit: options.limit,
+        })
+      : null,
+  ])
+
+  const appleResults = getRecord(searchResponse?.results)
   const results: CatalogSearchResponse['results'] = {}
   const rawItemsByType = new Map<AppleCatalogSearchType, AppleCatalogResource[]>()
 
-  for (const type of options.types) {
+  for (const type of appleSearchTypes) {
     const appleGroup = getRecord(appleResults?.[type])
     const rawItems = Array.isArray(appleGroup?.data) ? appleGroup.data : []
     rawItemsByType.set(
@@ -874,18 +906,41 @@ export async function getCatalogSearchServer(options: {
     )
   }
 
+  const suggestionsResults = getRecord(suggestionsResponse?.results)
+  const rawSuggestions = Array.isArray(suggestionsResults?.suggestions)
+    ? suggestionsResults.suggestions
+    : []
+  const rawTopResults = wantsTopResults
+    ? rawSuggestions.flatMap((value) => {
+        if (!isRecord(value) || value.kind !== 'topResults' || !isRecord(value.content)) return []
+        const content = value.content
+        if (typeof content.id !== 'string' || typeof content.type !== 'string') return []
+        return [content as AppleCatalogResource]
+      })
+    : []
+
   const includeMotionArtwork = options.motionArtwork ?? false
   const motionReferences = includeMotionArtwork
-    ? [...rawItemsByType.values()].flatMap((items) =>
-        items.flatMap((item) => {
-          const reference = getMotionArtworkReference(item, options.storefront)
-          return reference ? [reference] : []
-        }),
-      )
+    ? [...[...rawItemsByType.values()].flat(), ...rawTopResults].flatMap((item) => {
+        const reference = getMotionArtworkReference(item, options.storefront)
+        return reference ? [reference] : []
+      })
     : []
   const motionByKey = await fetchMotionArtworkForReferencesServer(motionReferences)
 
-  for (const type of options.types) {
+  if (wantsTopResults) {
+    const items = rawTopResults.flatMap((item) => {
+      const mapped = mapCatalogItem(
+        item,
+        options.artworkSize,
+        motionArtworkForResource(item, options.storefront, motionByKey, includeMotionArtwork),
+      )
+      return mapped ? [mapped] : []
+    })
+    results.topResults = { items }
+  }
+
+  for (const type of appleSearchTypes) {
     const appleGroup = getRecord(appleResults?.[type])
     const rawItems = Array.isArray(appleGroup?.data) ? appleGroup.data : []
     const items =
@@ -949,12 +1004,24 @@ export async function getCatalogSearchSuggestionsServer(options: {
   term: string
   storefront: string
   kinds: CatalogSearchSuggestionKind[]
-  types?: CatalogSearchType[]
+  types?: AppleCatalogSearchType[]
   limit: number
   artworkSize: number
   motionArtwork?: boolean
 }): Promise<CatalogSearchSuggestionsResponse> {
-  const response = await fetchAppleCatalogSearchSuggestionsServer(options)
+  const types =
+    options.types && options.types.length > 0
+      ? options.types
+      : options.kinds.includes('topResults')
+        ? [...DEFAULT_CATALOG_SEARCH_TYPES]
+        : undefined
+  const response = await fetchAppleCatalogSearchSuggestionsServer({
+    term: options.term,
+    storefront: options.storefront,
+    kinds: options.kinds,
+    ...(types ? { types } : {}),
+    limit: options.limit,
+  })
   const appleResults = getRecord(response?.results)
   const rawSuggestions = Array.isArray(appleResults?.suggestions) ? appleResults.suggestions : []
   const topResults = rawSuggestions.flatMap((value) => {

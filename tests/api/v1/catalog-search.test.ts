@@ -92,4 +92,111 @@ describe('catalog search motion artwork', () => {
       true,
     )
   })
+
+  it('returns results.topResults containing items mapped from mocked Apple suggestions when types=top-results', async () => {
+    mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/search/suggestions')) {
+        expect(url.searchParams.get('kinds')).toBe('topResults')
+        return Response.json({
+          results: {
+            suggestions: [{ kind: 'topResults', content: song('301') }],
+          },
+        })
+      }
+      return Response.json({ results: {} })
+    })
+
+    const response = await routeHandler(
+      CatalogSearchRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/catalog/search?term=example&types=top-results',
+      ),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.results.topResults).toBeDefined()
+    expect(body.results.topResults.items).toHaveLength(1)
+    expect(body.results.topResults.items[0].id).toBe('301')
+    expect(body.results.topResults.items[0].type).toBe('song')
+    expect(body.results.topResults.items[0].name).toBe('Song 301')
+    expect(body.results.songs).toBeUndefined()
+  })
+
+  it('returns both results.topResults and results.songs when types=top-results,songs', async () => {
+    mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/search/suggestions')) {
+        return Response.json({
+          results: {
+            suggestions: [{ kind: 'topResults', content: song('301') }],
+          },
+        })
+      }
+      if (url.pathname.endsWith('/search')) {
+        return Response.json({
+          results: {
+            songs: {
+              data: [song('101')],
+            },
+          },
+        })
+      }
+      return Response.json({ results: {} })
+    })
+
+    const response = await routeHandler(
+      CatalogSearchRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/catalog/search?term=example&types=top-results,songs',
+      ),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.results.topResults).toBeDefined()
+    expect(body.results.topResults.items[0].id).toBe('301')
+    expect(body.results.songs).toBeDefined()
+    expect(body.results.songs.items[0].id).toBe('101')
+  })
+
+  it('properly populates motion artwork for topResults when include=motionArtwork', async () => {
+    const appleRequests = mockAppleCatalog((url) => {
+      if (url.pathname.endsWith('/search/suggestions')) {
+        return Response.json({
+          results: {
+            suggestions: [{ kind: 'topResults', content: song('301') }],
+          },
+        })
+      }
+      if (url.pathname.endsWith('/search')) return Response.json({ results: {} })
+      const songIds = url.searchParams.get('ids[songs]')?.split(',') ?? []
+      return Response.json({
+        data: songIds.map((id) => song(id, url.searchParams.get('extend') === 'editorialVideo')),
+      })
+    })
+
+    const response = await routeHandler(
+      CatalogSearchRoute,
+      'GET',
+    )({
+      request: new Request(
+        'https://lyricsporn.test/api/v1/catalog/search?term=example&types=top-results&include=motionArtwork',
+      ),
+      params: {},
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.results.topResults).toBeDefined()
+    expect(body.results.topResults.items[0].motionArtwork).toEqual(expectedMotionArtwork)
+    expect(appleRequests.some((url) => url.searchParams.get('extend') === 'editorialVideo')).toBe(
+      true,
+    )
+  })
 })

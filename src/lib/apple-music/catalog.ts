@@ -381,7 +381,12 @@ export async function fetchAppleCatalogSearchSuggestionsServer(options: {
   const url = catalogUrl(`${storefront}/search/suggestions`)
   url.searchParams.set('term', options.term.trim())
   url.searchParams.set('kinds', [...new Set(options.kinds)].join(','))
-  if (options.types?.length) url.searchParams.set('types', [...new Set(options.types)].join(','))
+  const effectiveTypes = options.types?.length
+    ? options.types
+    : options.kinds.includes('topResults')
+      ? ['songs', 'albums', 'artists', 'playlists']
+      : undefined
+  if (effectiveTypes?.length) url.searchParams.set('types', [...new Set(effectiveTypes)].join(','))
   url.searchParams.set('limit', String(options.limit))
   return fetchAmp(url)
 }
