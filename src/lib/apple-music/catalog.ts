@@ -387,7 +387,7 @@ export async function fetchAppleCatalogSearchSuggestionsServer(options: {
       ? ['songs', 'albums', 'artists', 'playlists']
       : undefined
   if (effectiveTypes?.length) url.searchParams.set('types', [...new Set(effectiveTypes)].join(','))
-  url.searchParams.set('limit', String(options.limit))
+  url.searchParams.set('limit', String(Math.min(Math.max(1, options.limit), 10)))
   return fetchAmp(url)
 }
 

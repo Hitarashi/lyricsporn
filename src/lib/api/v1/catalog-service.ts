@@ -885,8 +885,8 @@ export async function getCatalogSearchServer(options: {
           storefront: options.storefront,
           kinds: ['topResults'],
           types: ['songs', 'albums', 'artists', 'playlists', 'stations', 'music-videos'],
-          limit: options.limit,
-        })
+          limit: Math.min(Math.max(1, options.limit), 10),
+        }).catch(() => null)
       : null,
   ])
 
