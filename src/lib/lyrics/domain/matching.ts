@@ -68,7 +68,7 @@ export function metadataScore(
     expectedDuration > 0 &&
     duration != null &&
     duration > 0 &&
-    Math.abs(expectedDuration - duration) > 12
+    Math.abs(expectedDuration - duration) > 16
   ) {
     return null
   }
@@ -84,7 +84,8 @@ export function metadataScore(
     const diff = Math.abs(expectedDuration - duration)
     if (diff <= 2) score += 30
     else if (diff <= 5) score += 20
-    else score += 10
+    else if (diff <= 12) score += 10
+    else score += 5
   }
 
   return score
