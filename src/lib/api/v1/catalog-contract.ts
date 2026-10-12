@@ -40,7 +40,7 @@ const ResolvedTrackStorefrontSchema = z
     example: 'gb',
   })
 
-export const ArtworkSizeSchema = z
+export const ArtworkSizeSchema = z.coerce
   .number()
   .int()
   .min(50)
