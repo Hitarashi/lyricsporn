@@ -21,6 +21,8 @@ import {
   CatalogSearchResponseSchema,
   CatalogSearchSuggestionsQuerySchema,
   CatalogSearchSuggestionsResponseSchema,
+  EditorialGroupingQuerySchema,
+  EditorialGroupingResponseSchema,
   PlaylistCollectionNameSchema,
   PlaylistGetQuerySchema,
   PlaylistSchema,
@@ -342,6 +344,66 @@ registry.registerPath({
     },
     500: {
       description: 'The asset batch could not be completed.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+  },
+})
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/editorial/groupings',
+  tags: ['Editorial'],
+  summary: 'Get Apple Music editorial groupings',
+  description:
+    'Return composite editorial groupings including hero carousel flowcase banners and structured shelf sections (such as "Best New Songs", "New This Week", and "Daily Top 100"). Use `name=music` for the New/Browse screen, or `name=radio` for Radio. Optional `sections` query parameter filters specific shelves, and `limit` restricts items per shelf.',
+  request: {
+    query: EditorialGroupingQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'The editorial grouping structure with hero and shelves.',
+      content: { 'application/json': { schema: EditorialGroupingResponseSchema } },
+    },
+    400: {
+      description: 'Invalid grouping name, storefront, or query parameters.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+    404: {
+      description: 'Editorial grouping was not found.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+    500: {
+      description: 'Apple Music editorial service failed.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+  },
+})
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/browse',
+  tags: ['Editorial'],
+  summary: 'Browse Apple Music (New screen shortcut)',
+  description:
+    'Convenience alias for `/api/v1/editorial/groupings?name=music`. Returns hero showcase items and category shelves for the New / Browse tab.',
+  request: {
+    query: EditorialGroupingQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'The editorial browse grouping structure.',
+      content: { 'application/json': { schema: EditorialGroupingResponseSchema } },
+    },
+    400: {
+      description: 'Invalid storefront or query parameters.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+    404: {
+      description: 'Editorial browse grouping was not found.',
+      content: { 'application/json': { schema: ApiErrorResponseSchema } },
+    },
+    500: {
+      description: 'Apple Music editorial service failed.',
       content: { 'application/json': { schema: ApiErrorResponseSchema } },
     },
   },

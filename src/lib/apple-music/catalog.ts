@@ -487,3 +487,46 @@ export async function fetchAppleCatalogCollectionServer(
   if (collection.kind === 'view') url.searchParams.set('with', 'attributes')
   return fetchAmp(url)
 }
+
+export interface AppleEditorialGroupingOptions {
+  name?: string
+  storefront?: string
+  platform?: string
+  tabs?: 'nonsubscriber' | 'subscriber'
+}
+
+const GROUPING_CACHE_MS = 5 * 60 * 1000
+const editorialGroupingCache = new Map<string, { data: AppleCatalogResponse; expiresAt: number }>()
+
+export async function fetchAppleEditorialGroupingServer(
+  options: AppleEditorialGroupingOptions = {},
+): Promise<AppleCatalogResponse | null> {
+  const storefront = normalizeCatalogStorefront(options.storefront ?? 'us')
+  const name = options.name?.trim() || 'music'
+  const platform = options.platform?.trim() || 'web'
+  const tabs = options.tabs ?? 'nonsubscriber'
+
+  const cacheKey = `${storefront}:${name}:${platform}:${tabs}`
+  const cached = editorialGroupingCache.get(cacheKey)
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.data
+  }
+
+  const url = new URL(`https://amp-api.music.apple.com/v1/editorial/${storefront}/groupings`)
+  url.searchParams.set('name', name)
+  url.searchParams.set('platform', platform)
+  url.searchParams.set('tabs', tabs)
+  url.searchParams.set('relate[songs]', 'albums')
+  url.searchParams.set('include[albums]', 'artists')
+  url.searchParams.set('include[songs]', 'artists')
+  url.searchParams.set('include[music-videos]', 'artists')
+
+  const response = await fetchAmp(url)
+  if (response) {
+    editorialGroupingCache.set(cacheKey, {
+      data: response,
+      expiresAt: Date.now() + GROUPING_CACHE_MS,
+    })
+  }
+  return response
+}

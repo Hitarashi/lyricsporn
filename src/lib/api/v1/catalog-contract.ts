@@ -1126,3 +1126,126 @@ export type AssetBatchRequest = z.infer<typeof AssetBatchRequestSchema>
 export type AssetBatchResponse = z.infer<typeof AssetBatchResponseSchema>
 export type AssetBatchItemResult = z.infer<typeof AssetBatchItemResultSchema>
 export type AssetType = z.infer<typeof AssetTypeSchema>
+
+export const EditorialHeroDestinationSchema = z
+  .object({
+    type: z.enum(['song', 'album', 'playlist', 'station', 'musicVideo', 'room']),
+    id: AppleCatalogIdSchema,
+    url: z.string().optional(),
+  })
+  .strict()
+  .openapi('EditorialHeroDestination')
+
+export const EditorialHeroItemSchema = z
+  .object({
+    id: AppleCatalogIdSchema,
+    badge: z
+      .string()
+      .optional()
+      .openapi({ description: 'Banner badge, e.g. "LIVE FROM INDIO" or "NEW RELEASE"' }),
+    title: z.string().optional().openapi({ description: 'Banner title or tagline' }),
+    description: z.string().optional(),
+    artwork: ArtworkSchema.optional(),
+    editorialArtwork: z
+      .object({
+        subscriptionCover: ArtworkSchema.optional(),
+        subscriptionHero: ArtworkSchema.optional(),
+        superHeroTall: ArtworkSchema.optional(),
+      })
+      .optional()
+      .openapi({ description: 'Multi-aspect editorial banner artwork assets' }),
+    target: CatalogItemSchema.optional().openapi({
+      description: 'Underlying target catalog item, if linked',
+    }),
+    destination: EditorialHeroDestinationSchema.optional(),
+  })
+  .strict()
+  .openapi('EditorialHeroItem')
+
+export const EditorialSectionLayoutSchema = z
+  .enum(['tracks', 'albums', 'playlists', 'stations', 'musicVideos', 'mixed'])
+  .openapi('EditorialSectionLayout')
+
+export const EditorialSectionSchema = z
+  .object({
+    id: AppleCatalogIdSchema,
+    slug: z
+      .string()
+      .openapi({ description: 'URL-friendly kebab-case slug of the section title or ID.' }),
+    title: z
+      .string()
+      .openapi({ description: 'Display title of the section, e.g. "Best New Songs".' }),
+    layout: EditorialSectionLayoutSchema,
+    itemsCount: z.number().int().nonnegative(),
+    hasMore: z
+      .boolean()
+      .openapi({ description: 'Whether a full room or collection page is available.' }),
+    roomId: AppleCatalogIdSchema.optional().openapi({
+      description: 'Associated Apple room ID for destination navigation.',
+    }),
+    items: z.array(CatalogItemSchema),
+  })
+  .strict()
+  .openapi('EditorialSection')
+
+export const EditorialGroupingResponseSchema = z
+  .object({
+    storefront: StorefrontSchema,
+    name: z
+      .string()
+      .openapi({ description: 'The grouping name identifier (e.g. "music", "radio").' }),
+    title: z
+      .string()
+      .openapi({ description: 'Display title for the grouping/screen (e.g. "New", "Radio").' }),
+    hero: z.array(EditorialHeroItemSchema),
+    sections: z.array(EditorialSectionSchema),
+  })
+  .strict()
+  .openapi('EditorialGroupingResponse')
+
+export const EditorialGroupingIncludeSchema = MotionArtworkIncludeSchema
+
+export const EditorialGroupingQuerySchema = z
+  .object({
+    name: z
+      .string()
+      .min(1)
+      .max(64)
+      .default('music')
+      .openapi({ description: 'Grouping name to fetch (default: "music" for New screen).' }),
+    storefront: StorefrontSchema,
+    sections: z
+      .string()
+      .optional()
+      .openapi({ description: 'Optional comma-separated list of section slugs or IDs to filter.' }),
+    limit: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(50)
+      .default(20)
+      .openapi({ description: 'Maximum number of items per section.' }),
+    artworkSize: ArtworkSizeSchema,
+    include: z
+      .array(MotionArtworkIncludeSchema)
+      .optional()
+      .openapi({
+        description: 'Opt-in inclusions, such as motionArtwork. Values are comma-separated.',
+        example: ['motionArtwork'],
+        param: { style: 'form', explode: false },
+      }),
+    tabs: z
+      .enum(['nonsubscriber', 'subscriber'])
+      .default('nonsubscriber')
+      .openapi({ description: 'Editorial audience tabs.' }),
+  })
+  .strict()
+  .openapi('EditorialGroupingQuery')
+
+export type EditorialHeroDestination = z.infer<typeof EditorialHeroDestinationSchema>
+export type EditorialHeroItem = z.infer<typeof EditorialHeroItemSchema>
+export type EditorialSectionLayout = z.infer<typeof EditorialSectionLayoutSchema>
+export type EditorialSection = z.infer<typeof EditorialSectionSchema>
+export type EditorialGroupingResponse = z.infer<typeof EditorialGroupingResponseSchema>
+export type EditorialGroupingInclude = z.infer<typeof EditorialGroupingIncludeSchema>
+export type EditorialGroupingQuery = z.infer<typeof EditorialGroupingQuerySchema>

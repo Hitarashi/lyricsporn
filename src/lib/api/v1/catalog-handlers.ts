@@ -18,6 +18,7 @@ import {
   CatalogSearchSuggestionsQuerySchema,
   CatalogSearchTypeSchema,
   DEFAULT_CATALOG_SEARCH_TYPES,
+  EditorialGroupingQuerySchema,
   PlaylistCollectionNameSchema,
   PlaylistGetQuerySchema,
   RecordLabelCollectionNameSchema,
@@ -32,6 +33,7 @@ import {
   getCatalogSearchHintsServer,
   getCatalogSearchServer,
   getCatalogSearchSuggestionsServer,
+  getEditorialGroupingServer,
   getRecordLabelCollectionServer,
   getRecordLabelServer,
   getTrackDetailServer,
@@ -383,6 +385,21 @@ export async function handleTrackDetailGet(request: Request, appleId: string): P
       artworkSize: parsedQuery.data.artworkSize,
     })
     if (!data) return resourceNotFoundResponse(`track ${idResult.id}`)
+    return catalogJson(data)
+  } catch {
+    return unexpectedErrorResponse()
+  }
+}
+
+export async function handleEditorialGroupingGet(request: Request): Promise<Response> {
+  const query = queryParameters(request)
+  if (query.error) return query.error
+  const parsedQuery = EditorialGroupingQuerySchema.safeParse(query.values)
+  if (!parsedQuery.success) return invalidRequestResponse(parsedQuery.error.issues)
+
+  try {
+    const data = await getEditorialGroupingServer(parsedQuery.data)
+    if (!data) return resourceNotFoundResponse(`grouping ${parsedQuery.data.name}`)
     return catalogJson(data)
   } catch {
     return unexpectedErrorResponse()

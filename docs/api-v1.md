@@ -167,6 +167,38 @@ Results preserve request order and include `index` plus `matched`, `not_found`, 
 
 Each item reports `matched`, `not_found`, `unavailable` (the resource exists but has no returned still artwork or requested motion video), or `error`. A matched asset contains the fields available for that resource. Motion video URLs are only included for songs and albums, and a song uses its album's video when Apple has no song-level video. Clients fetch image or video bytes directly from Apple.
 
+## Editorial groupings and browse
+
+`GET /api/v1/editorial/groupings` proxies Apple Music editorial composite pages and normalizes them into structured hero showcases and category shelves. `GET /api/v1/browse` is a convenience shortcut for `name=music` (the Apple Music "New" / "Browse" tab).
+
+```text
+GET /api/v1/browse?storefront=in&limit=10&sections=hero,best-new-songs,new-this-week
+GET /api/v1/editorial/groupings?name=radio&storefront=us
+```
+
+### Query parameters
+
+* `name`: Editorial grouping preset. Defaults to `music` ("New" / Browse tab). Also supports `radio` ("Radio" tab) or `browse`.
+* `storefront`: Two-letter ISO country code (e.g. `us`, `in`, `gb`). Defaults to `us`.
+* `sections`: Optional comma-separated list of section slugs or Apple IDs to filter (e.g. `sections=hero,best-new-songs,daily-top-100`). When provided, only matching shelves (and hero if `hero` is included) are returned, significantly reducing payload size on mobile.
+* `limit`: Maximum items per category shelf (1–50, default 20).
+* `artworkSize`: Square artwork dimensions in pixels (50–3000, default 300).
+* `include`: Opt-in additions. Pass `include=motionArtwork` to resolve motion video URLs for song and album shelf items.
+* `tabs`: Editorial audience partition (`nonsubscriber` or `subscriber`, default `nonsubscriber`).
+
+### Response structure
+
+* `hero`: Array of featured showcase banners. Each item contains `id`, `badge` (e.g. `"LIVE FROM INDIO"`), `title` / tagline, `artwork` (with Apple background and text color palette), multi-aspect `editorialArtwork` (subscriptionCover, subscriptionHero, superHeroTall), and optional linked `destination` or `target` item.
+* `sections`: Array of category shelves (e.g. "Best New Songs", "New This Week", "Daily Top 100", "City Charts"). Each shelf contains:
+  * `id`: Apple element ID.
+  * `slug`: Normalized kebab-case slug (e.g. `best-new-songs`).
+  * `title`: Section display name.
+  * `layout`: Recommended client layout (`tracks`, `albums`, `playlists`, `stations`, `musicVideos`, or `mixed`).
+  * `itemsCount`: Number of returned items in the shelf.
+  * `hasMore`: Boolean indicating if a full room or collection page is available.
+  * `roomId`: Apple room ID for destination navigation when tapping "See All".
+  * `items`: Array of compact normalized `CatalogItem` objects matching standard song, album, playlist, and station resources.
+
 ## Motion artwork
 
 Motion artwork is opt-in on track detail, queue, album detail, catalog search and top suggestions, song/album collection pages, catalog album batches, and artwork batches. Without the option, responses do not contain a `motionArtwork` field. When requested, an unavailable video is represented as `motionArtwork: null` on an otherwise available track, album, or catalog item.

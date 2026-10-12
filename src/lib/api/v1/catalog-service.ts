@@ -24,6 +24,12 @@ import type {
   CatalogSearchSuggestionKind,
   CatalogSearchSuggestionsResponse,
   CatalogSearchType,
+  EditorialGroupingQuery,
+  EditorialGroupingResponse,
+  EditorialHeroDestination,
+  EditorialHeroItem,
+  EditorialSection,
+  EditorialSectionLayout,
   Playlist,
   QueueInclude,
   QueueTrack,
@@ -47,6 +53,7 @@ import {
   fetchAppleCatalogSearchHintsServer,
   fetchAppleCatalogSearchServer,
   fetchAppleCatalogSearchSuggestionsServer,
+  fetchAppleEditorialGroupingServer,
 } from '@/lib/apple-music/catalog'
 import { defaultLyricsRepository } from '@/lib/lyrics/adapters/default-repository'
 
@@ -1782,5 +1789,273 @@ export async function lookupAssetBatchServer(
         },
       }
     }),
+  }
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+export async function getEditorialGroupingServer(
+  options: EditorialGroupingQuery,
+): Promise<EditorialGroupingResponse | null> {
+  const groupingName = options.name?.trim() || 'music'
+  const storefront = options.storefront
+  const artworkSize = options.artworkSize
+  const limit = options.limit ?? 20
+  const includeMotionArtwork = (options.include ?? []).includes('motionArtwork')
+
+  const raw = await fetchAppleEditorialGroupingServer({
+    name: groupingName,
+    storefront,
+    tabs: options.tabs,
+  })
+
+  if (!raw || !Array.isArray(raw.data) || raw.data.length === 0) {
+    return null
+  }
+
+  const groupingResource = raw.data[0]
+  if (!groupingResource) return null
+
+  const groupingTitle =
+    groupingName === 'music'
+      ? 'New'
+      : groupingName === 'radio'
+        ? 'Radio'
+        : (getString(groupingResource.attributes?.name) ?? groupingName)
+
+  const tabsRecord = getRecord(groupingResource.relationships?.tabs)
+  const tabsData = tabsRecord?.data
+  const primaryTab = Array.isArray(tabsData) ? tabsData[0] : null
+  const primaryTabRecord = isRecord(primaryTab) ? primaryTab : null
+  const childrenRecord = getRecord(primaryTabRecord?.relationships?.children)
+  const childrenData = childrenRecord?.data
+  const elements: AppleCatalogResource[] = Array.isArray(childrenData)
+    ? childrenData.filter(
+        (item): item is AppleCatalogResource => isRecord(item) && typeof item.id === 'string',
+      )
+    : []
+
+  const heroElements: AppleCatalogResource[] = []
+  const rawSections: { element: AppleCatalogResource; title: string; slug: string }[] = []
+
+  for (const elem of elements) {
+    const kind = getString(elem.attributes?.editorialElementKind)
+    const elemChildrenRecord = getRecord(elem.relationships?.children)
+    const hasChildren = Array.isArray(elemChildrenRecord?.data)
+    const elemContentsRecord = getRecord(elem.relationships?.contents)
+    const hasContents = Array.isArray(elemContentsRecord?.data)
+
+    if (kind === '316' || (hasChildren && !hasContents)) {
+      const heroChildren = elemChildrenRecord?.data
+      if (Array.isArray(heroChildren)) {
+        for (const h of heroChildren) {
+          if (isRecord(h) && typeof h.id === 'string') {
+            heroElements.push(h as AppleCatalogResource)
+          }
+        }
+      }
+    } else if (hasContents) {
+      const title =
+        getString(elem.attributes?.name) ||
+        getString(elem.attributes?.title) ||
+        getString(elem.attributes?.designTag) ||
+        'Section'
+      const slug = slugify(title) || `section-${elem.id}`
+      rawSections.push({ element: elem, title, slug })
+    }
+  }
+
+  let filteredSections = rawSections
+  let includeHero = true
+  if (options.sections?.trim()) {
+    const requested = new Set(
+      options.sections
+        .split(',')
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean),
+    )
+    includeHero = requested.has('hero')
+    filteredSections = rawSections.filter(
+      (s) => requested.has(s.slug.toLowerCase()) || requested.has(s.element.id),
+    )
+  }
+
+  let motionByKey = new Map<string, MotionArtwork | null>()
+  if (includeMotionArtwork) {
+    const motionRefs: MotionArtworkReference[] = []
+    if (includeHero) {
+      for (const h of heroElements) {
+        const hContentsRecord = getRecord(h.relationships?.contents)
+        const target = Array.isArray(hContentsRecord?.data) ? hContentsRecord.data[0] : undefined
+        if (isRecord(target) && typeof target.id === 'string' && typeof target.type === 'string') {
+          const ref = getMotionArtworkReference(target as AppleCatalogResource, storefront)
+          if (ref) motionRefs.push(ref)
+        }
+      }
+    }
+    for (const s of filteredSections) {
+      const sContentsRecord = getRecord(s.element.relationships?.contents)
+      const contents = sContentsRecord?.data
+      if (Array.isArray(contents)) {
+        for (const item of contents.slice(0, limit)) {
+          if (isRecord(item) && typeof item.id === 'string' && typeof item.type === 'string') {
+            const ref = getMotionArtworkReference(item as AppleCatalogResource, storefront)
+            if (ref) motionRefs.push(ref)
+          }
+        }
+      }
+    }
+    if (motionRefs.length > 0) {
+      motionByKey = await fetchMotionArtworkForReferencesServer(motionRefs)
+    }
+  }
+
+  const hero: EditorialHeroItem[] = []
+  if (includeHero) {
+    for (const h of heroElements) {
+      const hAttrs = h.attributes ?? {}
+      const hContentsRecord = getRecord(h.relationships?.contents)
+      const targetResRaw = Array.isArray(hContentsRecord?.data)
+        ? hContentsRecord.data[0]
+        : undefined
+      const targetRes =
+        isRecord(targetResRaw) &&
+        typeof targetResRaw.id === 'string' &&
+        typeof targetResRaw.type === 'string'
+          ? (targetResRaw as AppleCatalogResource)
+          : undefined
+
+      const targetItem = targetRes
+        ? mapCatalogItem(
+            targetRes,
+            artworkSize,
+            motionArtworkForResource(targetRes, storefront, motionByKey, includeMotionArtwork),
+          )
+        : undefined
+
+      const ea = getRecord(hAttrs.editorialArtwork)
+      const editorialArtwork = ea
+        ? {
+            ...(isRecord(ea.subscriptionCover)
+              ? { subscriptionCover: resizedArtwork(ea.subscriptionCover, artworkSize) }
+              : {}),
+            ...(isRecord(ea.subscriptionHero)
+              ? { subscriptionHero: resizedArtwork(ea.subscriptionHero, artworkSize) }
+              : {}),
+            ...(isRecord(ea.superHeroTall)
+              ? { superHeroTall: resizedArtwork(ea.superHeroTall, artworkSize) }
+              : {}),
+          }
+        : undefined
+
+      let destination: EditorialHeroDestination | undefined
+      if (targetRes) {
+        const mappedType = mapResourceType(targetRes.type) ?? 'room'
+        destination = {
+          type: mappedType,
+          id: targetRes.id,
+          ...(getString(targetRes.attributes?.url)
+            ? { url: getString(targetRes.attributes?.url) }
+            : {}),
+        }
+      }
+
+      hero.push({
+        id: h.id,
+        ...(getString(hAttrs.designBadge) ? { badge: getString(hAttrs.designBadge) } : {}),
+        ...(getString(hAttrs.designTag) || getString(hAttrs.title) || getString(hAttrs.name)
+          ? {
+              title:
+                getString(hAttrs.designTag) || getString(hAttrs.title) || getString(hAttrs.name),
+            }
+          : {}),
+        ...(getString(hAttrs.description) ? { description: getString(hAttrs.description) } : {}),
+        ...(resizedArtwork(hAttrs.artwork, artworkSize)
+          ? { artwork: resizedArtwork(hAttrs.artwork, artworkSize) }
+          : {}),
+        ...(editorialArtwork ? { editorialArtwork } : {}),
+        ...(targetItem ? { target: targetItem } : {}),
+        ...(destination ? { destination } : {}),
+      })
+    }
+  }
+
+  const sections: EditorialSection[] = []
+  for (const s of filteredSections) {
+    const elem = s.element
+    const sContentsRecord = getRecord(elem.relationships?.contents)
+    const contents = sContentsRecord?.data
+    const rawItems: AppleCatalogResource[] = Array.isArray(contents)
+      ? contents.filter(
+          (item): item is AppleCatalogResource =>
+            isRecord(item) && typeof item.id === 'string' && typeof item.type === 'string',
+        )
+      : []
+
+    const sliced = rawItems.slice(0, limit)
+    const items = sliced.flatMap((item) => {
+      const mapped = mapCatalogItem(
+        item,
+        artworkSize,
+        motionArtworkForResource(item, storefront, motionByKey, includeMotionArtwork),
+      )
+      return mapped ? [mapped] : []
+    })
+
+    const roomRecord = getRecord(elem.relationships?.room)
+    const roomData = roomRecord?.data
+    const roomId =
+      Array.isArray(roomData) && isRecord(roomData[0]) && typeof roomData[0].id === 'string'
+        ? roomData[0].id
+        : undefined
+
+    const rawType = getString(elem.attributes?.type)?.toLowerCase()
+    let layout: EditorialSectionLayout = 'mixed'
+    if (rawType === 'track' || rawType === 'song' || rawType === 'songs') layout = 'tracks'
+    else if (rawType === 'album' || rawType === 'albums') layout = 'albums'
+    else if (rawType === 'playlist' || rawType === 'playlists') layout = 'playlists'
+    else if (rawType === 'station' || rawType === 'stations' || rawType === 'radio')
+      layout = 'stations'
+    else if (
+      rawType === 'music-video' ||
+      rawType === 'music-videos' ||
+      rawType === 'video' ||
+      rawType === 'videos'
+    )
+      layout = 'musicVideos'
+    else if (items.length > 0) {
+      const firstType = items[0].type
+      if (firstType === 'song') layout = 'tracks'
+      else if (firstType === 'album') layout = 'albums'
+      else if (firstType === 'playlist') layout = 'playlists'
+      else if (firstType === 'station') layout = 'stations'
+      else if (firstType === 'musicVideo') layout = 'musicVideos'
+    }
+
+    sections.push({
+      id: elem.id,
+      slug: s.slug,
+      title: s.title,
+      layout,
+      itemsCount: items.length,
+      hasMore: !!roomId,
+      ...(roomId ? { roomId } : {}),
+      items,
+    })
+  }
+
+  return {
+    storefront,
+    name: groupingName,
+    title: groupingTitle,
+    hero,
+    sections,
   }
 }

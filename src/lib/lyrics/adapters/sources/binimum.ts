@@ -63,7 +63,9 @@ function formatLrcTimestamp(timeMs: number, bracketed = true): string {
   return bracketed ? `[${timestamp}]` : `<${timestamp}>`
 }
 
-function toLrc(response: LyricsPlusJsonResponse): { format: 'elrc' | 'lrc'; content: string } | null {
+function toLrc(
+  response: LyricsPlusJsonResponse,
+): { format: 'elrc' | 'lrc'; content: string } | null {
   const lines = response.lyrics
   if (!Array.isArray(lines) || lines.length === 0) return null
 
@@ -111,9 +113,7 @@ export class BinimumLyricsSource implements LyricsSource {
       try {
         const candidate = await this.fetchFromMirror(http, baseUrl, query, input)
         if (candidate) return [candidate]
-      } catch {
-        continue
-      }
+      } catch {}
     }
 
     return []
@@ -155,11 +155,7 @@ export class BinimumLyricsSource implements LyricsSource {
     return null
   }
 
-  private parseTtmlResponse(
-    raw: string,
-    url: string,
-    input: LyricsLookup,
-  ): LyricsCandidate | null {
+  private parseTtmlResponse(raw: string, url: string, input: LyricsLookup): LyricsCandidate | null {
     const trimmed = raw.trim()
     if (trimmed.startsWith('<')) {
       return {
@@ -175,7 +171,7 @@ export class BinimumLyricsSource implements LyricsSource {
     try {
       const data: LyricsPlusTtmlResponse = JSON.parse(raw)
       const ttml = data.ttml?.trim()
-      if (!ttml || !ttml.startsWith('<')) return null
+      if (!ttml?.startsWith('<')) return null
 
       const metadata = data.processingTime?.selectedSongMetadata
       const winnerSource = data.processingTime?.winnerSource
@@ -206,11 +202,7 @@ export class BinimumLyricsSource implements LyricsSource {
     }
   }
 
-  private parseJsonResponse(
-    raw: string,
-    url: string,
-    input: LyricsLookup,
-  ): LyricsCandidate | null {
+  private parseJsonResponse(raw: string, url: string, input: LyricsLookup): LyricsCandidate | null {
     try {
       const data: LyricsPlusJsonResponse = JSON.parse(raw)
       const lrcResult = toLrc(data)
